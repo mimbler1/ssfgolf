@@ -14,3 +14,9 @@ tools/.e2e_logs/
 # OS / editor
 .DS_Store
 Thumbs.db
+
+# Local image-generation environment and model cache (tools/artgen/README.md)
+tools/artgen/.venv/
+tools/artgen/models/
+tools/artgen/out/
+__pycache__/

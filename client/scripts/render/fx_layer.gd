@@ -1,7 +1,7 @@
 class_name FxLayer
 extends Node2D
-## Lightweight vector particle system for gameplay feedback (dust, splashes,
-## explosions, confetti, sparkles, impact rings). All particles are drawn in one pass.
+## Gameplay feedback: authored sprite flipbooks (res://assets/effects, see effects.json) layered
+## with a light particle system (sparks, confetti, droplets) drawn in one pass.
 
 class P:
 	var pos: Vector2
@@ -18,6 +18,50 @@ class P:
 
 var _ps: Array[P] = []
 const MAX := 900
+
+const FX_DIR := "res://assets/effects/"
+static var _fx_lib: Dictionary = {}
+static var _fx_loaded := false
+
+
+## Plays an authored flipbook effect once at `pos` (no-op when the effect has no art).
+func flip(name: String, pos: Vector2, angle: float = 0.0, scale_mul: float = 1.0) -> void:
+	if not _fx_loaded:
+		_fx_loaded = true
+		var path := FX_DIR + "effects.json"
+		if FileAccess.file_exists(path):
+			_fx_lib = JSON.parse_string(FileAccess.get_file_as_string(path))
+	var d: Dictionary = _fx_lib.get(name, {})
+	if d.is_empty():
+		return
+	var sp := _Flip.new()
+	sp.texture = load(FX_DIR + str(d.sheet))
+	sp.hframes = int(d.frames)
+	sp.fps = float(d.get("fps", 20))
+	sp.position = pos
+	sp.rotation = angle
+	var k := float(d.get("scale", 2.0)) * scale_mul
+	sp.scale = Vector2(k, k)
+	sp.offset = Vector2(0, float(d.get("offset_y", 0)))
+	sp.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	if bool(d.get("additive", false)):
+		var m := CanvasItemMaterial.new()
+		m.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		sp.material = m
+	add_child(sp)
+
+
+class _Flip extends Sprite2D:
+	var fps := 20.0
+	var _t := 0.0
+
+	func _process(delta: float) -> void:
+		_t += delta
+		var f := int(_t * fps)
+		if f >= hframes:
+			queue_free()
+		else:
+			frame = f
 
 
 func _process(delta: float) -> void:
@@ -87,6 +131,8 @@ func _draw() -> void:
 func dust(pos: Vector2, normal: Vector2, strength: float, color: Color = Color("e9dcc6")) -> void:
 	var n := int(clampf(strength / 90.0, 2.0, 10.0))
 	var tang := Vector2(-normal.y, normal.x)
+	if strength > 380.0:
+		flip("dust", pos, normal.angle() + PI * 0.5, clampf(strength / 700.0, 0.6, 1.0))
 	for i in n:
 		var side := tang * randf_range(-1.0, 1.0) * strength * 0.25
 		_add(pos, side + normal * randf_range(20, 70), randf_range(0.35, 0.6), randf_range(3.0, 6.0), color, 4, 60.0, 3.0)
@@ -97,7 +143,8 @@ func impact_ring(pos: Vector2, color: Color = Color(1, 1, 1, 0.8), size: float =
 
 
 func splash(pos: Vector2, color: Color = Color("bdeafe")) -> void:
-	for i in 26:
+	flip("splash", pos)
+	for i in 14:
 		var a := randf_range(-PI * 0.92, -PI * 0.08)
 		_add(pos, Vector2.from_angle(a) * randf_range(140, 420), randf_range(0.5, 0.9), randf_range(2.5, 5.0), color, 0, 900.0, 0.5)
 	impact_ring(pos, Color(1, 1, 1, 0.9), 50.0)
@@ -125,6 +172,7 @@ func explosion(pos: Vector2, radius: float) -> void:
 
 
 func confetti(pos: Vector2, amount: int = 60) -> void:
+	flip("sparkle", pos + Vector2(0, -24), 0.0, 1.4)
 	var palette := [Color("ffd166"), Color("ef476f"), Color("06d6a0"), Color("4cc9f0"), Color("b65cff"), Color("ffffff")]
 	for i in amount:
 		var a := randf_range(-PI * 0.85, -PI * 0.15)
@@ -138,6 +186,7 @@ func sparkle(pos: Vector2, color: Color = Color("ffd166"), amount: int = 10) -> 
 
 
 func nitro_burst(pos: Vector2, dir: Vector2) -> void:
+	flip("flame", pos, (-dir).angle() + PI * 0.5)
 	for i in 18:
 		var spread := dir.rotated(randf_range(-0.6, 0.6))
 		_add(pos, -spread * randf_range(150, 420), randf_range(0.25, 0.5), randf_range(3, 6), Color("ffd166").lerp(Color("ff4d1d"), randf()), 0, 0.0, 4.0)
@@ -164,6 +213,7 @@ func poof(pos: Vector2) -> void:
 
 
 func shot_burst(pos: Vector2, dir: Vector2, power: float) -> void:
+	flip("impact", pos, 0.0, 0.7 + power * 0.5)
 	impact_ring(pos, Color(1, 1, 1, 0.9), 18.0 + power * 22.0)
 	for i in int(4 + power * 8):
 		var d := dir.rotated(randf_range(-0.5, 0.5))

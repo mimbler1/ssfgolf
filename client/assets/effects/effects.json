@@ -1,0 +1,42 @@
+{
+ "impact": {
+  "sheet": "impact.png",
+  "frames": 6,
+  "fps": 24,
+  "additive": true,
+  "scale": 2,
+  "offset_y": 0
+ },
+ "sparkle": {
+  "sheet": "sparkle.png",
+  "frames": 8,
+  "fps": 16,
+  "additive": true,
+  "scale": 2,
+  "offset_y": 0
+ },
+ "dust": {
+  "sheet": "dust.png",
+  "frames": 6,
+  "fps": 16,
+  "additive": false,
+  "scale": 2,
+  "offset_y": -6
+ },
+ "splash": {
+  "sheet": "splash.png",
+  "frames": 8,
+  "fps": 16,
+  "additive": false,
+  "scale": 2,
+  "offset_y": -18
+ },
+ "flame": {
+  "sheet": "flame.png",
+  "frames": 6,
+  "fps": 18,
+  "additive": true,
+  "scale": 2,
+  "offset_y": -8
+ }
+}

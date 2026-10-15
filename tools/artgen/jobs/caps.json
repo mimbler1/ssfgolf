@@ -1,0 +1,8 @@
+[
+  {"name": "cap_grass_po", "w": 1024, "h": 256, "tile": true, "init": "art/worlds/meadow/guides/cap_grass.png", "strength": 0.62,
+   "seeds": [5101, 5102, 5103, 5104, 5105, 5106],
+   "prompt": "side view of a lush grass ledge top for a platform game, overhanging grass blades and tufts, tiny white and yellow flowers, dark green shadowed underside fringe, isolated on a plain flat white background"},
+  {"name": "cap_sand_po", "w": 1024, "h": 256, "tile": true, "init": "art/worlds/meadow/guides/cap_sand.png", "strength": 0.55,
+   "seeds": [5201, 5202, 5203, 5204],
+   "prompt": "side view of a golden sand bunker surface layer for a platform game, soft rippled sand with tiny pebbles, darker sand underside, isolated on a plain flat white background"}
+]

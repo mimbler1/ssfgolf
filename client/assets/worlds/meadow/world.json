@@ -1,0 +1,118 @@
+{
+ "id": "meadow",
+ "art_scale": 2,
+ "ink": "#20141e",
+ "backdrop": [
+  {
+   "tex": "backdrop/sky.png",
+   "mode": "sky"
+  },
+  {
+   "tex": "backdrop/hills.png",
+   "factor": 0.14,
+   "y": 140,
+   "scale": 4,
+   "mirror": true
+  }
+ ],
+ "materials": {
+  "soil": {
+   "fill": "terrain/soil.png",
+   "depth_dark": 0.4,
+   "depth_px": 900
+  },
+  "grass": {
+   "cap": "terrain/cap_grass.png",
+   "cap_base": 12
+  },
+  "rough": {
+   "cap": "terrain/cap_grass.png",
+   "cap_base": 12
+  },
+  "sand": {
+   "cap": "terrain/cap_sand.png",
+   "cap_base": 10
+  },
+  "rock": {
+   "cap": "terrain/cap_rock.png",
+   "cap_base": 0
+  },
+  "ice": {
+   "cap": "terrain/cap_ice.png",
+   "cap_base": 0
+  },
+  "sticky": {
+   "cap": "terrain/cap_sticky.png",
+   "cap_base": 0
+  },
+  "bouncy": {
+   "cap": "terrain/cap_bouncy.png",
+   "cap_base": 0
+  },
+  "wood": {
+   "cap": "terrain/cap_wood.png",
+   "cap_base": 0
+  },
+  "water": {
+   "fill": "terrain/water.png",
+   "foam": "#e8fbff",
+   "edge": "#1b4f8c",
+   "alpha": 0.9
+  },
+  "default": {
+   "cap": "terrain/cap_grass.png",
+   "cap_base": 12
+  }
+ },
+ "decor": {
+  "tree": [
+   "decor/tree_a.png",
+   "decor/tree_b.png"
+  ],
+  "bush": [
+   "decor/bush_a.png",
+   "decor/bush_b.png",
+   "decor/bush_c.png",
+   "decor/bush_sapling_1.png",
+   "decor/bush_sapling_2.png",
+   "decor/bush_sapling_3.png",
+   "decor/bush_sapling_4.png",
+   "decor/bush_sapling_6.png"
+  ],
+  "flowers": [
+   "decor/flower_12.png",
+   "decor/flower_13.png",
+   "decor/flower_2.png",
+   "decor/flower_3.png",
+   "decor/flower_44.png",
+   "decor/flower_57.png",
+   "decor/flower_62.png",
+   "decor/flower_65.png",
+   "decor/flower_mush_46.png",
+   "decor/flower_mush_47.png",
+   "decor/flower_mush_68.png",
+   "decor/flower_mush_72.png",
+   "decor/flower_mush_73.png",
+   "decor/flower_r17.png",
+   "decor/flower_r18.png",
+   "decor/flower_r4.png"
+  ],
+  "rock": [
+   "decor/rock_a.png",
+   "decor/rock_b.png",
+   "decor/rock_c.png",
+   "decor/rock_d.png",
+   "decor/rock_e.png",
+   "decor/rock_f.png"
+  ]
+ },
+ "flag": {
+  "sheet": "props/flag.png",
+  "frames": 6,
+  "fps": 9,
+  "pivot": [
+   3,
+   66
+  ]
+ }
+}

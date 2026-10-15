@@ -1,0 +1,12 @@
+[
+  {"name": "cap_grass", "w": 1024, "h": 512, "tile": true, "seeds": [1101, 1102, 1103, 1104],
+   "prompt": "side view cross-section of a grassy cliff top edge for a platform game, thick lush green grass layer with overhanging blades and tufts on top, small flowers, brown dirt below, horizontal strip, platformer tileset"},
+  {"name": "cap_sand", "w": 1024, "h": 512, "tile": true, "seeds": [1201, 1202, 1203, 1204],
+   "prompt": "side view cross-section of a golden sand bunker surface edge for a platform game, soft sand layer with small ripples and pebbles on top, horizontal strip, platformer tileset"},
+  {"name": "golfer_adventurer", "w": 1344, "h": 768, "seeds": [2101, 2102, 2103, 2104, 2105, 2106],
+   "prompt": "character sprite sheet of one young adventurer golfer boy with spiky orange hair and red bandana, teal jacket, tan trousers, brown boots, holding a golf club, side view, four poses in a row: standing idle, golf backswing, golf follow-through, celebrating, full body, isolated on a plain flat white background"},
+  {"name": "golfer_mira", "w": 1344, "h": 768, "seeds": [2201, 2202, 2203, 2204, 2205, 2206],
+   "prompt": "character sprite sheet of one sporty girl golfer with long purple ponytail, white visor cap, yellow polo shirt, navy skirt, white sneakers, holding a golf club, side view, four poses in a row: standing idle, golf backswing, golf follow-through, celebrating, full body, isolated on a plain flat white background"},
+  {"name": "golfer_bolt", "w": 1344, "h": 768, "seeds": [2301, 2302, 2303, 2304, 2305, 2306],
+   "prompt": "character sprite sheet of one small round cute robot golfer, glossy blue and white metal body, glowing cyan visor eyes, antenna, short legs, holding a golf club, side view, four poses in a row: standing idle, golf backswing, golf follow-through, celebrating, full body, isolated on a plain flat white background"}
+]

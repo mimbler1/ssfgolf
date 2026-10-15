@@ -1,0 +1,12 @@
+[
+ {"name": "fx_impact", "w": 1536, "h": 256, "seeds": [8101, 8102, 8103, 8104],
+  "prompt": "pixel art hit impact spark effect animation sprite sheet, 6 frames in one row, white and yellow star burst flash expanding then fading, comic action impact, isolated on a pure black background"},
+ {"name": "fx_dust", "w": 1536, "h": 256, "seeds": [8201, 8202, 8203, 8204],
+  "prompt": "pixel art dust cloud puff effect animation sprite sheet, 6 frames in one row, small round tan and brown dust puffs growing and dissipating, isolated on a plain flat white background"},
+ {"name": "fx_splash", "w": 1536, "h": 256, "seeds": [8301, 8302, 8303, 8304],
+  "prompt": "pixel art water splash effect animation sprite sheet, 6 frames in one row, blue and white water splash crown with droplets rising then falling, isolated on a plain flat white background"},
+ {"name": "fx_sparkle", "w": 1536, "h": 256, "seeds": [8401, 8402, 8403, 8404],
+  "prompt": "pixel art golden sparkle burst effect animation sprite sheet, 6 frames in one row, yellow stars and twinkles bursting outward and fading, celebration, isolated on a pure black background"},
+ {"name": "fx_flame", "w": 1536, "h": 256, "seeds": [8501, 8502, 8503, 8504],
+  "prompt": "pixel art fire flame burst effect animation sprite sheet, 6 frames in one row, orange yellow and red flame jet flickering, isolated on a pure black background"}
+]

@@ -1,0 +1,20 @@
+[
+  {"name": "meadow_sky", "w": 1536, "h": 768, "seeds": [101, 102, 103, 104],
+   "prompt": "bright fantasy sky panorama, huge fluffy white cumulus clouds with soft lavender shading, warm sunny light, distant pale blue snowcapped mountain range along the bottom edge, empty foreground"},
+  {"name": "meadow_hills", "w": 1536, "h": 640, "seeds": [201, 202, 203, 204],
+   "prompt": "wide panorama of rolling green hills covered in a dense forest of round leafy trees, a tall stone castle tower with red roof on one hill, isolated on a plain flat white background"},
+  {"name": "meadow_trees", "w": 1024, "h": 1024, "seeds": [301, 302, 303, 304],
+   "prompt": "single large leafy oak tree with thick brown trunk and lush round green canopy with highlights, game sprite, isolated on a plain flat white background"},
+  {"name": "meadow_props", "w": 1024, "h": 1024, "seeds": [401, 402, 403, 404],
+   "prompt": "sprite sheet of nature props: grey boulders, small mossy rocks, red and yellow flowers, green bushes, tall grass tufts, mushrooms, arranged in a grid, isolated on a plain flat white background"},
+  {"name": "tex_soil", "w": 1024, "h": 1024, "tile": true, "seeds": [501, 502, 503, 504],
+   "prompt": "seamless tileable texture of rich brown earth cross-section with embedded grey stones, pebbles, thin roots and darker cracks, side view underground dirt, top-down even lighting"},
+  {"name": "tex_grass", "w": 1024, "h": 1024, "tile": true, "seeds": [601, 602, 603, 604],
+   "prompt": "seamless tileable texture of lush green grass turf with varied blades, small white and yellow flowers, light and dark green clusters, even lighting"},
+  {"name": "tex_sand", "w": 1024, "h": 1024, "tile": true, "seeds": [701, 702, 703, 704],
+   "prompt": "seamless tileable texture of warm golden beach sand with small ripples, tiny shells and pebbles, even lighting"},
+  {"name": "tex_water", "w": 1024, "h": 1024, "tile": true, "seeds": [801, 802, 803, 804],
+   "prompt": "seamless tileable texture of clear turquoise lake water with light ripples and white sparkle highlights, even lighting"},
+  {"name": "tex_stone", "w": 1024, "h": 1024, "tile": true, "seeds": [901, 902, 903, 904],
+   "prompt": "seamless tileable texture of mossy grey stone bricks of an ancient ruin, cracks and moss patches, even lighting"}
+]

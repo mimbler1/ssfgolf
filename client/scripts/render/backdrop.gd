@@ -10,11 +10,18 @@ var _sky: ColorRect
 var _layers: Array[Dictionary] = []   ## {node: Node2D, factor: float, y: float}
 var _clouds: Array[Dictionary] = []
 var _t: float = 0.0
+## Authored parallax layers (world.json "backdrop"): {node, factor, y, w, drift}.
+var _art_layers: Array[Dictionary] = []
+var _art_sky: TextureRect
 
 
 func setup(p_theme: Dictionary, seed_value: int) -> void:
 	theme = p_theme
 	layer = -50
+	var art := WorldArt.load_for(theme)
+	if art and art.data.has("backdrop"):
+		_setup_art(art)
+		return
 	_sky = ColorRect.new()
 	_sky.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_sky.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -109,8 +116,82 @@ func _add_clouds(rng: RandomNumberGenerator, factor: float, scale_mul: float, co
 	_clouds.append({"node": node, "factor": factor, "y": base_y, "drift": rng.randf_range(6.0, 14.0) * (1.0 + factor * 4.0)})
 
 
+## Illustrated backdrop: a screen-filling sky painting plus horizontally repeating layers.
+func _setup_art(art: WorldArt) -> void:
+	for l: Dictionary in art.data.backdrop:
+		var t := art.tex(str(l.tex))
+		if t == null:
+			continue
+		var k := float(l.get("scale", art.scale))
+		if str(l.get("mode", "")) == "sky":
+			_art_sky = TextureRect.new()
+			_art_sky.texture = t
+			_art_sky.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+			_art_sky.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			_art_sky.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			_art_sky.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			_art_sky.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			add_child(_art_sky)
+			continue
+		var node := Node2D.new()
+		var w := float(t.get_width()) * k
+		var copies := maxi(4, ceili(4096.0 / w) + 2)
+		if bool(l.get("mirror", false)) and copies % 2 == 1:
+			copies += 1
+		for i in copies:
+			var sp := Sprite2D.new()
+			sp.texture = t
+			sp.centered = false
+			sp.offset = Vector2(0, -t.get_height())
+			sp.scale = Vector2(k, k)
+			sp.position = Vector2(w * i, 0)
+			# Mirrored repeats hide the seam of art that does not tile on its own.
+			if bool(l.get("mirror", false)) and i % 2 == 1:
+				sp.flip_h = true
+			sp.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			node.add_child(sp)
+		# Continue the layer below its painted bottom edge in its own base colour, so terrain
+		# dips never reveal a hard edge with the sky behind it.
+		var img := t.get_image()
+		var base := Color(0, 0, 0, 0)
+		var n := 0
+		for y in range(int(img.get_height() * 0.8), img.get_height()):
+			for x in range(0, img.get_width(), 3):
+				var c := img.get_pixel(x, y)
+				if c.a > 0.5:
+					base += c
+					n += 1
+		if n > 0:
+			var under := ColorRect.new()
+			under.color = Color(base.r / n, base.g / n, base.b / n, 1.0)
+			under.position = Vector2(0, -1)
+			under.size = Vector2(w * copies, 4000)
+			under.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			node.add_child(under)
+			node.move_child(under, 0)
+		add_child(node)
+		_art_layers.append({"node": node, "factor": float(l.get("factor", 0.1)), "y": float(l.get("y", 0)),
+			"w": w, "mirror": bool(l.get("mirror", false)), "drift": float(l.get("drift", 0.0)), "fill": Color(l.get("fill", "#00000000"))})
+
+
+func _follow_art(cam: Vector2, zoom: float) -> void:
+	var size := get_viewport().get_visible_rect().size
+	var z := lerpf(1.0, zoom, 0.25)
+	for l in _art_layers:
+		var f: float = l.factor
+		var n: Node2D = l.node
+		var w: float = float(l.w) * z * (2.0 if l.mirror else 1.0)
+		var x := fposmod(-cam.x * f * z + _t * float(l.drift) * z, w) - w
+		# Layer baseline: `y` px below the screen centre when the camera sits at world y 0.
+		n.position = Vector2(roundf(x), roundf(size.y * 0.5 + float(l.y) * z - cam.y * f * z))
+		n.scale = Vector2(z, z)
+
+
 ## cam: world position at screen centre. zoom: camera zoom (1 = default).
 func follow(cam: Vector2, zoom: float) -> void:
+	if _sky == null:
+		_follow_art(cam, zoom)
+		return
 	var size := get_viewport().get_visible_rect().size
 	var center := size * 0.5
 	var sky_mat := _sky.material as ShaderMaterial

@@ -1,0 +1,54 @@
+{
+ "assets": [
+  {"out": "backdrop/sky.png", "src": "picks/meadow_sky_103_x4b.png", "px": 8, "colors": 56},
+  {"out": "backdrop/hills.png", "src": "picks/meadow_hills_204.png", "px": 8, "colors": 40, "cut_sky": true},
+  {"out": "terrain/soil.png", "src": "picks/tex_soil2_5504.png", "px": 8, "colors": 24, "contrast": 0.72, "brightness": 1.12},
+  {"out": "terrain/stone.png", "src": "picks/tex_stone_902.png", "px": 8, "colors": 20},
+  {"out": "terrain/sand.png", "src": "picks/tex_sand_701.png", "px": 8, "colors": 16},
+  {"out": "terrain/water.png", "src": "picks/tex_water_804.png", "px": 8, "colors": 16},
+  {"out": "terrain/cap_grass.png", "src": "picks/cap_grass.png", "px": 8, "colors": 28, "cut_bg": 40, "fringe": 200},
+  {"out": "terrain/cap_sand.png", "src": "picks/cap_sand.png", "px": 8, "colors": 20, "cut_bg": 12, "fringe": 256}
+ ],
+ "strips": [
+  {"out": "terrain/cap_rock.png", "from": "terrain/stone.png", "rows": [0, 12], "ink_top": true}
+ ],
+ "copy": [
+  {"src": "hand/flag.png", "out": "props/flag.png"},
+  {"src": "hand/caps/*.png", "out": "terrain/cap_*.png"},
+  {"src": "hand/decor/tree_*.png", "out": "decor/*.png"},
+  {"src": "hand/decor/sapling_*.png", "out": "decor/bush_*.png"},
+  {"src": "hand/decor/bush_*.png", "out": "decor/*.png"},
+  {"src": "hand/decor/rock_*.png", "out": "decor/*.png"},
+  {"src": "hand/decor/flower_*.png", "out": "decor/*.png"},
+  {"src": "hand/decor/mush_*.png", "out": "decor/flower_*.png"}
+ ],
+ "world": {
+  "id": "meadow",
+  "art_scale": 2,
+  "ink": "#20141e",
+  "backdrop": [
+   {"tex": "backdrop/sky.png", "mode": "sky"},
+   {"tex": "backdrop/hills.png", "factor": 0.14, "y": 140, "scale": 4, "mirror": true}
+  ],
+  "materials": {
+   "soil": {"fill": "terrain/soil.png", "depth_dark": 0.4, "depth_px": 900},
+   "grass": {"cap": "terrain/cap_grass.png", "cap_base": 12},
+   "rough": {"cap": "terrain/cap_grass.png", "cap_base": 12},
+   "sand": {"cap": "terrain/cap_sand.png", "cap_base": 10},
+   "rock": {"cap": "terrain/cap_rock.png", "cap_base": 0},
+   "ice": {"cap": "terrain/cap_ice.png", "cap_base": 0},
+   "sticky": {"cap": "terrain/cap_sticky.png", "cap_base": 0},
+   "bouncy": {"cap": "terrain/cap_bouncy.png", "cap_base": 0},
+   "wood": {"cap": "terrain/cap_wood.png", "cap_base": 0},
+   "water": {"fill": "terrain/water.png", "foam": "#e8fbff", "edge": "#1b4f8c", "alpha": 0.9},
+   "default": {"cap": "terrain/cap_grass.png", "cap_base": 12}
+  },
+  "decor": {
+   "tree": "decor/tree_*.png",
+   "bush": "decor/bush_*.png",
+   "flowers": "decor/flower_*.png",
+   "rock": "decor/rock_*.png"
+  },
+  "flag": {"sheet": "props/flag.png", "frames": 6, "fps": 9, "pivot": [3, 66]}
+ }
+}

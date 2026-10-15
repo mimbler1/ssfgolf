@@ -5,6 +5,7 @@
   "practiceOnly": true,
   "theme": {
     "id": "meadow",
+    "art": "meadow",
     "sky_top": "#3fa9f5",
     "sky_bottom": "#c9f0ff",
     "sun": "#fff3c4",

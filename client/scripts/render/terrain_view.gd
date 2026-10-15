@@ -18,6 +18,8 @@ var theme: Dictionary
 var hole: Dictionary
 var hole_number: int = 1
 var _water: _Water
+## Authored world art (textures, caps, decor sprites); null = procedural fallback.
+var art: WorldArt
 ## Visual-only ground that continues past the world's left/right edges so the camera never
 ## shows a cut-off cliff. Each entry: {poly: PackedVector2Array, top: PackedVector2Array}.
 var skirts: Array[Dictionary] = []
@@ -32,6 +34,10 @@ func build(p_terrain: SimTerrain, p_hole: Dictionary, p_theme: Dictionary, p_hol
 	hole_number = p_hole_number
 	for c in get_children():
 		c.queue_free()
+	art = WorldArt.load_for(theme)
+	if art:
+		_build_art()
+		return
 
 	var decor_back := Node2D.new()
 	decor_back.name = "DecorBack"
@@ -81,6 +87,91 @@ func build(p_terrain: SimTerrain, p_hole: Dictionary, p_theme: Dictionary, p_hol
 		add_child(flag)
 
 	_build_decor(decor_back)
+
+
+## Authored-art build: same geometry as the procedural path, dressed in world materials.
+func _build_art() -> void:
+	var decor_back := Node2D.new()
+	decor_back.name = "DecorBack"
+	add_child(decor_back)
+	var cup := _Cup.new()
+	cup.terrain = terrain
+	add_child(cup)
+	var sm := art.material("soil")
+	var soil := art.tex(str(sm.get("fill", "")))
+	var min_y := INF
+	for poly in terrain.polygons:
+		for v: Vector2 in poly.points:
+			min_y = minf(min_y, v.y)
+	var soil_mat := ShaderMaterial.new()
+	soil_mat.shader = load("res://assets/shaders/world_soil.gdshader")
+	soil_mat.set_shader_parameter("top_y", min_y + 60.0)
+	soil_mat.set_shader_parameter("depth_px", float(sm.get("depth_px", 700)))
+	soil_mat.set_shader_parameter("dark", float(sm.get("depth_dark", 0.5)))
+	_build_skirts()
+	for poly in terrain.polygons:
+		var p := art.textured_polygon(poly.points, soil)
+		p.material = soil_mat
+		add_child(p)
+	for sk in skirts:
+		var p := art.textured_polygon(sk.poly, soil)
+		p.material = soil_mat
+		add_child(p)
+	var ink := _ArtInk.new()
+	ink.view = self
+	ink.width = art.scale * 1.5
+	add_child(ink)
+	var ed := _Edges.new()
+	ed.view = self
+	for poly in terrain.polygons:
+		for run in ed._runs(poly.points, poly.edge_mats, terrain):
+			if run.mat == "cup" or not (run.top or run.mat in ["sticky", "bouncy", "ice", "sand"]):
+				continue
+			_add_cap(run.points, run.normals, str(run.mat))
+	ed.free()
+	for sk in skirts:
+		var tp: PackedVector2Array = sk.top
+		if tp.size() >= 2:
+			_add_cap(tp, PackedVector2Array([Vector2.UP, Vector2.UP]), "grass")
+	_water = _Water.new()
+	_water.terrain = terrain
+	_water.theme = theme
+	_water.art = art
+	_water.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
+	_water.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	add_child(_water)
+	if terrain.has_cup:
+		var fd: Dictionary = art.data.get("flag", {})
+		if not fd.is_empty():
+			var flag := _ArtFlag.new()
+			flag.setup(art, fd)
+			flag.position = terrain.cup_pos
+			add_child(flag)
+	_build_art_decor(decor_back)
+
+
+func _add_cap(points: PackedVector2Array, normals: PackedVector2Array, mat: String) -> void:
+	var m := art.material(mat)
+	var t := art.tex(str(m.get("cap", "")))
+	if t == null:
+		return
+	add_child(art.cap_line(points, normals, t, float(m.get("cap_base", 4))))
+
+
+func _build_art_decor(parent: Node2D) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash(hole.get("id", ""))
+	for d: Dictionary in hole.get("decor", []):
+		var variants := art.decor_variants(str(d.get("type", "")))
+		if variants.is_empty():
+			continue
+		var pos := Vector2(float(d.get("x", 0)), float(d.get("y", 0)))
+		var hit := terrain.raycast(pos + Vector2(0, -400), Vector2.DOWN, 1400.0)
+		if hit.hit:
+			pos = hit.pos
+		var t := art.tex(str(variants[rng.randi() % variants.size()]))
+		if t:
+			parent.add_child(art.ground_sprite(t, pos + Vector2(0, art.scale * 3.0), rng.randf() < 0.5))
 
 
 ## Finds terrain edges lying on the world's left/right bounds and extends them outward as flat
@@ -458,9 +549,55 @@ class _Flag extends Node2D:
 # Hazard zones (water / lava)
 # ---------------------------------------------------------------------------
 
+## Crisp ink outline round terrain polygons (art mode), broken at hidden world-edge seams.
+class _ArtInk extends Node2D:
+	var view: TerrainView
+	var width := 3.0
+
+	func _draw() -> void:
+		var ink := Color(view.art.data.get("ink", "#20141e"))
+		for poly in view.terrain.polygons:
+			var pts: PackedVector2Array = poly.points
+			var n := pts.size()
+			var line := PackedVector2Array()
+			for i in n + 1:
+				var a := pts[i % n]
+				if i > 0 and view.is_seam(pts[i - 1], a):
+					if line.size() >= 2:
+						draw_polyline(line, ink, width, false)
+					line = PackedVector2Array()
+				line.append(a)
+			if line.size() >= 2:
+				draw_polyline(line, ink, width, false)
+
+
+## Sprite flag flipbook planted in the cup.
+class _ArtFlag extends Sprite2D:
+	var _frames := 1
+	var _fps := 10.0
+	var _t := 0.0
+
+	func setup(art: WorldArt, d: Dictionary) -> void:
+		texture = art.tex(str(d.sheet))
+		_frames = int(d.frames)
+		_fps = float(d.get("fps", 10))
+		hframes = _frames
+		centered = false
+		var pv: Array = d.pivot
+		offset = Vector2(-float(pv[0]), -float(pv[1]))
+		scale = Vector2(art.scale, art.scale)
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+
+	func _process(delta: float) -> void:
+		_t += delta
+		frame = int(_t * _fps) % _frames
+
+
 class _Water extends Node2D:
 	var terrain: SimTerrain
 	var theme: Dictionary
+	var art: WorldArt
+	var _bodies: Dictionary = {}   ## zone key -> [Polygon2D] (art mode)
 	var _t := 0.0
 
 	func _process(delta: float) -> void:
@@ -501,6 +638,9 @@ class _Water extends Node2D:
 						if not Geometry2D.is_polygon_clockwise(clipped):
 							next.append(clipped)
 				parts = next
+			if art:
+				_draw_art_zone(kind, parts, surf, rect)
+				continue
 			for part in parts:
 				cols = PackedColorArray()
 				for v in part:
@@ -515,6 +655,47 @@ class _Water extends Node2D:
 				var x := rect.position.x + fposmod(float(i) * 70.0 + _t * 18.0, rect.size.x)
 				var y := rect.position.y + 10.0 + fmod(float(i) * 23.0, maxf(rect.size.y - 20.0, 1.0))
 				draw_line(Vector2(x, y), Vector2(x + 16, y), Color(1, 1, 1, 0.25), 2.0, true)
+
+
+	## Authored water/lava: tiled material texture drifting slowly, a crisp foam line, sparkles.
+	func _draw_art_zone(kind: String, parts: Array[PackedVector2Array], surf: PackedVector2Array, rect: Rect2) -> void:
+		var m := art.material(kind)
+		var t := art.tex(str(m.get("fill", "")))
+		var span := Vector2(t.get_width(), t.get_height()) * art.scale if t else Vector2.ONE
+		var drift := Vector2(_t * 6.0, sin(_t * 0.7) * 3.0)
+		# Water body: textured Polygon2D children behind this node (crisp, repeating, drifting).
+		var key := "%s:%s" % [kind, rect]
+		if not _bodies.has(key):
+			_bodies[key] = []
+		var pool: Array = _bodies[key]
+		while pool.size() < parts.size():
+			var p2 := art.textured_polygon(PackedVector2Array(), t)
+			p2.show_behind_parent = true
+			p2.color = Color(1, 1, 1, float(m.get("alpha", 0.92)))
+			add_child(p2)
+			pool.append(p2)
+		for i in pool.size():
+			var p2: Polygon2D = pool[i]
+			p2.visible = i < parts.size()
+			if p2.visible:
+				p2.polygon = parts[i]
+				p2.texture_offset = drift
+		var foam := Color(m.get("foam", "#e8fbff"))
+		var deep := Color(m.get("edge", "#1b4f8c"))
+		var s := art.scale
+		var top := PackedVector2Array()
+		for v in surf:
+			top.append(Vector2(roundf(v.x / s) * s, roundf(v.y / s) * s))
+		draw_polyline(top, deep, s * 3.0, false)
+		draw_polyline(top, foam, s, false)
+		# Sparkles: 2x2 art-pixel glints that blink along the surface band.
+		for i in int(rect.size.x / 46.0):
+			var ph := fposmod(_t * 1.7 + float(i) * 0.61, 2.0)
+			if ph > 0.5:
+				continue
+			var x := rect.position.x + fposmod(float(i) * 46.0 + _t * 9.0, rect.size.x)
+			var y := rect.position.y + s * (4.0 + float(i % 4) * 3.0)
+			draw_rect(Rect2(Vector2(roundf(x / s) * s, roundf(y / s) * s), Vector2(s, s)), foam)
 
 
 # ---------------------------------------------------------------------------

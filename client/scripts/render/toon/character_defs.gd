@@ -38,6 +38,26 @@ const SLOTS := ["body_color", "outline_color", "head_shape", "face", "hat", "shi
 const ROSTER := {
 	# Hand-authored sprite character (art/characters/adventurer). Hidden from the roster until its
 	# full animation set is drawn and approved; reachable by id for review (--dev-character).
+	# Sprite golfers (v3 art direction): generated + cleaned pixel art, pose-guided animation
+	# (tools/artgen, docs/SPRITE_PIPELINE.md). Idle + swing so far; other anims fall back to idle.
+	"rex": {
+		"name": "Rex", "tagline": "Never met a fairway he couldn't fly over.",
+		"kind": "human", "builder": "sprite", "rarity": "common", "unlock": {"type": "default"},
+		"scale": 1.0, "rig": {}, "colors": {}, "compat": [], "motion": {"walk": "step"},
+		"ball": "#ffffff", "trail": "#ff9a3c",
+	},
+	"mira": {
+		"name": "Mira", "tagline": "Ponytail up, putter ready, rivals nervous.",
+		"kind": "human", "builder": "sprite", "rarity": "rare", "unlock": {"type": "default"},
+		"scale": 1.0, "rig": {}, "colors": {}, "compat": [], "motion": {"walk": "step"},
+		"ball": "#fff3b0", "trail": "#b65cff",
+	},
+	"bjorn": {
+		"name": "Bjorn", "tagline": "Swings like he's splitting logs. Usually is.",
+		"kind": "human", "builder": "sprite", "rarity": "epic", "unlock": {"type": "default"},
+		"scale": 1.0, "rig": {}, "colors": {}, "compat": [], "motion": {"walk": "step"},
+		"ball": "#e8f0ff", "trail": "#ff5a3c",
+	},
 	"adventurer": {
 		"name": "Adventurer", "tagline": "Packs light. Swings heavy.",
 		"kind": "human", "builder": "sprite", "rarity": "epic", "unlock": {"type": "default"},

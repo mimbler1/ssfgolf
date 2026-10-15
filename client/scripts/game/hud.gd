@@ -176,8 +176,8 @@ func _add_player_row(r: Dictionary) -> void:
 	var slot := int(r.slot)
 	var panel := PanelContainer.new()
 	var is_local := slot == view.local_slot
-	var sb := UITheme.box(Color(UITheme.INK, 0.82), 16, Color(UITheme.SLOT_COLORS[slot % 4], 0.9) if is_local else Color(0, 0, 0, 0), 0, 6, 3 if is_local else 0)
-	sb.content_margin_top = 6; sb.content_margin_bottom = 6; sb.content_margin_left = 12; sb.content_margin_right = 14
+	var sb := UITheme.arcade_box(Color(UITheme.INK, 0.92), UITheme.SLOT_COLORS[slot % 4] if is_local else UITheme.INK_LINE)
+	sb.content_margin_top = 5; sb.content_margin_bottom = 9; sb.content_margin_left = 16; sb.content_margin_right = 18
 	panel.add_theme_stylebox_override("panel", sb)
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var hb := HBoxContainer.new()
@@ -294,9 +294,9 @@ func _process(_delta: float) -> void:
 		if c.get("key", "") == key:
 			continue
 		c["key"] = key
-		var sb := UITheme.box(Color(UITheme.INK, 0.9) if not sel else Color(col.darkened(0.55), 0.95), 18,
-			col if sel else Color(1, 1, 1, 0.08), 0, 8, 4 if sel else 2)
-		sb.content_margin_top = 6; sb.content_margin_bottom = 8; sb.content_margin_left = 8; sb.content_margin_right = 8
+		var sb := UITheme.arcade_box(Color(UITheme.INK, 0.94) if not sel else Color(col.darkened(0.45), 0.97),
+			col if sel else UITheme.INK_LINE, UITheme.SLANT * 0.6, 4 if sel else 3)
+		sb.content_margin_top = 6; sb.content_margin_bottom = 10; sb.content_margin_left = 10; sb.content_margin_right = 10
 		c.panel.add_theme_stylebox_override("panel", sb)
 		c.icon.dimmed = not affordable
 		c.cost.energy = energy
@@ -356,21 +356,27 @@ class _EnergyBar extends Control:
 
 	func _draw() -> void:
 		var r := Rect2(Vector2.ZERO, size)
-		draw_style_box(UITheme.box(Color(UITheme.INK, 0.88), 17, UITheme.INK_LINE, 0, 6, 0), r)
-		var pad := 6.0
-		var inner := r.grow(-pad)
-		var gap := 4.0
+		draw_style_box(UITheme.arcade_box(Color(UITheme.INK, 0.94)), r)
+		var pad := 7.0
+		var inner := Rect2(r.position + Vector2(pad + 4, pad), r.size - Vector2(pad * 2 + 8, pad * 2 + 4))
+		var gap := 5.0
 		var w := (inner.size.x - gap * (segments - 1)) / segments
+		var sl := inner.size.y * 0.35   # parallelogram cells, slanted like the panels
 		for i in segments:
-			var seg := Rect2(inner.position + Vector2(i * (w + gap), 0), Vector2(w, inner.size.y))
-			draw_style_box(UITheme.box(Color(1, 1, 1, 0.08), 8), seg)
+			var x := inner.position.x + i * (w + gap)
+			var y0 := inner.position.y
+			var y1 := inner.end.y
+			var cell := PackedVector2Array([Vector2(x + sl, y0), Vector2(x + w + sl, y0), Vector2(x + w - sl, y1), Vector2(x - sl, y1)])
+			draw_colored_polygon(cell, Color(1, 1, 1, 0.07))
 			var fill := clampf(value - i, 0.0, 1.0)
 			if fill > 0.0:
-				var fr := Rect2(seg.position, Vector2(seg.size.x * fill, seg.size.y))
-				var col := Color("b65cff") if fill >= 1.0 else Color("7b2cbf")
-				draw_style_box(UITheme.box(col, 8), fr)
-				if fill >= 1.0:
-					draw_rect(Rect2(fr.position + Vector2(3, 3), Vector2(fr.size.x - 6, 4)), Color(1, 1, 1, 0.35))
+				var fw := w * fill
+				var fc := PackedVector2Array([Vector2(x + sl, y0), Vector2(x + fw + sl, y0), Vector2(x + fw - sl, y1), Vector2(x - sl, y1)])
+				var full := fill >= 1.0
+				draw_colored_polygon(fc, Color("b65cff") if full else Color("6a2bb0"))
+				if full:
+					var hl := PackedVector2Array([Vector2(x + sl, y0), Vector2(x + w + sl, y0), Vector2(x + w + sl * 0.6, y0 + 5), Vector2(x + sl * 0.6, y0 + 5)])
+					draw_colored_polygon(hl, Color("e9c8ff"))
 		var f := UITheme.heading_font()
 		var txt := "%d" % int(floor(value + 0.0001))
 		draw_string_outline(f, Vector2(-34, size.y * 0.5 + 9), txt, HORIZONTAL_ALIGNMENT_RIGHT, 28, 26, 6, UITheme.INK_LINE)

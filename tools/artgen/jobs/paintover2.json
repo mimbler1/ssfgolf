@@ -1,0 +1,44 @@
+[
+ {
+  "name": "po2_rex",
+  "w": 1536,
+  "h": 1536,
+  "init": "art/characters/guides/rex.png",
+  "strength": 0.62,
+  "seeds": [
+   7101,
+   7102,
+   7103,
+   7104
+  ],
+  "prompt": "pixel art sprite sheet, twelve frames of the same young golfer boy with an orange cap, spiky orange hair, orange polo shirt, dark green trousers, brown shoes, white glove, golf swing animation poses arranged in a 4 by 3 grid, side view facing right, detailed shading, dark outlines, isolated on a plain flat white background"
+ },
+ {
+  "name": "po2_mira",
+  "w": 1536,
+  "h": 1536,
+  "init": "art/characters/guides/mira.png",
+  "strength": 0.62,
+  "seeds": [
+   7101,
+   7102,
+   7103,
+   7104
+  ],
+  "prompt": "pixel art sprite sheet, twelve frames of the same slim sporty girl golfer with a white visor cap, long purple ponytail, yellow polo shirt, navy pleated skirt, white sneakers, golf swing animation poses arranged in a 4 by 3 grid, side view facing right, detailed shading, dark outlines, isolated on a plain flat white background"
+ },
+ {
+  "name": "po2_bjorn",
+  "w": 1536,
+  "h": 1536,
+  "init": "art/characters/guides/bjorn.png",
+  "strength": 0.62,
+  "seeds": [
+   7101,
+   7102,
+   7103,
+   7104
+  ],
+  "prompt": "pixel art sprite sheet, twelve frames of the same stocky broad viking golfer with a big bushy red beard, steel helmet with two small horns, green tunic with brown fur vest, brown trousers, leather boots, golf swing animation poses arranged in a 4 by 3 grid, side view facing right, detailed shading, dark outlines, isolated on a plain flat white background"
+ }
+]

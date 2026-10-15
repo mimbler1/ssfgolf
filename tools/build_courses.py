@@ -23,6 +23,7 @@ def water(x0, y0, x1, y1):
 
 MEADOW_THEME = {
     "id": "meadow",
+    "art": "meadow",  # authored world art (client/assets/worlds/meadow); procedural fallback otherwise
     "sky_top": "#3fa9f5", "sky_bottom": "#c9f0ff", "sun": "#fff3c4",
     "far_hills": "#9fd8b4", "mid_hills": "#73c27f",
     "ground_top": "#8a5a3c", "ground_bottom": "#5b3a29", "ground_strata": "#7a4e34",

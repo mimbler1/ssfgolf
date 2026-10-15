@@ -19,7 +19,7 @@ func _initialize() -> void:
 		_check(CharacterDefs.has(id), "legacy id '%s' must stay defined" % id)
 		var a := Appearance.normalize({"character": id})
 		_check(str(a.character) == id, "normalize keeps '%s'" % id)
-	_check(str(Appearance.normalize({"character": "nope"}).character) == "stickman", "unknown id falls back to stickman")
+	_check(str(Appearance.normalize({"character": "nope"}).character) == str(Appearance.DEFAULT.character), "unknown id falls back to the default character")
 	var anims := ["idle", "aim", "swing", "watch", "celebrate", "victory", "sad", "walk", "dance"]
 	for e: Dictionary in Emotes.LIST:
 		anims.append(str(e.id))

@@ -3,9 +3,9 @@ extends RefCounted
 ## Central art-direction tokens and the generated Godot Theme for all menus.
 ## See /docs/ART_DIRECTION.md for the rules these values encode.
 
-const INK := Color("1b2040")          ## Primary dark (panels, outlines)
-const INK_SOFT := Color("2a3160")
-const INK_LINE := Color("11142b")
+const INK := Color("1c1630")          ## Primary dark (panels, outlines)
+const INK_SOFT := Color("2e2548")
+const INK_LINE := Color("20141e")     ## Same ink as sprite outlines (ART_STYLE_GUIDE §3)
 const PAPER := Color("fff8ec")        ## Light text / highlights
 const MUTED := Color("aab3e0")
 const SUN := Color("ffd166")          ## Accent / currency
@@ -17,8 +17,10 @@ const CORAL := Color("ef476f")        ## Danger / leave
 const CORAL_DARK := Color("b02a4d")
 const TROPHY := Color("ffb703")
 
-const RADIUS := 18
-const RADIUS_SMALL := 12
+## Arcade panels (v3): tight corners, thick ink rims, slanted silhouettes.
+const RADIUS := 7
+const RADIUS_SMALL := 5
+const SLANT := 0.16                   ## horizontal skew of slanted panels
 const BORDER_BOTTOM := 6
 
 ## Rarity presentation (colour is never the only signal: names + icons too).
@@ -47,8 +49,10 @@ static func _tag(name: String) -> int:
 static func heading_font() -> FontVariation:
 	if _heading == null:
 		_heading = FontVariation.new()
-		_heading.base_font = load("res://assets/fonts/Fredoka.ttf")
-		_heading.variation_opentype = {_tag("wght"): 640, _tag("wdth"): 100}
+		# Heavy display face, slanted like arcade title type.
+		_heading.base_font = load("res://assets/fonts/LilitaOne-Regular.ttf")
+		_heading.variation_transform = Transform2D(Vector2(1, 0), Vector2(-0.14, 1), Vector2.ZERO)
+		_heading.spacing_glyph = 1
 	return _heading
 
 
@@ -71,7 +75,7 @@ static func body_bold_font() -> FontVariation:
 static func box(bg: Color, radius: int = RADIUS, border_color: Color = Color.TRANSPARENT, bottom: int = 0, shadow: int = 0, border: int = 0) -> StyleBoxFlat:
 	var s := StyleBoxFlat.new()
 	s.bg_color = bg
-	s.set_corner_radius_all(radius)
+	s.set_corner_radius_all(mini(radius, RADIUS))
 	s.corner_detail = 10
 	s.anti_aliasing = true
 	if border > 0 or bottom > 0:
@@ -89,10 +93,34 @@ static func box(bg: Color, radius: int = RADIUS, border_color: Color = Color.TRA
 	return s
 
 
+## Arcade panel: slanted parallelogram, thick ink rim, heavier bottom lip in `lip` colour.
+static func arcade_box(fill: Color, lip: Color = INK_LINE, slant: float = SLANT, rim: int = 3) -> StyleBoxFlat:
+	var s := StyleBoxFlat.new()
+	s.bg_color = fill
+	s.set_corner_radius_all(4)
+	s.corner_detail = 3
+	s.anti_aliasing = false
+	s.border_color = INK_LINE
+	s.set_border_width_all(rim)
+	s.border_width_bottom = rim + 4
+	s.skew = Vector2(slant, 0)
+	s.expand_margin_bottom = 0
+	s.content_margin_left = 16
+	s.content_margin_right = 16
+	s.content_margin_top = 8
+	s.content_margin_bottom = 12
+	if lip != INK_LINE:
+		s.border_color = lip
+	return s
+
+
 static func panel_box() -> StyleBoxFlat:
-	var s := box(Color(INK, 0.94), 26, INK_LINE, 0, 18, 0)
-	s.border_color = Color(1, 1, 1, 0.08)
-	s.set_border_width_all(2)
+	var s := box(Color(INK, 0.95), RADIUS, INK_LINE, 0, 0, 0)
+	s.border_color = INK_LINE
+	s.set_border_width_all(4)
+	s.border_width_top = 4
+	s.border_width_bottom = 9
+	s.skew = Vector2(SLANT * 0.5, 0)
 	s.content_margin_left = 28
 	s.content_margin_right = 28
 	s.content_margin_top = 24

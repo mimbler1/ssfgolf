@@ -1,0 +1,6 @@
+[
+  {"name": "swing_adventurer", "w": 1536, "h": 512, "seeds": [3101, 3102, 3103, 3104, 3105, 3106, 3107, 3108],
+   "prompt": "golf swing animation sprite sheet, 8 frames in one row left to right, the same young golfer boy with spiky orange hair, red bandana, teal jacket, tan trousers, brown boots, side view facing right: address stance, backswing, top of backswing, downswing, impact, follow-through, finish pose, full body, isolated on a plain flat white background"},
+  {"name": "idle_adventurer", "w": 1536, "h": 512, "seeds": [3201, 3202, 3203, 3204],
+   "prompt": "idle breathing animation sprite sheet, 8 frames in one row, the same young golfer boy with spiky orange hair, red bandana, teal jacket, tan trousers, brown boots, standing relaxed side view facing right holding a golf club, full body, isolated on a plain flat white background"}
+]

@@ -496,7 +496,12 @@ func _send_result() -> void:
 var _dev_names: Array[String] = []
 
 
+## "Name@character" picks a roster character for the dev player (art review of several golfers).
 func _dev_join(name: String) -> String:
+	var want_char := ""
+	if name.contains("@"):
+		want_char = name.get_slice("@", 1)
+		name = name.get_slice("@", 0)
 	if name == "":
 		name = "Dev"
 	var id := "dev-" + name.to_lower().validate_filename()
@@ -506,7 +511,10 @@ func _dev_join(name: String) -> String:
 		return id
 	if state != State.WAITING or sim.players.size() >= dev_players:
 		return ""
-	var p := sim.add_player(id, name, Appearance.with_preset({}, Appearance.PRESETS[sim.players.size() % Appearance.PRESETS.size()].data))
+	var app := Appearance.with_preset({}, Appearance.PRESETS[sim.players.size() % Appearance.PRESETS.size()].data)
+	if CharacterDefs.has(want_char):
+		app.character = want_char
+	var p := sim.add_player(id, name, Appearance.normalize(app))
 	p.connected = false
 	_dev_names.append(name)
 	return id

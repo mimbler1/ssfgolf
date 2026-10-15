@@ -1,0 +1,74 @@
+[
+ {
+  "name": "swing_rex",
+  "w": 1536,
+  "h": 512,
+  "seeds": [
+   4000,
+   4001,
+   4002,
+   4003,
+   4004,
+   4005,
+   4006,
+   4007,
+   4008,
+   4009,
+   4010,
+   4011,
+   4012,
+   4013,
+   4014,
+   4015
+  ],
+  "prompt": "golf swing animation sprite sheet, 8 frames in one row left to right, the same young golfer boy with orange cap, spiky orange hair, teal shirt, red neckerchief, dark green trousers, brown boots, side view facing right: address stance, backswing, top of backswing, downswing, impact, follow-through, finish pose, full body, isolated on a plain flat white background"
+ },
+ {
+  "name": "swing_mira",
+  "w": 1536,
+  "h": 512,
+  "seeds": [
+   4100,
+   4101,
+   4102,
+   4103,
+   4104,
+   4105,
+   4106,
+   4107,
+   4108,
+   4109,
+   4110,
+   4111,
+   4112,
+   4113,
+   4114,
+   4115
+  ],
+  "prompt": "golf swing animation sprite sheet, 8 frames in one row left to right, the same sporty girl golfer with long purple ponytail, white visor cap, yellow polo shirt, navy skirt, white sneakers, side view facing right: address stance, backswing, top of backswing, downswing, impact, follow-through, finish pose, full body, isolated on a plain flat white background"
+ },
+ {
+  "name": "swing_bolt",
+  "w": 1536,
+  "h": 512,
+  "seeds": [
+   4200,
+   4201,
+   4202,
+   4203,
+   4204,
+   4205,
+   4206,
+   4207,
+   4208,
+   4209,
+   4210,
+   4211,
+   4212,
+   4213,
+   4214,
+   4215
+  ],
+  "prompt": "golf swing animation sprite sheet, 8 frames in one row left to right, the same small round robot golfer with glossy blue and white metal body, glowing cyan visor eyes, short antenna, short stubby legs, side view facing right: address stance, backswing, top of backswing, downswing, impact, follow-through, finish pose, full body, isolated on a plain flat white background"
+ }
+]

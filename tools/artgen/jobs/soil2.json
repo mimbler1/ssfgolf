@@ -1,0 +1,4 @@
+[
+ {"name": "tex_soil2", "w": 1024, "h": 1024, "tile": true, "seeds": [5501, 5502, 5503, 5504, 5505, 5506],
+  "prompt": "seamless tileable texture of underground earth cross-section, mostly rich dark brown soil with subtle layered clumps, a few small scattered pebbles, thin pale roots, small cracks, low contrast, platform game ground fill"}
+]

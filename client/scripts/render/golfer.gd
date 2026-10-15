@@ -578,6 +578,10 @@ func _draw() -> void:
 
 ## Current sprite frame: (sprite anim, frame index) for the game animation and clock.
 func sprite_frame() -> Array:
+	if anim == "aim" and _sprite.anims.has("swing") and not _sprite.anims.has("prepare"):
+		# Wind-up follows shot power: address .. top of backswing (frames before the downswing).
+		var top := maxi(int(_sprite.anims.swing.contact) - 2, 0)
+		return ["swing", clampi(roundi(clampf(aim_power, 0.0, 1.0) * top), 0, top)]
 	var sa := _sprite.resolve(anim if not Emotes.is_emote(anim) else "idle")
 	var t := _anim_t
 	if sa == "swing":

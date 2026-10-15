@@ -19,7 +19,7 @@ const PALETTE := [
 
 const DEFAULT := {
 	"v": 1,
-	"character": "stickman",
+	"character": "rex",   ## v3: new profiles start as a sprite golfer; "stickman" stays valid
 	"bodyColor": "#2b2d42",
 	"outlineColor": "#11121c",
 	"headShape": "round",

@@ -1,0 +1,86 @@
+[
+ {
+  "name": "po_rex_55",
+  "w": 1536,
+  "h": 1536,
+  "init": "art/characters/guides/rex.png",
+  "strength": 0.55,
+  "seeds": [
+   7001,
+   7002,
+   7003,
+   7004
+  ],
+  "prompt": "pixel art sprite sheet, twelve frames of the same young golfer boy with an orange cap, spiky orange hair, orange polo shirt, dark green trousers, brown shoes, white glove, golf swing animation poses arranged in a 4 by 3 grid, side view facing right, detailed shading, dark outlines, isolated on a plain flat white background"
+ },
+ {
+  "name": "po_rex_68",
+  "w": 1536,
+  "h": 1536,
+  "init": "art/characters/guides/rex.png",
+  "strength": 0.68,
+  "seeds": [
+   7001,
+   7002,
+   7003,
+   7004
+  ],
+  "prompt": "pixel art sprite sheet, twelve frames of the same young golfer boy with an orange cap, spiky orange hair, orange polo shirt, dark green trousers, brown shoes, white glove, golf swing animation poses arranged in a 4 by 3 grid, side view facing right, detailed shading, dark outlines, isolated on a plain flat white background"
+ },
+ {
+  "name": "po_mira_55",
+  "w": 1536,
+  "h": 1536,
+  "init": "art/characters/guides/mira.png",
+  "strength": 0.55,
+  "seeds": [
+   7001,
+   7002,
+   7003,
+   7004
+  ],
+  "prompt": "pixel art sprite sheet, twelve frames of the same sporty girl golfer with a white visor cap, long purple ponytail, yellow polo shirt, navy skirt, white sneakers, golf swing animation poses arranged in a 4 by 3 grid, side view facing right, detailed shading, dark outlines, isolated on a plain flat white background"
+ },
+ {
+  "name": "po_mira_68",
+  "w": 1536,
+  "h": 1536,
+  "init": "art/characters/guides/mira.png",
+  "strength": 0.68,
+  "seeds": [
+   7001,
+   7002,
+   7003,
+   7004
+  ],
+  "prompt": "pixel art sprite sheet, twelve frames of the same sporty girl golfer with a white visor cap, long purple ponytail, yellow polo shirt, navy skirt, white sneakers, golf swing animation poses arranged in a 4 by 3 grid, side view facing right, detailed shading, dark outlines, isolated on a plain flat white background"
+ },
+ {
+  "name": "po_bjorn_55",
+  "w": 1536,
+  "h": 1536,
+  "init": "art/characters/guides/bjorn.png",
+  "strength": 0.55,
+  "seeds": [
+   7001,
+   7002,
+   7003,
+   7004
+  ],
+  "prompt": "pixel art sprite sheet, twelve frames of the same stocky viking golfer with a big braided red beard, round steel helmet, green tunic with brown fur vest, brown trousers, leather boots, golf swing animation poses arranged in a 4 by 3 grid, side view facing right, detailed shading, dark outlines, isolated on a plain flat white background"
+ },
+ {
+  "name": "po_bjorn_68",
+  "w": 1536,
+  "h": 1536,
+  "init": "art/characters/guides/bjorn.png",
+  "strength": 0.68,
+  "seeds": [
+   7001,
+   7002,
+   7003,
+   7004
+  ],
+  "prompt": "pixel art sprite sheet, twelve frames of the same stocky viking golfer with a big braided red beard, round steel helmet, green tunic with brown fur vest, brown trousers, leather boots, golf swing animation poses arranged in a 4 by 3 grid, side view facing right, detailed shading, dark outlines, isolated on a plain flat white background"
+ }
+]

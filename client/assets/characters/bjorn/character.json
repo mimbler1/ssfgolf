@@ -1,0 +1,323 @@
+{
+ "format": 1,
+ "id": "bjorn",
+ "name": "Bjorn",
+ "frame_size": [
+  48,
+  64
+ ],
+ "pivot": [
+  22,
+  61
+ ],
+ "rig_units_per_px": 1.5384615384615383,
+ "anims": {
+  "idle": {
+   "sheet": "idle.png",
+   "loop": true,
+   "frames": [
+    {
+     "name": "idle_0",
+     "rect": [
+      0,
+      0,
+      48,
+      64
+     ],
+     "ms": 260,
+     "anchors": {
+      "club_grip": [
+       31,
+       37
+      ],
+      "club_head": [
+       47,
+       59
+      ]
+     }
+    },
+    {
+     "name": "idle_1",
+     "rect": [
+      48,
+      0,
+      48,
+      64
+     ],
+     "ms": 200,
+     "anchors": {
+      "club_grip": [
+       31,
+       38
+      ],
+      "club_head": [
+       47,
+       59
+      ]
+     }
+    },
+    {
+     "name": "idle_2",
+     "rect": [
+      96,
+      0,
+      48,
+      64
+     ],
+     "ms": 260,
+     "anchors": {
+      "club_grip": [
+       31,
+       38
+      ],
+      "club_head": [
+       47,
+       59
+      ]
+     }
+    },
+    {
+     "name": "idle_3",
+     "rect": [
+      144,
+      0,
+      48,
+      64
+     ],
+     "ms": 220,
+     "anchors": {
+      "club_grip": [
+       31,
+       37
+      ],
+      "club_head": [
+       47,
+       59
+      ]
+     }
+    },
+    {
+     "name": "idle_2",
+     "rect": [
+      192,
+      0,
+      48,
+      64
+     ],
+     "ms": 200,
+     "anchors": {
+      "club_grip": [
+       31,
+       38
+      ],
+      "club_head": [
+       47,
+       59
+      ]
+     }
+    },
+    {
+     "name": "idle_1",
+     "rect": [
+      240,
+      0,
+      48,
+      64
+     ],
+     "ms": 200,
+     "anchors": {
+      "club_grip": [
+       31,
+       38
+      ],
+      "club_head": [
+       47,
+       59
+      ]
+     }
+    }
+   ],
+   "target_frames": 6,
+   "contact_frame": null
+  },
+  "swing": {
+   "sheet": "swing.png",
+   "loop": false,
+   "frames": [
+    {
+     "name": "address",
+     "rect": [
+      0,
+      0,
+      48,
+      64
+     ],
+     "ms": 60,
+     "anchors": {
+      "club_grip": [
+       31,
+       37
+      ],
+      "club_head": [
+       47,
+       59
+      ]
+     }
+    },
+    {
+     "name": "takeaway",
+     "rect": [
+      48,
+      0,
+      48,
+      64
+     ],
+     "ms": 60,
+     "anchors": {
+      "club_grip": [
+       23,
+       34
+      ],
+      "club_head": [
+       7,
+       48
+      ]
+     }
+    },
+    {
+     "name": "halfback",
+     "rect": [
+      96,
+      0,
+      48,
+      64
+     ],
+     "ms": 60,
+     "anchors": {
+      "club_grip": [
+       16,
+       27
+      ],
+      "club_head": [
+       12,
+       7
+      ]
+     }
+    },
+    {
+     "name": "top",
+     "rect": [
+      144,
+      0,
+      48,
+      64
+     ],
+     "ms": 80,
+     "anchors": {
+      "club_grip": [
+       17,
+       10
+      ],
+      "club_head": [
+       35,
+       2
+      ]
+     }
+    },
+    {
+     "name": "down",
+     "rect": [
+      192,
+      0,
+      48,
+      64
+     ],
+     "ms": 40,
+     "anchors": {
+      "club_grip": [
+       20,
+       26
+      ],
+      "club_head": [
+       2,
+       18
+      ]
+     }
+    },
+    {
+     "name": "impact",
+     "rect": [
+      240,
+      0,
+      48,
+      64
+     ],
+     "ms": 50,
+     "anchors": {
+      "club_grip": [
+       32,
+       38
+      ],
+      "club_head": [
+       47,
+       59
+      ]
+     }
+    },
+    {
+     "name": "follow",
+     "rect": [
+      288,
+      0,
+      48,
+      64
+     ],
+     "ms": 90,
+     "anchors": {
+      "club_grip": [
+       37,
+       23
+      ],
+      "club_head": [
+       46,
+       5
+      ]
+     }
+    },
+    {
+     "name": "finish",
+     "rect": [
+      336,
+      0,
+      48,
+      64
+     ],
+     "ms": 500,
+     "anchors": {
+      "club_grip": [
+       24,
+       8
+      ],
+      "club_head": [
+       7,
+       10
+      ]
+     }
+    }
+   ],
+   "target_frames": 8,
+   "contact_frame": 5
+  }
+ },
+ "palette": {},
+ "regions": {},
+ "recolor_regions": [],
+ "variants": {},
+ "equipment_slots": {},
+ "surfaces": {},
+ "source": {
+  "generator": "tools/artgen (SDXL + pixel-art-xl LoRA), pose-guided paint-over",
+  "guide": "art/characters/guides/bjorn.png",
+  "painted": "art/characters/painted/bjorn.png"
+ }
+}
