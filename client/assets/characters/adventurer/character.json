@@ -1,0 +1,201 @@
+{
+ "format": 1,
+ "id": "adventurer",
+ "name": "Adventurer",
+ "frame_size": [
+  96,
+  128
+ ],
+ "pivot": [
+  48,
+  124
+ ],
+ "rig_units_per_px": 0.7692,
+ "anims": {
+  "idle": {
+   "sheet": "idle.png",
+   "loop": true,
+   "frames": [
+    {
+     "name": "idle_00",
+     "rect": [
+      0,
+      0,
+      96,
+      128
+     ],
+     "ms": 160,
+     "anchors": {
+      "club_grip": [
+       63,
+       67
+      ],
+      "club_head": [
+       20,
+       62
+      ],
+      "head_top": [
+       50,
+       45
+      ],
+      "back": [
+       40,
+       76
+      ]
+     }
+    }
+   ],
+   "target_frames": 8,
+   "contact_frame": null
+  }
+ },
+ "palette": {
+  "K": "#20141e",
+  "s": "#ffd6b0",
+  "S": "#f0a878",
+  "d": "#c07850",
+  "D": "#8a4a3a",
+  "y": "#ffa050",
+  "h": "#e0622c",
+  "H": "#a8381e",
+  "j": "#6a2018",
+  "q": "#ff7a6a",
+  "r": "#e03a3a",
+  "R": "#a01e34",
+  "t": "#6ad8c8",
+  "T": "#2fa0a0",
+  "u": "#1e6878",
+  "U": "#143c50",
+  "w": "#fff6dc",
+  "W": "#e6cc9c",
+  "v": "#b0905e",
+  "p": "#e0c080",
+  "P": "#b8904e",
+  "o": "#7e5c30",
+  "O": "#4e3820",
+  "f": "#f6e0a8",
+  "l": "#c8804a",
+  "L": "#8e4e2a",
+  "n": "#5c2c1a",
+  "b": "#ffd860",
+  "B": "#c89030",
+  "m": "#ffffff",
+  "M": "#b8c4d4",
+  "N": "#6e7a90",
+  "g": "#3c3048",
+  "e": "#ffffff",
+  "i": "#2c70d8",
+  "a": "#7ab8ff",
+  "x": "#7a1e28"
+ },
+ "regions": {
+  "bandana": {
+   "q": "light",
+   "r": "mid",
+   "R": "shadow"
+  },
+  "brass": {
+   "b": "light",
+   "B": "mid"
+  },
+  "eye": {
+   "e": "white",
+   "i": "iris",
+   "a": "iris_light"
+  },
+  "grip": {
+   "g": "mid"
+  },
+  "hair": {
+   "y": "light",
+   "h": "mid",
+   "H": "shadow",
+   "j": "deep"
+  },
+  "jacket": {
+   "t": "light",
+   "T": "mid",
+   "u": "shadow",
+   "U": "deep"
+  },
+  "leather": {
+   "l": "light",
+   "L": "mid",
+   "n": "shadow"
+  },
+  "metal": {
+   "m": "light",
+   "M": "mid",
+   "N": "shadow"
+  },
+  "mouth": {
+   "x": "inner"
+  },
+  "outline": {
+   "K": "ink"
+  },
+  "pants": {
+   "p": "light",
+   "P": "mid",
+   "o": "shadow",
+   "O": "deep",
+   "f": "highlight"
+  },
+  "shirt": {
+   "w": "light",
+   "W": "mid",
+   "v": "shadow"
+  },
+  "skin": {
+   "s": "light",
+   "S": "mid",
+   "d": "shadow",
+   "D": "deep"
+  }
+ },
+ "recolor_regions": [
+  "hair",
+  "bandana",
+  "jacket",
+  "shirt",
+  "pants",
+  "leather"
+ ],
+ "variants": {
+  "midnight": {
+   "t": "#8fb4ff",
+   "T": "#4a62c8",
+   "u": "#2e3a86",
+   "U": "#1c2052",
+   "q": "#ffe08a",
+   "r": "#f2b43c",
+   "R": "#b07418"
+  }
+ },
+ "equipment_slots": {
+  "hat": {
+   "anchor": "head_top",
+   "layer": "above_head",
+   "note": "per-frame hat art keyed by this character's frame names"
+  },
+  "back": {
+   "anchor": "back",
+   "layer": "behind_body"
+  },
+  "club": {
+   "anchor": "club_grip",
+   "layer": "per_frame",
+   "note": "club is part of the body art; club cosmetics swap the metal/grip palette keys"
+  }
+ },
+ "surfaces": {
+  "shirt_front": {
+   "status": "planned",
+   "canvas": [
+    16,
+    16
+   ],
+   "method": "per-frame UV map: each surface pixel stores the (u, v) of the player's drawing it shows, so a drawing follows every pose"
+  }
+ }
+}

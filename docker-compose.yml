@@ -1,0 +1,41 @@
+name: fairway-frenzy
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: fairway
+      POSTGRES_PASSWORD: fairway
+      POSTGRES_DB: fairway
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fairway -d fairway"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  # Only started with `docker compose --profile full up -d`; developers usually
+  # run the backend directly with `npm run dev` in /backend.
+  backend:
+    profiles: ["full"]
+    build: ./backend
+    environment:
+      NODE_ENV: development
+      PORT: "8080"
+      HOST: 0.0.0.0
+      DATABASE_URL: postgres://fairway:fairway@postgres:5432/fairway
+      GAME_SERVER_KEY: ${GAME_SERVER_KEY:-dev-server-key-change-me}
+      JOIN_TOKEN_SECRET: ${JOIN_TOKEN_SECRET:-dev-join-secret-change-me}
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pgdata:

@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "physics": {
+    "gravity": 1500.0,
+    "air_drag": 0.04,
+    "ball_radius": 9.0,
+    "ball_mass": 1.0,
+    "max_substep_travel": 3.5,
+    "max_substeps": 32,
+    "contact_iterations": 3,
+    "rest_speed": 24.0,
+    "rest_time": 0.14,
+    "max_speed": 3400.0,
+    "max_angular_velocity": 70.0,
+    "ball_restitution": 0.82,
+    "ball_impulse_scale": 1.0,
+    "grounded_grace": 0.12,
+    "stuck_time": 9.0,
+    "slow_creep_speed": 60.0
+  },
+  "shot": {
+    "min_speed": 140.0,
+    "max_speed": 1520.0,
+    "cooldown": 1.7,
+    "reset_cooldown": 3.0
+  },
+  "energy": {
+    "max": 10.0,
+    "start": 4.0,
+    "regen_per_second": 0.45
+  },
+  "hole": {
+    "countdown": 3.0,
+    "max_duration": 120.0,
+    "finish_window": 25.0,
+    "results_duration": 5.5,
+    "hazard_reset_delay": 1.1
+  },
+  "match": {
+    "points": { "1": [1], "2": [3, 0], "3": [3, 1, 0], "4": [3, 2, 1, 0] },
+    "target_points": 9,
+    "max_holes": 15,
+    "join_timeout": 25.0,
+    "disconnect_grace": 30.0,
+    "intro_duration": 2.5
+  },
+  "abilities": [
+    {
+      "id": "standard", "name": "Standard", "cost": 0, "color": "#f4f4f8",
+      "activation": "none",
+      "desc": "A trusty, honest golf ball. No tricks.",
+      "params": {}
+    },
+    {
+      "id": "nitro", "name": "Nitro", "cost": 3, "color": "#ff7b2e",
+      "activation": "manual",
+      "desc": "Press [Space] mid-flight to ignite a speed burst along your path.",
+      "params": { "boost": 640.0, "max_speed": 2300.0 }
+    },
+    {
+      "id": "sticky", "name": "Sticky", "cost": 2, "color": "#b65cff",
+      "activation": "none",
+      "desc": "Glues to the first surface it touches, even walls and ceilings.",
+      "params": {}
+    },
+    {
+      "id": "grenade", "name": "Grenade", "cost": 4, "color": "#56c271",
+      "activation": "impact_or_manual",
+      "desc": "Explodes on impact (or press [Space]), blasting nearby balls away.",
+      "params": { "radius": 175.0, "impulse": 1150.0, "self_scale": 0.4, "arm_time": 0.12, "fuse": 3.0 }
+    },
+    {
+      "id": "heavy", "name": "Heavy", "cost": 3, "color": "#7d8597",
+      "activation": "none",
+      "desc": "Four times the mass. Barely bounces and bullies other balls.",
+      "params": { "mass": 4.0, "restitution_scale": 0.4, "gravity_scale": 1.18, "roll_drag_scale": 0.55 }
+    },
+    {
+      "id": "air_brake", "name": "Air Brake", "cost": 2, "color": "#4cc9f0",
+      "activation": "manual",
+      "desc": "Press [Space] mid-flight to slam the brakes and drop almost straight down.",
+      "params": { "keep": 0.12, "gravity_scale": 0.55, "slow_time": 0.4 }
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "id": "adventurer",
+  "name": "Adventurer",
+  "frame_size": [96, 128],
+  "pivot": [48, 124],
+  "rig_units_per_px": 0.7692,
+  "anims": {
+    "idle":     {"loop": true,  "target_frames": 8,  "frames": [["idle_00", 160]]},
+    "prepare":  {"loop": false, "target_frames": 6,  "frames": []},
+    "swing":    {"loop": false, "target_frames": 12, "frames": [], "contact_frame": 6},
+    "recovery": {"loop": false, "target_frames": 6,  "frames": []},
+    "walk":     {"loop": true,  "target_frames": 8,  "frames": []},
+    "victory":  {"loop": true,  "target_frames": 12, "frames": []},
+    "defeat":   {"loop": false, "target_frames": 8,  "frames": []}
+  },
+  "anchors": {
+    "idle_00": {"club_grip": [63, 67], "club_head": [20, 62], "head_top": [50, 45], "back": [40, 76]}
+  },
+  "recolor_regions": ["hair", "bandana", "jacket", "shirt", "pants", "leather"],
+  "variants": {
+    "midnight": {"t": "8fb4ff", "T": "4a62c8", "u": "2e3a86", "U": "1c2052",
+                 "q": "ffe08a", "r": "f2b43c", "R": "b07418"}
+  },
+  "equipment_slots": {
+    "hat":  {"anchor": "head_top", "layer": "above_head", "note": "per-frame hat art keyed by this character's frame names"},
+    "back": {"anchor": "back", "layer": "behind_body"},
+    "club": {"anchor": "club_grip", "layer": "per_frame", "note": "club is part of the body art; club cosmetics swap the metal/grip palette keys"}
+  },
+  "surfaces": {
+    "shirt_front": {
+      "status": "planned",
+      "canvas": [16, 16],
+      "method": "per-frame UV map: each surface pixel stores the (u, v) of the player's drawing it shows, so a drawing follows every pose"
+    }
+  }
+}

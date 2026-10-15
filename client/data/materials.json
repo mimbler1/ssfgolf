@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "materials": {
+    "grass":  { "restitution": 0.40, "friction": 0.30, "roll_drag": 1.25, "rest_slope_deg": 13.0, "bounce_min": 75.0, "sticky": false, "boost": 0.0, "sound": "thud_grass" },
+    "rough":  { "restitution": 0.22, "friction": 0.55, "roll_drag": 3.4,  "rest_slope_deg": 22.0, "bounce_min": 90.0, "sticky": false, "boost": 0.0, "sound": "thud_grass" },
+    "sand":   { "restitution": 0.05, "friction": 0.95, "roll_drag": 7.5,  "rest_slope_deg": 48.0, "bounce_min": 200.0, "sticky": false, "boost": 0.0, "sound": "thud_sand" },
+    "ice":    { "restitution": 0.32, "friction": 0.015, "roll_drag": 0.06, "rest_slope_deg": 1.2,  "bounce_min": 70.0, "sticky": false, "boost": 0.0, "sound": "clink_ice" },
+    "rock":   { "restitution": 0.55, "friction": 0.35, "roll_drag": 1.1,  "rest_slope_deg": 11.0, "bounce_min": 60.0, "sticky": false, "boost": 0.0, "sound": "clack_rock" },
+    "wood":   { "restitution": 0.48, "friction": 0.40, "roll_drag": 1.4,  "rest_slope_deg": 12.0, "bounce_min": 60.0, "sticky": false, "boost": 0.0, "sound": "knock_wood" },
+    "sticky": { "restitution": 0.0,  "friction": 1.0,  "roll_drag": 40.0, "rest_slope_deg": 90.0, "bounce_min": 99999.0, "sticky": true, "boost": 0.0, "sound": "squish" },
+    "bouncy": { "restitution": 0.95, "friction": 0.15, "roll_drag": 0.6,  "rest_slope_deg": 10.0, "bounce_min": 60.0, "sticky": false, "boost": 780.0, "sound": "boing" },
+    "cup":    { "restitution": 0.10, "friction": 0.90, "roll_drag": 6.0,  "rest_slope_deg": 70.0, "bounce_min": 120.0, "sticky": false, "boost": 0.0, "sound": "cup" }
+  }
+}

@@ -1,0 +1,50 @@
+# Adventurer golfer palette. One character = one pixel colour in the frame grids.
+# key  hex      region     role
+# '.' is always transparent.
+K  20141e   outline    ink
+# skin
+s  ffd6b0   skin       light
+S  f0a878   skin       mid
+d  c07850   skin       shadow
+D  8a4a3a   skin       deep
+# hair (rust)
+y  ffa050   hair       light
+h  e0622c   hair       mid
+H  a8381e   hair       shadow
+j  6a2018   hair       deep
+# bandana (red)
+q  ff7a6a   bandana    light
+r  e03a3a   bandana    mid
+R  a01e34   bandana    shadow
+# jacket (teal)
+t  6ad8c8   jacket     light
+T  2fa0a0   jacket     mid
+u  1e6878   jacket     shadow
+U  143c50   jacket     deep
+# shirt (cream)
+w  fff6dc   shirt      light
+W  e6cc9c   shirt      mid
+v  b0905e   shirt      shadow
+# pants (tan)
+p  e0c080   pants      light
+P  b8904e   pants      mid
+o  7e5c30   pants      shadow
+O  4e3820   pants      deep
+f  f6e0a8   pants      highlight
+# leather (gloves, boots, belt)
+l  c8804a   leather    light
+L  8e4e2a   leather    mid
+n  5c2c1a   leather    shadow
+# brass (buckle)
+b  ffd860   brass      light
+B  c89030   brass      mid
+# club metal + grip
+m  ffffff   metal      light
+M  b8c4d4   metal      mid
+N  6e7a90   metal      shadow
+g  3c3048   grip       mid
+# eyes, mouth
+e  ffffff   eye        white
+i  2c70d8   eye        iris
+a  7ab8ff   eye        iris_light
+x  7a1e28   mouth      inner

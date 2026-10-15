@@ -1,0 +1,16 @@
+backend/node_modules
+
+# Godot
+client/.godot/
+client/tests/tmp/
+build/
+
+# Pinned engine binaries (download per README; not committed)
+tools/godot/*.exe
+
+# Local test logs
+tools/.e2e_logs/
+
+# OS / editor
+.DS_Store
+Thumbs.db
