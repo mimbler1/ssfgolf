@@ -11,6 +11,8 @@ extends Control
 static var _cache: Dictionary = {}   ## character id -> Texture2D (or null = use the golfer view)
 
 var mirror := false                  ## face left (right-hand HUD panels look inward)
+## Draw the pixel-art portrait frame (assets/ui/hud/portrait_frame.png, 9-slice) over the edge.
+var framed := false
 var _tex: Texture2D
 var _view: GolferView
 
@@ -72,6 +74,7 @@ static func _crop_head(sc: SpriteCharacter) -> Texture2D:
 
 func _draw() -> void:
 	if _tex == null:
+		_draw_frame()
 		return
 	var ts := _tex.get_size()
 	var s := floorf(minf(size.x / ts.x, size.y / ts.y))
@@ -83,3 +86,12 @@ func _draw() -> void:
 		draw_set_transform(Vector2(size.x, 0), 0.0, Vector2(-1, 1))
 	draw_texture_rect(_tex, dst, false)
 	draw_set_transform_matrix(Transform2D.IDENTITY)
+	_draw_frame()
+
+
+func _draw_frame() -> void:
+	if not framed:
+		return
+	var sb := UIArt.nine("hud/portrait_frame.png", [16, 16, 16, 16], 2 if size.x >= 64.0 else 1)
+	if sb:
+		draw_style_box(sb, Rect2(Vector2.ZERO, size))

@@ -180,6 +180,7 @@ class _Panel extends Control:
 
 	func _ready() -> void:
 		_portrait = Portrait.new()
+		_portrait.framed = true
 		add_child(_portrait)
 		_portrait.set_look(appearance)
 		_score = _label(UITheme.heading_font(), 48, UITheme.PAPER, 10)

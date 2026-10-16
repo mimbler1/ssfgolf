@@ -7,8 +7,8 @@ extends Node2D
 const AIM_DEADZONE := 14.0
 const GOLFER_SCALE := 1.3
 const EMOTE_COOLDOWN := 1.5   ## Mirrors the server's cooldown so spam never looks like lost input.
-const PLACE_TEXT := ["1ST!", "2ND!", "3RD!", "4TH"]
-const PLACE_COLORS := [Color("ffd166"), Color("d9e2f2"), Color("f4a261"), Color("aab3e0")]
+const PLACE_TEXT := ["1ST!", "2ND!", "3RD!", "4TH", "5TH", "6TH"]
+const PLACE_COLORS := [Color("ffd166"), Color("d9e2f2"), Color("f4a261"), Color("aab3e0"), Color("aab3e0"), Color("aab3e0")]
 
 var view: MatchView
 var params: Dictionary
@@ -101,6 +101,9 @@ func _ready() -> void:
 				var vals := OS.get_cmdline_user_args()[dpts + 1].split(",")
 				for i in mini(vals.size(), lv.sim.players.size()):
 					lv.sim.players[i].points = int(vals[i])
+			if OS.get_cmdline_user_args().has("--dev-end"):
+				# Results-screen check: end the local match a few seconds in.
+				get_tree().create_timer(4.0).timeout.connect(func() -> void: lv.sim.abort("completed"))
 		elif str(params.get("mode", "practice")) == "stroke":
 			lv.setup_stroke(str(params.get("course", "golf_land")), int(params.get("hole", 0)), app, pname, bool(params.get("clean", false)))
 		else:
@@ -885,7 +888,7 @@ func _on_event(ev: Dictionary) -> void:
 				_golfer_state[slot].shown = true
 			if is_me:
 				if view.mode == "online":
-					hud.announce(PLACE_TEXT[clampi(place - 1, 0, 3)], PLACE_COLORS[clampi(place - 1, 0, 3)], 150, 1.0)
+					hud.announce(PLACE_TEXT[clampi(place - 1, 0, PLACE_TEXT.size() - 1)], PLACE_COLORS[clampi(place - 1, 0, PLACE_COLORS.size() - 1)], 150, 1.0)
 				elif view.mode == "stroke":
 					var par := int(view.course.holes[view.hole_index].get("par", 3))
 					var strokes := int(ev.get("strokes", ev.get("shots", 0)))
@@ -1042,6 +1045,13 @@ func _on_impacts(list: Array) -> void:
 			fx.dust(pos, Vector2.UP, speed, col)
 		if mname == "bouncy" and speed > 100.0:
 			fx.impact_ring(pos, Color("ff4d6d"), 30.0)
+
+
+func _appearance_of(slot: int) -> Dictionary:
+	for r in view.roster:
+		if int(r.slot) == slot:
+			return r.appearance
+	return {}
 
 
 func _name(slot: int) -> String:
@@ -1313,14 +1323,19 @@ func _results_card(title: String, rows: Array[Dictionary], subtitle: String) -> 
 		place.custom_minimum_size = Vector2(64, 0)
 		place.add_theme_font_override("font", UITheme.heading_font())
 		place.add_theme_font_size_override("font_size", 28)
-		place.add_theme_color_override("font_color", PLACE_COLORS[clampi(p - 1, 0, 3)] if p > 0 else UITheme.MUTED)
+		place.add_theme_color_override("font_color", PLACE_COLORS[clampi(p - 1, 0, PLACE_COLORS.size() - 1)] if p > 0 else UITheme.MUTED)
 		hb.add_child(place)
 		var chip := ColorRect.new()
-		chip.custom_minimum_size = Vector2(12, 34)
+		chip.custom_minimum_size = Vector2(8, 56)
 		chip.color = UITheme.SLOT_COLORS[int(r.slot) % UITheme.SLOT_COLORS.size()]
 		hb.add_child(chip)
+		var por := Portrait.new()
+		por.framed = true
+		por.custom_minimum_size = Vector2(64, 64)
+		hb.add_child(por)
+		por.set_look(_appearance_of(int(r.slot)))
 		var n := Label.new()
-		n.text = str(r.name) + ("  (you)" if int(r.slot) == view.local_slot else "")
+		n.text = str(r.name) + ("  (you)" if int(r.slot) == view.local_slot and str(r.name).to_lower() != "you" else "")
 		n.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		n.add_theme_font_override("font", UITheme.body_bold_font())
 		hb.add_child(n)
@@ -1376,6 +1391,15 @@ func _show_match_end(ev: Dictionary) -> void:
 	var title := UITheme.styled_label("VICTORY!" if my_place == 1 else ("%s PLACE" % _ordinal(my_place).to_upper()), 72,
 		UITheme.SUN if my_place == 1 else UITheme.PAPER, 12)
 	vb.add_child(title)
+	# The match winner, animated in their victory pose.
+	if not standings.is_empty():
+		var champ := GolferView.new()
+		champ.custom_minimum_size = Vector2(0, 220)
+		champ.pad = Vector2(8, 46)   # headroom: victory poses rise above the idle frame
+		vb.add_child(champ)
+		champ.set_look(Appearance.normalize(_appearance_of(int(standings[0].slot))), "victory")
+		champ.set_animated(true)
+		champ.golfer.play("victory")
 	if str(ev.get("reason", "")) == "aborted":
 		var ab := Label.new()
 		ab.text = "Match ended early — no trophies were changed."
@@ -1393,10 +1417,15 @@ func _show_match_end(ev: Dictionary) -> void:
 		p.custom_minimum_size = Vector2(64, 0)
 		p.add_theme_font_override("font", UITheme.heading_font())
 		p.add_theme_font_size_override("font_size", 28)
-		p.add_theme_color_override("font_color", PLACE_COLORS[clampi(int(s.placement) - 1, 0, 3)])
+		p.add_theme_color_override("font_color", PLACE_COLORS[clampi(int(s.placement) - 1, 0, PLACE_COLORS.size() - 1)])
 		hb.add_child(p)
+		var por := Portrait.new()
+		por.framed = true
+		por.custom_minimum_size = Vector2(64, 64)
+		hb.add_child(por)
+		por.set_look(_appearance_of(int(s.slot)))
 		var n := Label.new()
-		n.text = str(s.name) + ("  (you)" if int(s.slot) == view.local_slot else "") + ("  — left" if s.get("disconnected", false) else "")
+		n.text = str(s.name) + ("  (you)" if int(s.slot) == view.local_slot and str(s.name).to_lower() != "you" else "") + ("  — left" if s.get("disconnected", false) else "")
 		n.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		n.add_theme_font_override("font", UITheme.body_bold_font())
 		hb.add_child(n)
