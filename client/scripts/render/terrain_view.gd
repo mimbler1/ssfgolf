@@ -416,6 +416,12 @@ class _Edges extends Node2D:
 				draw_polyline(_offset(rp, rn, -5.0), cols2[0], 9.0, true)
 				draw_polyline(_offset(rp, rn, -2.0), Color.WHITE, 2.5, true)
 				_glints(rp, rn, rng)
+			"snow":
+				# Soft, matte, pillowy (contrast with glossy ice): thick white band, blue shadow scallops.
+				_scallops(rp, rn, -14.0, 22.0, 9.0, Color("c9d6ea"))
+				draw_polyline(_offset(rp, rn, -9.0), Color("dfe8f5"), 18.0, true)
+				draw_polyline(_offset(rp, rn, -6.0), Color("f7fbff"), 12.0, true)
+				_speckles(rp, rn, rng, Color("c3d3ec"), 1.6)
 			"sticky":
 				var cols3: Array = MATERIAL_COLORS.sticky
 				_drips(rp, rn, rng, cols3[1])
