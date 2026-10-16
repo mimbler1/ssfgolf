@@ -72,10 +72,13 @@ def main():
         assert s == 200, (s, d)
         players.append({"name": name, "token": d["sessionToken"], "id": d["playerId"], "trophies": d["profile"]["trophies"]})
     print("created guests:", [p["name"] for p in players])
-    # The first player plays as a roster character.
+    # The first player plays as a starter roster character (owned by everyone; see the collection).
     s, me = call("GET", "/v1/me", token=players[0]["token"])
-    s, d = call("PATCH", "/v1/me", {"appearance": dict(me["appearance"], character="ace")}, players[0]["token"])
-    assert s == 200 and d["appearance"]["character"] == "ace", (s, d)
+    s, d = call("PATCH", "/v1/me", {"appearance": dict(me["appearance"], character="bjorn")}, players[0]["token"])
+    assert s == 200 and d["appearance"]["character"] == "bjorn", (s, d)
+    # A collectible the player does not own is refused.
+    s2, d2 = call("PATCH", "/v1/me", {"appearance": dict(me["appearance"], character="knight")}, players[0]["token"], ok=(403,))
+    assert s2 == 403 and d2["error"]["code"] == "not_owned", (s2, d2)
 
     time.sleep(2.0)  # let the game server register
     for p in players:
@@ -117,7 +120,7 @@ def main():
         emotes = [l for l in out.splitlines() if "EMOTE slot" in l and l.rstrip().endswith("id 7")]
         assert len(emotes) >= 2, "client %s saw emotes %s" % (name, emotes)
         # The first player's roster character travels backend -> server -> every client.
-        assert "=ace" in out, "client %s did not see the roster character" % name
+        assert "=bjorn" in out, "client %s did not see the roster character" % name
     assert codes == [0, 0], codes
 
     deadline = time.time() + 30
