@@ -1,0 +1,171 @@
+{
+ "assets": [
+  {
+   "out": "backdrop/sky.png",
+   "src": "picks/beach_sky_3101_x4.png",
+   "px": 8,
+   "colors": 56
+  },
+  {
+   "out": "backdrop/far.png",
+   "src": "picks/beach_far_3202.png",
+   "px": 8,
+   "colors": 40,
+   "cut_top": 40,
+   "keep_below": 31,
+   "cloud": [
+    170,
+    90
+   ]
+  },
+  {
+   "out": "backdrop/near.png",
+   "src": "picks/beach_near_3303.png",
+   "px": 8,
+   "colors": 40,
+   "cut_top": 40,
+   "keep_below": 22,
+   "cloud": [
+    170,
+    60
+   ],
+   "cloud_any": true,
+   "extend": [
+    24,
+    0.35
+   ]
+  },
+  {
+   "out": "terrain/soil.png",
+   "src": "picks/beach_soil_3402.png",
+   "px": 8,
+   "colors": 24,
+   "contrast": 0.62,
+   "brightness": 1.15,
+   "saturation": 1.4
+  },
+  {
+   "out": "terrain/rock.png",
+   "src": "picks/beach_rock_3502.png",
+   "px": 8,
+   "colors": 20
+  },
+  {
+   "out": "terrain/water.png",
+   "src": "picks/meadow_water_804.png",
+   "px": 8,
+   "colors": 16,
+   "saturation": 1.15
+  }
+ ],
+ "strips": [
+  {
+   "out": "terrain/cap_rock.png",
+   "from": "terrain/rock.png",
+   "rows": [
+    0,
+    12
+   ],
+   "ink_top": true
+  }
+ ],
+ "copy": [
+  {
+   "src": "hand/flag.png",
+   "out": "props/flag.png"
+  },
+  {
+   "src": "hand/caps/*.png",
+   "out": "terrain/cap_*.png"
+  },
+  {
+   "src": "hand/decor/*.png",
+   "out": "decor/*.png"
+  }
+ ],
+ "world": {
+  "id": "beach",
+  "art_scale": 2,
+  "ink": "#20141e",
+  "backdrop": [
+   {
+    "tex": "backdrop/sky.png",
+    "mode": "sky"
+   },
+   {
+    "tex": "backdrop/far.png",
+    "factor": 0.08,
+    "y": 140,
+    "scale": 4,
+    "mirror": true
+   },
+   {
+    "tex": "backdrop/near.png",
+    "factor": 0.2,
+    "y": 300,
+    "scale": 4,
+    "mirror": true
+   }
+  ],
+  "materials": {
+   "soil": {
+    "fill": "terrain/soil.png",
+    "depth_dark": 0.3,
+    "depth_px": 900
+   },
+   "grass": {
+    "cap": "terrain/cap_grass.png",
+    "cap_base": 11
+   },
+   "rough": {
+    "cap": "terrain/cap_grass.png",
+    "cap_base": 11
+   },
+   "sand": {
+    "cap": "terrain/cap_sand.png",
+    "cap_base": 4
+   },
+   "rock": {
+    "cap": "terrain/cap_rock.png",
+    "cap_base": 0
+   },
+   "wood": {
+    "cap": "terrain/cap_wood.png",
+    "cap_base": 0
+   },
+   "water": {
+    "fill": "terrain/water.png",
+    "foam": "#f2fdff",
+    "edge": "#1878b8",
+    "alpha": 0.88
+   },
+   "default": {
+    "cap": "terrain/cap_grass.png",
+    "cap_base": 11
+   }
+  },
+  "decor": {
+   "palm": "decor/palm_*.png",
+   "shell": "decor/shell_*.png",
+   "umbrella": "decor/umbrella_*.png",
+   "crab": "decor/crab_*.png",
+   "lighthouse": "decor/lighthouse_*.png",
+   "buoy": "decor/buoy_*.png",
+   "grass_tuft": "decor/grass_tuft_*.png",
+   "rock": "decor/rock_*.png",
+   "flag_small": "decor/flag_small_*.png"
+  },
+  "flag": {
+   "sheet": "props/flag.png",
+   "frames": 6,
+   "fps": 9,
+   "pivot": [
+    3,
+    66
+   ]
+  },
+  "decor_anchor": {
+   "buoy": "water"
+  }
+ }
+}

@@ -1,0 +1,135 @@
+[
+ {
+  "name": "snow_sky",
+  "w": 1536,
+  "h": 768,
+  "steps": 26,
+  "seeds": [
+   5101,
+   5102,
+   5103,
+   5104
+  ],
+  "style": "pixel art, 2d game stage background, crisp pixels, rich cel shading, vibrant saturated colors, highly detailed",
+  "prompt": "snowy alpine mountain range panorama, bright winter blue sky, soft white clouds, sunlit snowy peaks with blue and lavender shadows, empty foreground"
+ },
+ {
+  "name": "snow_far",
+  "w": 1536,
+  "h": 640,
+  "steps": 26,
+  "seeds": [
+   5201,
+   5202,
+   5203
+  ],
+  "style": "pixel art, 2d game stage background, crisp pixels, rich cel shading, vibrant saturated colors, highly detailed",
+  "prompt": "wide panorama of snowy hills covered with a dense forest of snow covered pine trees, a small wooden ski lodge, isolated on a plain flat red background"
+ },
+ {
+  "name": "snow_near",
+  "w": 1536,
+  "h": 512,
+  "steps": 26,
+  "seeds": [
+   5301,
+   5302,
+   5303
+  ],
+  "style": "pixel art, 2d game stage background, crisp pixels, rich cel shading, vibrant saturated colors, highly detailed",
+  "prompt": "wide panorama of deep snow drifts with dark green snowy pine trees and grey rocks, isolated on a plain flat red background"
+ },
+ {
+  "name": "snow_soil",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "tile": true,
+  "seeds": [
+   5401,
+   5402,
+   5403
+  ],
+  "style": "pixel art texture, crisp pixels, cel shading, detailed",
+  "prompt": "seamless tileable texture of frozen blue grey mountain rock cross-section, layered slate with frost and thin ice veins, side view, low contrast, platform game ground fill"
+ },
+ {
+  "name": "snow_rock",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "tile": true,
+  "seeds": [
+   5501,
+   5502
+  ],
+  "style": "pixel art texture, crisp pixels, cel shading, detailed",
+  "prompt": "seamless tileable texture of grey granite stone blocks with patches of snow and frost, even lighting"
+ },
+ {
+  "name": "snow_water",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "tile": true,
+  "seeds": [
+   5601,
+   5602,
+   5603
+  ],
+  "style": "pixel art texture, crisp pixels, cel shading, detailed",
+  "prompt": "seamless tileable texture of cold dark blue icy lake water with small floating ice shards and pale ripples, even lighting"
+ },
+ {
+  "name": "snow_ice",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "tile": true,
+  "seeds": [
+   5611,
+   5612
+  ],
+  "style": "pixel art texture, crisp pixels, cel shading, detailed",
+  "prompt": "seamless tileable texture of glassy clear cyan blue ice with cracks and bright white reflections, even lighting"
+ },
+ {
+  "name": "snow_pine",
+  "w": 768,
+  "h": 1280,
+  "steps": 26,
+  "seeds": [
+   5801,
+   5802,
+   5803,
+   5804
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "single tall dark green pine fir tree with heavy snow on its branches, isolated on a plain flat red background"
+ },
+ {
+  "name": "snow_snowman",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "seeds": [
+   5811,
+   5812
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "single cute snowman with carrot nose, red scarf and stick arms, isolated on a plain flat red background"
+ },
+ {
+  "name": "snow_props",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "seeds": [
+   5821,
+   5822,
+   5823
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "sprite sheet of winter props: blue ice blocks, ice crystal spikes, snowy grey boulders, frozen bushes, arranged in a grid, isolated on a plain flat red background"
+ }
+]

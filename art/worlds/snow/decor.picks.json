@@ -1,0 +1,15 @@
+[
+ {"out": "pine_a", "src": "art/worlds/snow/picks/snow_pine2_5862.png", "height": 120, "colors": 32, "cut_bg": 20, "unshadow": true},
+ {"out": "pine_b", "src": "art/worlds/snow/picks/snow_pine2_5864.png", "height": 150, "colors": 32, "cut_bg": 20},
+ {"out": "pine_c", "src": "art/worlds/snow/picks/snow_pine2_5862.png", "height": 92, "colors": 32, "cut_bg": 20, "unshadow": true, "flip": true},
+ {"out": "snowman_a", "src": "art/worlds/snow/picks/snow_snowman_5811.png", "crop": [345, 100, 800, 880], "height": 64, "cut_bg": 30, "unshadow": true},
+ {"out": "ice_chunk_a", "src": "art/worlds/snow/picks/snow_props_5821.png", "crop": [216, 0, 400, 144], "px": 8, "cut_bg": 50, "fringe_hue": true},
+ {"out": "ice_chunk_b", "src": "art/worlds/snow/picks/snow_props_5821.png", "crop": [264, 272, 520, 448], "px": 8, "cut_bg": 50, "fringe_hue": true},
+ {"out": "ice_chunk_c", "src": "art/worlds/snow/picks/snow_props_5821.png", "crop": [208, 784, 456, 1000], "px": 8, "cut_bg": 50, "fringe_hue": true},
+ {"out": "icicle_a", "src": "art/worlds/snow/picks/snow_props_5823.png", "crop": [544, 784, 640, 1016], "px": 7, "cut_bg": 50, "fringe_hue": true},
+ {"out": "icicle_b", "src": "art/worlds/snow/picks/snow_props_5823.png", "crop": [664, 784, 752, 1016], "px": 7, "cut_bg": 50, "fringe_hue": true},
+ {"out": "icicle_c", "src": "art/worlds/snow/picks/snow_props_5823.png", "crop": [464, 808, 536, 1016], "px": 7, "cut_bg": 50, "fringe_hue": true},
+ {"out": "rock_a", "src": "art/worlds/snow/picks/beach_props_3821.png", "crop": [800, 288, 984, 448], "px": 8, "snowcap": true},
+ {"out": "rock_b", "src": "art/worlds/snow/picks/beach_props_3821.png", "crop": [584, 304, 768, 456], "px": 8, "snowcap": true},
+ {"out": "rock_c", "src": "art/worlds/snow/picks/beach_props_3821.png", "crop": [840, 816, 984, 976], "px": 8, "snowcap": true}
+]

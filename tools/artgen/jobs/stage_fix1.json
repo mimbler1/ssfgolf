@@ -1,0 +1,85 @@
+[
+ {
+  "name": "beach_palm2",
+  "w": 768,
+  "h": 1024,
+  "steps": 26,
+  "seeds": [
+   3861,
+   3862,
+   3863,
+   3864
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "one single coconut palm tree standing alone, slightly curved trunk, green fronds, full tree visible with empty space around it, game sprite, isolated on a plain flat white background"
+ },
+ {
+  "name": "beach_umbrella2",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "seeds": [
+   3871,
+   3872,
+   3873
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "one red and white striped beach parasol, straight side view, open canopy on a tall pole, no shadow, game sprite, isolated on a plain flat white background"
+ },
+ {
+  "name": "beach_water2",
+  "w": 1024,
+  "h": 1024,
+  "tile": true,
+  "steps": 26,
+  "seeds": [
+   3881,
+   3882,
+   3883
+  ],
+  "style": "pixel art, 2d side view game asset, crisp pixels, clean dark outlines, rich cel shading, vibrant saturated colors, detailed, professional sprite art, platform fighter stage art",
+  "prompt": "seamless tileable texture of clear bright turquoise tropical sea water with light ripples and white sparkle highlights, even lighting"
+ },
+ {
+  "name": "snow_pine2",
+  "w": 768,
+  "h": 1280,
+  "steps": 26,
+  "seeds": [
+   5861,
+   5862,
+   5863,
+   5864
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "one single dark green fir tree with snow on its branches, full tree visible, no ground, no snowfall, game sprite, isolated on a plain flat red background"
+ },
+ {
+  "name": "snow_water2",
+  "w": 1024,
+  "h": 1024,
+  "tile": true,
+  "steps": 26,
+  "seeds": [
+   5881,
+   5882,
+   5883
+  ],
+  "style": "pixel art, 2d side view game asset, crisp pixels, clean dark outlines, rich cel shading, vibrant saturated colors, detailed, professional sprite art, platform fighter stage art",
+  "prompt": "seamless tileable texture of cold deep blue lake water with light ripples and pale white sparkle highlights, even lighting"
+ },
+ {
+  "name": "spin_water2",
+  "w": 1024,
+  "h": 1024,
+  "tile": true,
+  "steps": 26,
+  "seeds": [
+   7881,
+   7882,
+   7883
+  ],
+  "style": "pixel art, 2d side view game asset, crisp pixels, clean dark outlines, rich cel shading, vibrant saturated colors, detailed, professional sprite art, platform fighter stage art",
+  "prompt": "seamless tileable texture of clear blue pond water reflecting a warm sunset sky with light ripples and pale orange sparkle highlights, even lighting"
+ }
+]

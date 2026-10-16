@@ -170,12 +170,37 @@ func _build_art_decor(parent: Node2D) -> void:
 		if variants.is_empty():
 			continue
 		var pos := Vector2(float(d.get("x", 0)), float(d.get("y", 0)))
+		var t := art.tex(str(variants[rng.randi() % variants.size()]))
+		if t == null:
+			continue
+		var flip := rng.randf() < 0.5
+		# world.json "decor_anchor": ground (default) | free (at x, y) | water (floats on the
+		# water surface under x) | ceiling (hangs from the surface above; ground if none).
+		var anchor := str((art.data.get("decor_anchor", {}) as Dictionary).get(str(d.get("type", "")), "ground"))
+		if anchor == "free":
+			parent.add_child(art.ground_sprite(t, pos, flip))
+			continue
+		if anchor == "water":
+			var placed := false
+			for z in terrain.zones:
+				var zr: Rect2 = z["rect"]
+				if z["type"] == "water" and pos.x >= zr.position.x and pos.x <= zr.end.x:
+					parent.add_child(art.ground_sprite(t, Vector2(pos.x, zr.position.y + art.scale * 4.0), flip))
+					placed = true
+					break
+			if placed:
+				continue
+		if anchor == "ceiling":
+			var up := terrain.raycast(pos + Vector2(0, 40), Vector2.UP, 400.0)
+			if up.hit and up.normal.y > 0.5:
+				var sp := art.ground_sprite(t, up.pos, flip)
+				sp.offset = Vector2(-t.get_width() * 0.5, 0)
+				parent.add_child(sp)
+				continue
 		var hit := terrain.raycast(pos + Vector2(0, -400), Vector2.DOWN, 1400.0)
 		if hit.hit:
 			pos = hit.pos
-		var t := art.tex(str(variants[rng.randi() % variants.size()]))
-		if t:
-			parent.add_child(art.ground_sprite(t, pos + Vector2(0, art.scale * 3.0), rng.randf() < 0.5))
+		parent.add_child(art.ground_sprite(t, pos + Vector2(0, art.scale * 3.0), flip))
 
 
 ## Finds terrain edges lying on the world's left/right bounds and extends them outward as flat

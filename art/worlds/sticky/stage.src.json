@@ -1,0 +1,184 @@
+{
+ "assets": [
+  {
+   "out": "backdrop/sky.png",
+   "src": "picks/sticky_sky_4102_x4.png",
+   "px": 8,
+   "colors": 56
+  },
+  {
+   "out": "backdrop/far.png",
+   "src": "picks/sticky_far_4202.png",
+   "px": 8,
+   "colors": 40,
+   "cut_top": 40,
+   "cloud": [
+    160,
+    70
+   ],
+   "cloud_any": true,
+   "extend": [
+    24,
+    0.5
+   ]
+  },
+  {
+   "out": "backdrop/near.png",
+   "src": "picks/sticky_near_4302.png",
+   "crop": [
+    0,
+    232,
+    1536,
+    456
+   ],
+   "px": 8,
+   "colors": 40,
+   "cut_top": 40,
+   "cloud": [
+    140,
+    70
+   ],
+   "cloud_any": true,
+   "extend": [
+    30,
+    0.6
+   ]
+  },
+  {
+   "out": "terrain/soil.png",
+   "src": "picks/sticky_soil_4401.png",
+   "px": 8,
+   "colors": 24,
+   "contrast": 0.7,
+   "brightness": 1.2
+  },
+  {
+   "out": "terrain/rock.png",
+   "src": "picks/sticky_rock_4502.png",
+   "px": 8,
+   "colors": 20
+  },
+  {
+   "out": "terrain/acid.png",
+   "src": "picks/sticky_acid_4603.png",
+   "px": 8,
+   "colors": 16
+  },
+  {
+   "out": "terrain/water.png",
+   "src": "picks/sticky_water_4611.png",
+   "px": 8,
+   "colors": 16
+  }
+ ],
+ "strips": [
+  {
+   "out": "terrain/cap_rock.png",
+   "from": "terrain/rock.png",
+   "rows": [
+    0,
+    12
+   ],
+   "ink_top": true
+  }
+ ],
+ "copy": [
+  {
+   "src": "hand/flag.png",
+   "out": "props/flag.png"
+  },
+  {
+   "src": "hand/caps/*.png",
+   "out": "terrain/cap_*.png"
+  },
+  {
+   "src": "hand/decor/*.png",
+   "out": "decor/*.png"
+  }
+ ],
+ "world": {
+  "id": "sticky",
+  "art_scale": 2,
+  "ink": "#20141e",
+  "backdrop": [
+   {
+    "tex": "backdrop/sky.png",
+    "mode": "sky"
+   },
+   {
+    "tex": "backdrop/far.png",
+    "factor": 0.1,
+    "y": 170,
+    "scale": 4,
+    "mirror": true
+   },
+   {
+    "tex": "backdrop/near.png",
+    "factor": 0.22,
+    "y": 330,
+    "scale": 4,
+    "mirror": true
+   }
+  ],
+  "materials": {
+   "soil": {
+    "fill": "terrain/soil.png",
+    "depth_dark": 0.35,
+    "depth_px": 900
+   },
+   "grass": {
+    "cap": "terrain/cap_grass.png",
+    "cap_base": 11
+   },
+   "rough": {
+    "cap": "terrain/cap_grass.png",
+    "cap_base": 11
+   },
+   "rock": {
+    "cap": "terrain/cap_rock.png",
+    "cap_base": 0
+   },
+   "wood": {
+    "cap": "terrain/cap_wood.png",
+    "cap_base": 0
+   },
+   "sticky": {
+    "cap": "terrain/cap_sticky.png",
+    "cap_base": 5
+   },
+   "acid": {
+    "fill": "terrain/acid.png",
+    "foam": "#efffb8",
+    "edge": "#2a7a2a",
+    "alpha": 0.95
+   },
+   "water": {
+    "fill": "terrain/water.png",
+    "foam": "#f3d9ff",
+    "edge": "#4a1f86",
+    "alpha": 0.9
+   },
+   "default": {
+    "cap": "terrain/cap_grass.png",
+    "cap_base": 11
+   }
+  },
+  "decor": {
+   "mushroom": "decor/mushroom_*.png",
+   "vine": "decor/vine_*.png",
+   "crystal": "decor/crystal_*.png"
+  },
+  "flag": {
+   "sheet": "props/flag.png",
+   "frames": 6,
+   "fps": 9,
+   "pivot": [
+    3,
+    66
+   ]
+  },
+  "decor_anchor": {
+   "vine": "ceiling"
+  }
+ }
+}

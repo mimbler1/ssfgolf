@@ -1,0 +1,42 @@
+[
+ {
+  "out": "beach_sky_3101_x4",
+  "theme": "beach",
+  "src": "art/worlds/beach/picks/beach_sky_3101.png",
+  "strength": 0.4,
+  "factor": 4,
+  "prompt": "tropical seaside sky panorama, bright blue sky, huge fluffy white cumulus clouds with soft lavender shading, calm turquoise sea horizon"
+ },
+ {
+  "out": "snow_sky_5102_x4",
+  "theme": "snow",
+  "src": "art/worlds/snow/picks/snow_sky_5102.png",
+  "strength": 0.4,
+  "factor": 4,
+  "prompt": "snowy alpine mountain range panorama, bright winter blue sky, white clouds, sunlit snowy peaks with lavender shadows"
+ },
+ {
+  "out": "sticky_sky_4102_x4",
+  "theme": "sticky",
+  "src": "art/worlds/sticky/picks/sticky_sky_4102.png",
+  "strength": 0.4,
+  "factor": 4,
+  "prompt": "alien slime jungle at purple dusk, magenta sky with pink clouds, big pale moon, purple mountains, giant mushroom silhouettes"
+ },
+ {
+  "out": "spin_sky_7101_x4",
+  "theme": "spin",
+  "src": "art/worlds/spin/picks/spin_sky_7101.png",
+  "strength": 0.4,
+  "factor": 4,
+  "prompt": "warm sunset countryside panorama, orange and pink sky with glowing clouds, ferris wheel and windmill, fields"
+ },
+ {
+  "out": "lab_sky_6103_x4",
+  "theme": "lab",
+  "src": "art/worlds/lab/picks/lab_sky_6103.png",
+  "strength": 0.4,
+  "factor": 4,
+  "prompt": "futuristic science laboratory complex at night, starry navy sky, big planet, glowing domes and antenna towers, distant city lights"
+ }
+]

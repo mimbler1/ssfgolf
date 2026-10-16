@@ -1,0 +1,13 @@
+[
+ {"out": "windmill_a", "src": "art/worlds/spin/picks/spin_windmill_7802.png", "height": 150, "colors": 40, "cut_bg": 30, "unshadow": true},
+ {"out": "windmill_b", "src": "art/worlds/spin/picks/spin_windmill_7803.png", "crop": [150, 0, 768, 1280], "height": 140, "colors": 40, "cut_bg": 30},
+ {"out": "windmill_c", "src": "art/worlds/spin/picks/spin_windmill_7804.png", "crop": [0, 0, 384, 560], "height": 70, "colors": 40, "cut_bg": 30, "unshadow": true},
+ {"out": "pinwheel_a", "src": "art/worlds/spin/picks/spin_pinwheel_7811.png", "height": 64, "cut_bg": 30, "unshadow": true},
+ {"out": "pinwheel_b", "src": "art/worlds/spin/picks/spin_pinwheel_7812.png", "height": 60, "cut_bg": 30, "unshadow": true},
+ {"out": "pinwheel_c", "src": "art/worlds/spin/picks/spin_pinwheel_7813.png", "height": 62, "cut_bg": 30, "unshadow": true},
+ {"out": "balloon_b", "src": "art/worlds/spin/picks/spin_balloon_7823.png", "height": 130, "colors": 40, "cut_bg": 30, "unshadow": true},
+ {"out": "gear_a", "src": "art/worlds/spin/picks/spin_gear_7831.png", "height": 64, "cut_bg": 30, "unshadow": true},
+ {"out": "gear_b", "src": "art/worlds/spin/picks/spin_gear_7832.png", "height": 70, "cut_bg": 30, "unshadow": true},
+ {"out": "bush_a", "src": "art/worlds/spin/picks/spin_bush_7841.png", "height": 48, "cut_bg": 30, "unshadow": true},
+ {"out": "bush_b", "src": "art/worlds/spin/picks/spin_bush_7841.png", "height": 36, "cut_bg": 30, "unshadow": true, "flip": true}
+]

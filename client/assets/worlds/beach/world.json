@@ -1,0 +1,116 @@
+{
+ "id": "beach",
+ "art_scale": 2,
+ "ink": "#20141e",
+ "backdrop": [
+  {
+   "tex": "backdrop/sky.png",
+   "mode": "sky"
+  },
+  {
+   "tex": "backdrop/far.png",
+   "factor": 0.08,
+   "y": 140,
+   "scale": 4,
+   "mirror": true
+  },
+  {
+   "tex": "backdrop/near.png",
+   "factor": 0.2,
+   "y": 300,
+   "scale": 4,
+   "mirror": true
+  }
+ ],
+ "materials": {
+  "soil": {
+   "fill": "terrain/soil.png",
+   "depth_dark": 0.3,
+   "depth_px": 900
+  },
+  "grass": {
+   "cap": "terrain/cap_grass.png",
+   "cap_base": 11
+  },
+  "rough": {
+   "cap": "terrain/cap_grass.png",
+   "cap_base": 11
+  },
+  "sand": {
+   "cap": "terrain/cap_sand.png",
+   "cap_base": 4
+  },
+  "rock": {
+   "cap": "terrain/cap_rock.png",
+   "cap_base": 0
+  },
+  "wood": {
+   "cap": "terrain/cap_wood.png",
+   "cap_base": 0
+  },
+  "water": {
+   "fill": "terrain/water.png",
+   "foam": "#f2fdff",
+   "edge": "#1878b8",
+   "alpha": 0.88
+  },
+  "default": {
+   "cap": "terrain/cap_grass.png",
+   "cap_base": 11
+  }
+ },
+ "decor": {
+  "palm": [
+   "decor/palm_a.png",
+   "decor/palm_b.png",
+   "decor/palm_c.png"
+  ],
+  "shell": [
+   "decor/shell_a.png",
+   "decor/shell_b.png",
+   "decor/shell_c.png",
+   "decor/shell_d.png",
+   "decor/shell_e.png",
+   "decor/shell_f.png"
+  ],
+  "umbrella": [
+   "decor/umbrella_a.png"
+  ],
+  "crab": [
+   "decor/crab_a.png"
+  ],
+  "lighthouse": [
+   "decor/lighthouse_a.png"
+  ],
+  "buoy": [
+   "decor/buoy_a.png"
+  ],
+  "grass_tuft": [
+   "decor/grass_tuft_a.png",
+   "decor/grass_tuft_b.png",
+   "decor/grass_tuft_c.png"
+  ],
+  "rock": [
+   "decor/rock_a.png",
+   "decor/rock_b.png",
+   "decor/rock_c.png",
+   "decor/rock_d.png"
+  ],
+  "flag_small": [
+   "decor/flag_small_a.png",
+   "decor/flag_small_b.png"
+  ]
+ },
+ "flag": {
+  "sheet": "props/flag.png",
+  "frames": 6,
+  "fps": 9,
+  "pivot": [
+   3,
+   66
+  ]
+ },
+ "decor_anchor": {
+  "buoy": "water"
+ }
+}

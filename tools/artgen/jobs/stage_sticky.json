@@ -1,0 +1,149 @@
+[
+ {
+  "name": "sticky_sky",
+  "w": 1536,
+  "h": 768,
+  "steps": 26,
+  "seeds": [
+   4101,
+   4102,
+   4103,
+   4104
+  ],
+  "style": "pixel art, 2d game stage background, crisp pixels, rich cel shading, vibrant saturated colors, highly detailed",
+  "prompt": "alien slime jungle at purple dusk, magenta and violet sky with pink glowing clouds, huge pale moon, distant purple mountains and giant mushroom silhouettes, empty foreground"
+ },
+ {
+  "name": "sticky_far",
+  "w": 1536,
+  "h": 640,
+  "steps": 26,
+  "seeds": [
+   4201,
+   4202,
+   4203
+  ],
+  "style": "pixel art, 2d game stage background, crisp pixels, rich cel shading, vibrant saturated colors, highly detailed",
+  "prompt": "wide panorama of a forest of giant glowing purple and teal mushrooms and twisted jungle trees with hanging vines, isolated on a plain flat white background"
+ },
+ {
+  "name": "sticky_near",
+  "w": 1536,
+  "h": 512,
+  "steps": 26,
+  "seeds": [
+   4301,
+   4302,
+   4303
+  ],
+  "style": "pixel art, 2d game stage background, crisp pixels, rich cel shading, vibrant saturated colors, highly detailed",
+  "prompt": "wide panorama of dense dark swamp jungle foliage, big ferns, glowing mushrooms and hanging vines dripping purple slime, isolated on a plain flat white background"
+ },
+ {
+  "name": "sticky_soil",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "tile": true,
+  "seeds": [
+   4401,
+   4402,
+   4403
+  ],
+  "style": "pixel art texture, crisp pixels, cel shading, detailed",
+  "prompt": "seamless tileable texture of dark swamp earth cross-section, deep brown and plum soil with twisted roots, small stones and faint glowing purple spores, side view, low contrast, platform game ground fill"
+ },
+ {
+  "name": "sticky_rock",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "tile": true,
+  "seeds": [
+   4501,
+   4502
+  ],
+  "style": "pixel art texture, crisp pixels, cel shading, detailed",
+  "prompt": "seamless tileable texture of dark mossy purple grey stone blocks with teal moss, even lighting"
+ },
+ {
+  "name": "sticky_acid",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "tile": true,
+  "seeds": [
+   4601,
+   4602,
+   4603
+  ],
+  "style": "pixel art texture, crisp pixels, cel shading, detailed",
+  "prompt": "seamless tileable texture of bubbling toxic lime green slime liquid with round bubbles and bright highlights, even lighting"
+ },
+ {
+  "name": "sticky_water",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "tile": true,
+  "seeds": [
+   4611,
+   4612
+  ],
+  "style": "pixel art texture, crisp pixels, cel shading, detailed",
+  "prompt": "seamless tileable texture of murky purple swamp water with gentle ripples and pink highlights, even lighting"
+ },
+ {
+  "name": "sticky_goo",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "tile": true,
+  "seeds": [
+   4621,
+   4622
+  ],
+  "style": "pixel art texture, crisp pixels, cel shading, detailed",
+  "prompt": "seamless tileable texture of glossy thick purple slime goo with shiny white highlights and bubbles, even lighting"
+ },
+ {
+  "name": "sticky_mushroom",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "seeds": [
+   4801,
+   4802,
+   4803,
+   4804
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "single giant glowing fantasy mushroom with purple spotted cap and pale stem, small mushrooms at its base, isolated on a plain flat white background"
+ },
+ {
+  "name": "sticky_vine",
+  "w": 768,
+  "h": 1280,
+  "steps": 26,
+  "seeds": [
+   4811,
+   4812,
+   4813
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "single tall curly jungle vine plant growing upward with big leaves and purple bulbs, isolated on a plain flat white background"
+ },
+ {
+  "name": "sticky_crystal",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "seeds": [
+   4821,
+   4822,
+   4823
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "single cluster of glowing purple and teal crystals on a small rock, isolated on a plain flat white background"
+ }
+]

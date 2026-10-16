@@ -1,0 +1,134 @@
+[
+ {
+  "name": "lab_sky",
+  "w": 1536,
+  "h": 768,
+  "steps": 26,
+  "seeds": [
+   6101,
+   6102,
+   6103,
+   6104
+  ],
+  "style": "pixel art, 2d game stage background, crisp pixels, rich cel shading, vibrant saturated colors, highly detailed",
+  "prompt": "futuristic science laboratory complex at night, dark navy sky with stars and a big moon, glowing domes, radio telescope dish and antenna towers, distant city lights, empty foreground"
+ },
+ {
+  "name": "lab_far",
+  "w": 1536,
+  "h": 640,
+  "steps": 26,
+  "seeds": [
+   6201,
+   6202,
+   6203
+  ],
+  "style": "pixel art, 2d game stage background, crisp pixels, rich cel shading, vibrant saturated colors, highly detailed",
+  "prompt": "wide panorama of a sci-fi research facility at night, steel domes, towers, big pipes and tanks with glowing cyan windows, isolated on a plain flat white background"
+ },
+ {
+  "name": "lab_near",
+  "w": 1536,
+  "h": 512,
+  "steps": 26,
+  "seeds": [
+   6301,
+   6302,
+   6303
+  ],
+  "style": "pixel art, 2d game stage background, crisp pixels, rich cel shading, vibrant saturated colors, highly detailed",
+  "prompt": "wide panorama of industrial laboratory machinery at night, big glass tanks of glowing green liquid, pipes, catwalk railings and blinking consoles, isolated on a plain flat white background"
+ },
+ {
+  "name": "lab_soil",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "tile": true,
+  "seeds": [
+   6401,
+   6402,
+   6403
+  ],
+  "style": "pixel art texture, crisp pixels, cel shading, detailed",
+  "prompt": "seamless tileable texture of dark blue grey sci-fi metal wall panels with rivets, seams, small vents and faint cyan lights, even lighting, low contrast"
+ },
+ {
+  "name": "lab_floor",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "tile": true,
+  "seeds": [
+   6501,
+   6502
+  ],
+  "style": "pixel art texture, crisp pixels, cel shading, detailed",
+  "prompt": "seamless tileable texture of steel diamond plate floor tiles with rivets and yellow black hazard stripes, even lighting"
+ },
+ {
+  "name": "lab_acid",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "tile": true,
+  "seeds": [
+   6601,
+   6602,
+   6603
+  ],
+  "style": "pixel art texture, crisp pixels, cel shading, detailed",
+  "prompt": "seamless tileable texture of glowing radioactive green chemical liquid with bubbles and bright highlights, even lighting"
+ },
+ {
+  "name": "lab_console",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "seeds": [
+   6801,
+   6802,
+   6803
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "single sci-fi computer console terminal with glowing screens, buttons and levers, isolated on a plain flat white background"
+ },
+ {
+  "name": "lab_vat",
+  "w": 768,
+  "h": 1280,
+  "steps": 26,
+  "seeds": [
+   6811,
+   6812,
+   6813
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "single tall glass chemical vat tank full of glowing green liquid with metal pipes and valves, isolated on a plain flat white background"
+ },
+ {
+  "name": "lab_fan",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "seeds": [
+   6821,
+   6822
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "single big industrial fan in a metal frame on a stand, side view, isolated on a plain flat white background"
+ },
+ {
+  "name": "lab_lamp",
+  "w": 768,
+  "h": 1280,
+  "steps": 26,
+  "seeds": [
+   6831,
+   6832,
+   6833
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "single tall sci-fi lamp post with a glowing cyan light on top, metal pole, isolated on a plain flat white background"
+ }
+]

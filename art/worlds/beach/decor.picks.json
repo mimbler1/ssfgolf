@@ -1,0 +1,19 @@
+[
+ {"out": "shell_a", "src": "art/worlds/beach/picks/beach_props_3821.png", "crop": [464, 48, 624, 176], "height": 11, "unshadow": true},
+ {"out": "shell_b", "src": "art/worlds/beach/picks/beach_props_3821.png", "crop": [848, 56, 1000, 168], "height": 10, "unshadow": true},
+ {"out": "shell_c", "src": "art/worlds/beach/picks/beach_props_3821.png", "crop": [32, 784, 224, 976], "height": 12, "unshadow": true},
+ {"out": "shell_d", "src": "art/worlds/beach/picks/beach_props_3822.png", "crop": [696, 32, 832, 160], "height": 11, "unshadow": true},
+ {"out": "shell_e", "src": "art/worlds/beach/picks/beach_props_3822.png", "crop": [744, 456, 872, 560], "height": 10, "unshadow": true},
+ {"out": "shell_f", "src": "art/worlds/beach/picks/beach_props_3822.png", "crop": [840, 160, 976, 264], "height": 10, "unshadow": true},
+ {"out": "rock_a", "src": "art/worlds/beach/picks/beach_props_3821.png", "crop": [800, 288, 984, 448], "px": 8},
+ {"out": "rock_b", "src": "art/worlds/beach/picks/beach_props_3821.png", "crop": [584, 304, 768, 456], "px": 8},
+ {"out": "rock_c", "src": "art/worlds/beach/picks/beach_props_3821.png", "crop": [680, 592, 848, 784], "px": 8},
+ {"out": "rock_d", "src": "art/worlds/beach/picks/beach_props_3821.png", "crop": [840, 816, 984, 976], "px": 8},
+ {"out": "lighthouse_a", "src": "art/worlds/beach/picks/beach_lighthouse_3812.png", "height": 150, "colors": 40, "cut_bg": 30},
+ {"out": "crab_a", "src": "art/worlds/beach/picks/beach_crab_3841.png", "crop": [300, 300, 760, 720], "height": 18, "cut_bg": 30, "unshadow": true},
+ {"out": "buoy_a", "src": "art/worlds/beach/picks/beach_buoy_3851.png", "crop": [270, 0, 500, 1280], "height": 175, "cut_bg": 30, "unshadow": true},
+ {"out": "palm_a", "src": "art/worlds/beach/picks/beach_palm2_3862.png", "height": 140, "colors": 36, "cut_bg": 25, "unshadow": true},
+ {"out": "palm_b", "src": "art/worlds/beach/picks/beach_palm2_3863.png", "height": 120, "colors": 36, "cut_bg": 25, "unshadow": true, "flip": true},
+ {"out": "palm_c", "src": "art/worlds/beach/picks/beach_palm2_3862.png", "height": 112, "colors": 36, "cut_bg": 25, "unshadow": true, "flip": true},
+ {"out": "umbrella_a", "src": "art/worlds/beach/picks/beach_umbrella2_3871.png", "height": 72, "colors": 32, "cut_bg": 12, "unshadow": true}
+]

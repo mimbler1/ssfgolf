@@ -1,0 +1,164 @@
+{
+ "assets": [
+  {
+   "out": "backdrop/sky.png",
+   "src": "picks/snow_sky_5102_x4.png",
+   "px": 8,
+   "colors": 56
+  },
+  {
+   "out": "backdrop/far.png",
+   "src": "picks/snow_near_5301.png",
+   "px": 8,
+   "colors": 40,
+   "cut_top": 30,
+   "cloud": [
+    200,
+    40
+   ]
+  },
+  {
+   "out": "backdrop/near.png",
+   "src": "picks/snow_far_5203.png",
+   "px": 8,
+   "colors": 40,
+   "cut_top": 60,
+   "extend": [
+    32,
+    0.25
+   ]
+  },
+  {
+   "out": "terrain/soil.png",
+   "src": "picks/snow_soil_5401.png",
+   "px": 8,
+   "colors": 24,
+   "contrast": 0.7,
+   "brightness": 1.12
+  },
+  {
+   "out": "terrain/rock.png",
+   "src": "picks/snow_rock_5502.png",
+   "px": 8,
+   "colors": 20
+  },
+  {
+   "out": "terrain/water.png",
+   "src": "picks/meadow_water_804.png",
+   "px": 8,
+   "colors": 16,
+   "contrast": 1.0,
+   "brightness": 0.78,
+   "saturation": 0.8,
+   "haze": [
+    "#2f6fc8",
+    0.3
+   ]
+  }
+ ],
+ "strips": [
+  {
+   "out": "terrain/cap_rock.png",
+   "from": "terrain/rock.png",
+   "rows": [
+    0,
+    12
+   ],
+   "ink_top": true
+  }
+ ],
+ "copy": [
+  {
+   "src": "hand/flag.png",
+   "out": "props/flag.png"
+  },
+  {
+   "src": "hand/caps/*.png",
+   "out": "terrain/cap_*.png"
+  },
+  {
+   "src": "hand/decor/*.png",
+   "out": "decor/*.png"
+  }
+ ],
+ "world": {
+  "id": "snow",
+  "art_scale": 2,
+  "ink": "#20141e",
+  "backdrop": [
+   {
+    "tex": "backdrop/sky.png",
+    "mode": "sky"
+   },
+   {
+    "tex": "backdrop/far.png",
+    "factor": 0.08,
+    "y": 150,
+    "scale": 4,
+    "mirror": true
+   },
+   {
+    "tex": "backdrop/near.png",
+    "factor": 0.18,
+    "y": 330,
+    "scale": 4,
+    "mirror": true
+   }
+  ],
+  "materials": {
+   "soil": {
+    "fill": "terrain/soil.png",
+    "depth_dark": 0.3,
+    "depth_px": 900
+   },
+   "snow": {
+    "cap": "terrain/cap_snow.png",
+    "cap_base": 7
+   },
+   "grass": {
+    "cap": "terrain/cap_snow.png",
+    "cap_base": 7
+   },
+   "ice": {
+    "cap": "terrain/cap_ice.png",
+    "cap_base": 3
+   },
+   "rock": {
+    "cap": "terrain/cap_rock.png",
+    "cap_base": 0
+   },
+   "water": {
+    "fill": "terrain/water.png",
+    "foam": "#e8f6ff",
+    "edge": "#1e5a9a",
+    "alpha": 0.9
+   },
+   "default": {
+    "cap": "terrain/cap_snow.png",
+    "cap_base": 7
+   }
+  },
+  "decor": {
+   "pine": "decor/pine_*.png",
+   "snowman": "decor/snowman_*.png",
+   "ice_chunk": "decor/ice_chunk_*.png",
+   "icicle": "decor/icicle_*.png",
+   "flag_slalom": "decor/flag_slalom_*.png",
+   "summit_flag": "decor/summit_flag_*.png",
+   "rock": "decor/rock_*.png",
+   "flag_small": "decor/flag_small_*.png"
+  },
+  "flag": {
+   "sheet": "props/flag.png",
+   "frames": 6,
+   "fps": 9,
+   "pivot": [
+    3,
+    66
+   ]
+  },
+  "decor_anchor": {
+   "icicle": "ceiling"
+  }
+ }
+}

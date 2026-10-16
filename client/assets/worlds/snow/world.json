@@ -1,0 +1,105 @@
+{
+ "id": "snow",
+ "art_scale": 2,
+ "ink": "#20141e",
+ "backdrop": [
+  {
+   "tex": "backdrop/sky.png",
+   "mode": "sky"
+  },
+  {
+   "tex": "backdrop/far.png",
+   "factor": 0.08,
+   "y": 150,
+   "scale": 4,
+   "mirror": true
+  },
+  {
+   "tex": "backdrop/near.png",
+   "factor": 0.18,
+   "y": 330,
+   "scale": 4,
+   "mirror": true
+  }
+ ],
+ "materials": {
+  "soil": {
+   "fill": "terrain/soil.png",
+   "depth_dark": 0.3,
+   "depth_px": 900
+  },
+  "snow": {
+   "cap": "terrain/cap_snow.png",
+   "cap_base": 7
+  },
+  "grass": {
+   "cap": "terrain/cap_snow.png",
+   "cap_base": 7
+  },
+  "ice": {
+   "cap": "terrain/cap_ice.png",
+   "cap_base": 3
+  },
+  "rock": {
+   "cap": "terrain/cap_rock.png",
+   "cap_base": 0
+  },
+  "water": {
+   "fill": "terrain/water.png",
+   "foam": "#e8f6ff",
+   "edge": "#1e5a9a",
+   "alpha": 0.9
+  },
+  "default": {
+   "cap": "terrain/cap_snow.png",
+   "cap_base": 7
+  }
+ },
+ "decor": {
+  "pine": [
+   "decor/pine_a.png",
+   "decor/pine_b.png",
+   "decor/pine_c.png"
+  ],
+  "snowman": [
+   "decor/snowman_a.png"
+  ],
+  "ice_chunk": [
+   "decor/ice_chunk_a.png",
+   "decor/ice_chunk_b.png",
+   "decor/ice_chunk_c.png"
+  ],
+  "icicle": [
+   "decor/icicle_a.png",
+   "decor/icicle_b.png",
+   "decor/icicle_c.png"
+  ],
+  "flag_slalom": [
+   "decor/flag_slalom_blue.png",
+   "decor/flag_slalom_red.png"
+  ],
+  "summit_flag": [
+   "decor/summit_flag_a.png"
+  ],
+  "rock": [
+   "decor/rock_a.png",
+   "decor/rock_b.png",
+   "decor/rock_c.png"
+  ],
+  "flag_small": [
+   "decor/flag_small_a.png"
+  ]
+ },
+ "flag": {
+  "sheet": "props/flag.png",
+  "frames": 6,
+  "fps": 9,
+  "pivot": [
+   3,
+   66
+  ]
+ },
+ "decor_anchor": {
+  "icicle": "ceiling"
+ }
+}

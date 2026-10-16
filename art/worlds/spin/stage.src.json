@@ -1,0 +1,179 @@
+{
+ "assets": [
+  {
+   "out": "backdrop/sky.png",
+   "src": "picks/spin_sky_7101_x4.png",
+   "px": 8,
+   "colors": 56
+  },
+  {
+   "out": "backdrop/far.png",
+   "src": "picks/spin_far_7202.png",
+   "px": 8,
+   "colors": 40,
+   "cut_top": 50,
+   "cloud": [
+    150,
+    110
+   ],
+   "cloud_any": true,
+   "keep_below": 14,
+   "haze": [
+    "#f6a985",
+    0.3
+   ],
+   "contrast": 0.85
+  },
+  {
+   "out": "backdrop/near.png",
+   "src": "picks/spin_near_7302.png",
+   "px": 8,
+   "colors": 40,
+   "cut_top": 40,
+   "cloud": [
+    170,
+    110
+   ],
+   "cloud_any": true,
+   "keep_below": 40,
+   "extend": [
+    16,
+    0.45
+   ]
+  },
+  {
+   "out": "terrain/soil.png",
+   "src": "picks/spin_soil_7403.png",
+   "px": 8,
+   "colors": 24,
+   "contrast": 0.7,
+   "brightness": 1.0
+  },
+  {
+   "out": "terrain/rock.png",
+   "src": "picks/spin_rock_7502.png",
+   "px": 8,
+   "colors": 20
+  },
+  {
+   "out": "terrain/water.png",
+   "src": "picks/meadow_water_804.png",
+   "px": 8,
+   "colors": 16,
+   "haze": [
+    "#ff9d6c",
+    0.14
+   ]
+  }
+ ],
+ "strips": [
+  {
+   "out": "terrain/cap_rock.png",
+   "from": "terrain/rock.png",
+   "rows": [
+    0,
+    12
+   ],
+   "ink_top": true
+  }
+ ],
+ "copy": [
+  {
+   "src": "hand/flag.png",
+   "out": "props/flag.png"
+  },
+  {
+   "src": "hand/caps/*.png",
+   "out": "terrain/cap_*.png"
+  },
+  {
+   "src": "hand/decor/*.png",
+   "out": "decor/*.png"
+  }
+ ],
+ "world": {
+  "id": "spin",
+  "art_scale": 2,
+  "ink": "#20141e",
+  "backdrop": [
+   {
+    "tex": "backdrop/sky.png",
+    "mode": "sky"
+   },
+   {
+    "tex": "backdrop/far.png",
+    "factor": 0.08,
+    "y": 150,
+    "scale": 4,
+    "mirror": true
+   },
+   {
+    "tex": "backdrop/near.png",
+    "factor": 0.2,
+    "y": 330,
+    "scale": 4,
+    "mirror": true
+   }
+  ],
+  "materials": {
+   "soil": {
+    "fill": "terrain/soil.png",
+    "depth_dark": 0.4,
+    "depth_px": 900
+   },
+   "grass": {
+    "cap": "terrain/cap_grass.png",
+    "cap_base": 11
+   },
+   "rough": {
+    "cap": "terrain/cap_grass.png",
+    "cap_base": 11
+   },
+   "sand": {
+    "cap": "terrain/cap_sand.png",
+    "cap_base": 4
+   },
+   "rock": {
+    "cap": "terrain/cap_rock.png",
+    "cap_base": 0
+   },
+   "conveyor_r": {
+    "cap": "terrain/cap_conveyor.png",
+    "cap_base": 0
+   },
+   "conveyor_l": {
+    "cap": "terrain/cap_conveyor.png",
+    "cap_base": 0
+   },
+   "water": {
+    "fill": "terrain/water.png",
+    "foam": "#fff4ea",
+    "edge": "#2a78c0",
+    "alpha": 0.9
+   },
+   "default": {
+    "cap": "terrain/cap_grass.png",
+    "cap_base": 11
+   }
+  },
+  "decor": {
+   "windmill": "decor/windmill_*.png",
+   "pinwheel": "decor/pinwheel_*.png",
+   "balloon": "decor/balloon_*.png",
+   "gear": "decor/gear_*.png",
+   "bush": "decor/bush_*.png"
+  },
+  "flag": {
+   "sheet": "props/flag.png",
+   "frames": 6,
+   "fps": 9,
+   "pivot": [
+    3,
+    66
+   ]
+  },
+  "decor_anchor": {
+   "balloon": "free"
+  }
+ }
+}

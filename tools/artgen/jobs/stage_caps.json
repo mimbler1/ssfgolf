@@ -1,0 +1,11 @@
+[
+ {"name": "beach_cap_grass_po", "w": 1024, "h": 256, "tile": true, "init": "art/worlds/beach/guides/cap_grass.png", "strength": 0.6,
+  "seeds": [9101, 9102, 9103, 9104],
+  "prompt": "side view of a sandy dune grass ledge top for a platform game, clumps of tall yellow green beach grass blades, sandy turf, darker shadowed underside fringe, isolated on a plain flat white background"},
+ {"name": "sticky_cap_grass_po", "w": 1024, "h": 256, "tile": true, "init": "art/worlds/sticky/guides/cap_grass.png", "strength": 0.6,
+  "seeds": [9201, 9202, 9203, 9204],
+  "prompt": "side view of a lush swamp moss ledge top for a platform game, round clumps of dark green moss and small leaves, tiny pink glowing flowers, dark shadowed underside fringe, isolated on a plain flat white background"},
+ {"name": "spin_cap_grass_po", "w": 1024, "h": 256, "tile": true, "init": "art/worlds/spin/guides/cap_grass.png", "strength": 0.6,
+  "seeds": [9301, 9302, 9303, 9304],
+  "prompt": "side view of a lush grass ledge top for a platform game, overhanging grass blades and tufts, tiny pink and yellow flowers, warm sunset light, dark green shadowed underside fringe, isolated on a plain flat white background"}
+]

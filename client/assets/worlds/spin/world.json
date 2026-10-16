@@ -1,0 +1,101 @@
+{
+ "id": "spin",
+ "art_scale": 2,
+ "ink": "#20141e",
+ "backdrop": [
+  {
+   "tex": "backdrop/sky.png",
+   "mode": "sky"
+  },
+  {
+   "tex": "backdrop/far.png",
+   "factor": 0.08,
+   "y": 150,
+   "scale": 4,
+   "mirror": true
+  },
+  {
+   "tex": "backdrop/near.png",
+   "factor": 0.2,
+   "y": 330,
+   "scale": 4,
+   "mirror": true
+  }
+ ],
+ "materials": {
+  "soil": {
+   "fill": "terrain/soil.png",
+   "depth_dark": 0.4,
+   "depth_px": 900
+  },
+  "grass": {
+   "cap": "terrain/cap_grass.png",
+   "cap_base": 11
+  },
+  "rough": {
+   "cap": "terrain/cap_grass.png",
+   "cap_base": 11
+  },
+  "sand": {
+   "cap": "terrain/cap_sand.png",
+   "cap_base": 4
+  },
+  "rock": {
+   "cap": "terrain/cap_rock.png",
+   "cap_base": 0
+  },
+  "conveyor_r": {
+   "cap": "terrain/cap_conveyor.png",
+   "cap_base": 0
+  },
+  "conveyor_l": {
+   "cap": "terrain/cap_conveyor.png",
+   "cap_base": 0
+  },
+  "water": {
+   "fill": "terrain/water.png",
+   "foam": "#fff4ea",
+   "edge": "#2a78c0",
+   "alpha": 0.9
+  },
+  "default": {
+   "cap": "terrain/cap_grass.png",
+   "cap_base": 11
+  }
+ },
+ "decor": {
+  "windmill": [
+   "decor/windmill_a.png",
+   "decor/windmill_b.png",
+   "decor/windmill_c.png"
+  ],
+  "pinwheel": [
+   "decor/pinwheel_a.png",
+   "decor/pinwheel_b.png",
+   "decor/pinwheel_c.png"
+  ],
+  "balloon": [
+   "decor/balloon_b.png"
+  ],
+  "gear": [
+   "decor/gear_a.png",
+   "decor/gear_b.png"
+  ],
+  "bush": [
+   "decor/bush_a.png",
+   "decor/bush_b.png"
+  ]
+ },
+ "flag": {
+  "sheet": "props/flag.png",
+  "frames": 6,
+  "fps": 9,
+  "pivot": [
+   3,
+   66
+  ]
+ },
+ "decor_anchor": {
+  "balloon": "free"
+ }
+}

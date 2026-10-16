@@ -1,0 +1,9 @@
+[
+ {"out": "console_a", "src": "art/worlds/lab/picks/lab_console_6803.png", "height": 50, "colors": 40, "cut_bg": 10, "crop": [180, 250, 850, 850], "flip": true},
+ {"out": "console_b", "src": "art/worlds/lab/picks/lab_console_6803.png", "height": 64, "colors": 40, "cut_bg": 10, "crop": [180, 250, 850, 850]},
+ {"out": "vat_pipe_a", "src": "art/worlds/lab/picks/lab_vat_6811.png", "height": 112, "colors": 40, "cut_bg": 45, "unshadow": true},
+ {"out": "fan_a", "src": "art/worlds/lab/picks/lab_fan_6821.png", "height": 64, "colors": 32, "cut_bg": 25, "unshadow": true},
+ {"out": "lab_light_a", "src": "art/worlds/lab/picks/lab_lamp_6831.png", "height": 100, "colors": 32, "cut_bg": 25, "unshadow": true},
+ {"out": "lab_light_b", "src": "art/worlds/lab/picks/lab_lamp_6832.png", "height": 100, "colors": 32, "cut_bg": 25, "unshadow": true},
+ {"out": "lab_light_c", "src": "art/worlds/lab/picks/lab_lamp_6833.png", "height": 104, "colors": 32, "cut_bg": 25, "unshadow": true}
+]

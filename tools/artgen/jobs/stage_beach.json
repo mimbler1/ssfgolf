@@ -1,0 +1,172 @@
+[
+ {
+  "name": "beach_sky",
+  "w": 1536,
+  "h": 768,
+  "steps": 26,
+  "seeds": [
+   3101,
+   3102,
+   3103,
+   3104
+  ],
+  "style": "pixel art, 2d game stage background, crisp pixels, rich cel shading, vibrant saturated colors, highly detailed",
+  "prompt": "tropical seaside sky panorama, bright blue sky, huge fluffy white cumulus clouds with soft lavender shading, calm turquoise sea horizon along the bottom, distant green islands, empty foreground"
+ },
+ {
+  "name": "beach_far",
+  "w": 1536,
+  "h": 640,
+  "steps": 26,
+  "seeds": [
+   3201,
+   3202,
+   3203
+  ],
+  "style": "pixel art, 2d game stage background, crisp pixels, rich cel shading, vibrant saturated colors, highly detailed",
+  "prompt": "wide panorama of tall orange sandstone sea cliffs and rocky islets with palm trees and a small white lighthouse above turquoise sea, isolated on a plain flat white background"
+ },
+ {
+  "name": "beach_near",
+  "w": 1536,
+  "h": 512,
+  "steps": 26,
+  "seeds": [
+   3301,
+   3302,
+   3303
+  ],
+  "style": "pixel art, 2d game stage background, crisp pixels, rich cel shading, vibrant saturated colors, highly detailed",
+  "prompt": "wide panorama of golden sand dunes with tall dune grass, wooden beach fences, palm trees and small beach huts, isolated on a plain flat white background"
+ },
+ {
+  "name": "beach_soil",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "tile": true,
+  "seeds": [
+   3401,
+   3402,
+   3403
+  ],
+  "style": "pixel art texture, crisp pixels, cel shading, detailed",
+  "prompt": "seamless tileable texture of layered warm sandstone rock cross-section, horizontal tan and orange strata, small embedded shells and pebbles, side view, low contrast, platform game ground fill"
+ },
+ {
+  "name": "beach_rock",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "tile": true,
+  "seeds": [
+   3501,
+   3502
+  ],
+  "style": "pixel art texture, crisp pixels, cel shading, detailed",
+  "prompt": "seamless tileable texture of grey brown coastal rock wall, stacked wet stones with barnacles and seaweed, even lighting"
+ },
+ {
+  "name": "beach_water",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "tile": true,
+  "seeds": [
+   3601,
+   3602,
+   3603
+  ],
+  "style": "pixel art texture, crisp pixels, cel shading, detailed",
+  "prompt": "seamless tileable texture of clear tropical turquoise sea water, gentle ripples, light caustic highlights, even lighting"
+ },
+ {
+  "name": "beach_wood",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "tile": true,
+  "seeds": [
+   3701,
+   3702
+  ],
+  "style": "pixel art texture, crisp pixels, cel shading, detailed",
+  "prompt": "seamless tileable texture of weathered brown wooden boardwalk planks, horizontal boards with nails, even lighting"
+ },
+ {
+  "name": "beach_palm",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "seeds": [
+   3801,
+   3802,
+   3803,
+   3804
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "single tall tropical palm tree with curved trunk and big green fronds and coconuts, isolated on a plain flat white background"
+ },
+ {
+  "name": "beach_lighthouse",
+  "w": 768,
+  "h": 1280,
+  "steps": 26,
+  "seeds": [
+   3811,
+   3812,
+   3813
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "single tall red and white striped lighthouse on a small rocky base, glowing lamp room, isolated on a plain flat white background"
+ },
+ {
+  "name": "beach_props",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "seeds": [
+   3821,
+   3822,
+   3823
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "sprite sheet of beach props: seashells, starfish, grey boulders, dune grass tufts, driftwood, arranged in a grid, isolated on a plain flat white background"
+ },
+ {
+  "name": "beach_umbrella",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "seeds": [
+   3831,
+   3832
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "single red and white striped beach umbrella planted in sand, isolated on a plain flat white background"
+ },
+ {
+  "name": "beach_crab",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "seeds": [
+   3841,
+   3842
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "single cute red cartoon crab with raised claws, side view, isolated on a plain flat white background"
+ },
+ {
+  "name": "beach_buoy",
+  "w": 768,
+  "h": 1280,
+  "steps": 26,
+  "seeds": [
+   3851,
+   3852
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "single red and white channel marker buoy on a tall wooden post with a small lamp, isolated on a plain flat white background"
+ }
+]

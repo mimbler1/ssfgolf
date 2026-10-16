@@ -1,0 +1,146 @@
+[
+ {
+  "name": "spin_sky",
+  "w": 1536,
+  "h": 768,
+  "steps": 26,
+  "seeds": [
+   7101,
+   7102,
+   7103,
+   7104
+  ],
+  "style": "pixel art, 2d game stage background, crisp pixels, rich cel shading, vibrant saturated colors, highly detailed",
+  "prompt": "warm sunset countryside panorama, orange and pink sky with glowing golden clouds, distant pink rolling hills with tiny windmills and a ferris wheel, empty foreground"
+ },
+ {
+  "name": "spin_far",
+  "w": 1536,
+  "h": 640,
+  "steps": 26,
+  "seeds": [
+   7201,
+   7202,
+   7203
+  ],
+  "style": "pixel art, 2d game stage background, crisp pixels, rich cel shading, vibrant saturated colors, highly detailed",
+  "prompt": "wide panorama of rolling hills with old windmills, colorful carnival tents and a ferris wheel at sunset, isolated on a plain flat white background"
+ },
+ {
+  "name": "spin_near",
+  "w": 1536,
+  "h": 512,
+  "steps": 26,
+  "seeds": [
+   7301,
+   7302,
+   7303
+  ],
+  "style": "pixel art, 2d game stage background, crisp pixels, rich cel shading, vibrant saturated colors, highly detailed",
+  "prompt": "wide panorama of green hedges, flower fields with tulips, wooden fences and leafy trees at sunset, isolated on a plain flat white background"
+ },
+ {
+  "name": "spin_soil",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "tile": true,
+  "seeds": [
+   7401,
+   7402,
+   7403
+  ],
+  "style": "pixel art texture, crisp pixels, cel shading, detailed",
+  "prompt": "seamless tileable texture of warm red brown clay earth cross-section with small pebbles, roots and darker clumps, side view, low contrast, platform game ground fill"
+ },
+ {
+  "name": "spin_rock",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "tile": true,
+  "seeds": [
+   7501,
+   7502
+  ],
+  "style": "pixel art texture, crisp pixels, cel shading, detailed",
+  "prompt": "seamless tileable texture of warm beige cobblestone wall, rounded stones, even lighting"
+ },
+ {
+  "name": "spin_water",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "tile": true,
+  "seeds": [
+   7601,
+   7602
+  ],
+  "style": "pixel art texture, crisp pixels, cel shading, detailed",
+  "prompt": "seamless tileable texture of blue pond water reflecting a warm sunset, gentle ripples with orange highlights, even lighting"
+ },
+ {
+  "name": "spin_windmill",
+  "w": 768,
+  "h": 1280,
+  "steps": 26,
+  "seeds": [
+   7801,
+   7802,
+   7803,
+   7804
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "single old wooden windmill with four large sails and a red roof, side view, isolated on a plain flat white background"
+ },
+ {
+  "name": "spin_pinwheel",
+  "w": 768,
+  "h": 1280,
+  "steps": 26,
+  "seeds": [
+   7811,
+   7812,
+   7813
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "single colorful toy pinwheel on a tall wooden stick, isolated on a plain flat white background"
+ },
+ {
+  "name": "spin_balloon",
+  "w": 768,
+  "h": 1280,
+  "steps": 26,
+  "seeds": [
+   7821,
+   7822,
+   7823
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "bunch of shiny colorful party balloons on long strings tied to a small wooden stake, isolated on a plain flat white background"
+ },
+ {
+  "name": "spin_gear",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "seeds": [
+   7831,
+   7832
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "single big brass cog gear on a metal stand, isolated on a plain flat white background"
+ },
+ {
+  "name": "spin_bush",
+  "w": 1024,
+  "h": 1024,
+  "steps": 26,
+  "seeds": [
+   7841,
+   7842
+  ],
+  "style": "pixel art, 2d side view game sprite, crisp pixels, clean dark outlines, rich cel shading, vibrant, detailed",
+  "prompt": "single round green bush with pink and yellow flowers, isolated on a plain flat white background"
+ }
+]
