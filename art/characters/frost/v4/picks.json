@@ -1,0 +1,84 @@
+{
+ "colors": 40,
+ "prompt": "pixel art, 2d game sprite, crisp pixels, dark outline, rich cel shading, detailed, single friendly gentle yeti golfer, shaggy white fur, round pale blue face, no horns, pink and yellow striped scarf, big bare blue feet, full body, side view facing right, golf swing pose, hands clasped together, plain flat dark slate blue background",
+ "frames": {
+  "address": {
+   "file": "address_e_s60_12.png",
+   "seed": 12,
+   "strength": 0.6,
+   "tag": "e"
+  },
+  "takeaway": {
+   "file": "takeaway_e_s60_12.png",
+   "seed": 12,
+   "strength": 0.6,
+   "tag": "e"
+  },
+  "halfback": {
+   "file": "halfback_e_s60_12.png",
+   "seed": 12,
+   "strength": 0.6,
+   "tag": "e"
+  },
+  "top": {
+   "file": "top_e_s60_12.png",
+   "seed": 12,
+   "strength": 0.6,
+   "tag": "e"
+  },
+  "down": {
+   "file": "down_e_s60_12.png",
+   "seed": 12,
+   "strength": 0.6,
+   "tag": "e"
+  },
+  "impact": {
+   "file": "impact_e_s60_12.png",
+   "seed": 12,
+   "strength": 0.6,
+   "tag": "e"
+  },
+  "follow": {
+   "file": "follow_e_s60_12.png",
+   "seed": 12,
+   "strength": 0.6,
+   "tag": "e"
+  },
+  "finish": {
+   "file": "finish_e_s60_12.png",
+   "seed": 12,
+   "strength": 0.6,
+   "tag": "e"
+  },
+  "vic_0": {
+   "file": "vic_0_e_s60_12.png",
+   "seed": 12,
+   "strength": 0.6,
+   "tag": "e"
+  },
+  "vic_1": {
+   "file": "vic_1_e_s60_12.png",
+   "seed": 12,
+   "strength": 0.6,
+   "tag": "e"
+  },
+  "vic_2": {
+   "file": "vic_2_e_s60_12.png",
+   "seed": 12,
+   "strength": 0.6,
+   "tag": "e"
+  },
+  "vic_3": {
+   "file": "vic_3_e_s60_12.png",
+   "seed": 12,
+   "strength": 0.6,
+   "tag": "e"
+  },
+  "stand": {
+   "file": "stand_e_s60_12.png",
+   "seed": 12,
+   "strength": 0.6,
+   "tag": "e"
+  }
+ }
+}

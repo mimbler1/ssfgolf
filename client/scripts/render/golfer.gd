@@ -87,6 +87,16 @@ func character_def() -> Dictionary:
 	return _def
 
 
+## Rig units from the golfer origin to the ball at address (per sprite character).
+func ball_offset() -> float:
+	return _sprite.ball_offset if _sprite else BALL_OFFSET
+
+
+## Rig units from the ground to the top of the head (for name tags and emote bubbles).
+func head_height() -> float:
+	return -_sprite.idle_bounds().position.y if _sprite else 112.0
+
+
 func play(name: String) -> void:
 	if name == anim:
 		return

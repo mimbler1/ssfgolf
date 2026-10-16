@@ -1,0 +1,84 @@
+{
+ "colors": 40,
+ "prompt": "pixel art, 2d game sprite, crisp pixels, dark outline, rich cel shading, detailed, single noble armored knight golfer, shining steel plate armor, closed great helm with visor slit and pink plume, long bright blue tabard with gold emblem worn over the armor, red cape, full body, side view facing right, golf swing pose, hands clasped together, plain flat light grey background",
+ "frames": {
+  "address": {
+   "file": "address_c_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "c"
+  },
+  "takeaway": {
+   "file": "takeaway_c_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "c"
+  },
+  "halfback": {
+   "file": "halfback_c_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "c"
+  },
+  "top": {
+   "file": "top_c_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "c"
+  },
+  "down": {
+   "file": "down_c_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "c"
+  },
+  "impact": {
+   "file": "impact_c_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "c"
+  },
+  "follow": {
+   "file": "follow_c_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "c"
+  },
+  "finish": {
+   "file": "finish_c_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "c"
+  },
+  "vic_0": {
+   "file": "vic_0_c_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "c"
+  },
+  "vic_1": {
+   "file": "vic_1_c_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "c"
+  },
+  "vic_2": {
+   "file": "vic_2_c_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "c"
+  },
+  "vic_3": {
+   "file": "vic_3_c_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "c"
+  },
+  "stand": {
+   "file": "stand_c_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "c"
+  }
+ }
+}

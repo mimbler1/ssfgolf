@@ -25,6 +25,8 @@ var meta: Dictionary = {}
 var frame_size := Vector2i(96, 128)
 var pivot := Vector2(48, 124)
 var units_per_px := 1.0
+## Rig units from the pivot to where the ball sits at address (v4 sprites set it per character).
+var ball_offset := 34.0
 ## anim -> {loop: bool, frames: [{tex: AtlasTexture, ms: int, anchors: Dictionary}], contact: int}
 var anims: Dictionary = {}
 
@@ -58,6 +60,7 @@ func _load(char_id: String, variant: String) -> bool:
 	frame_size = Vector2i(int(meta.frame_size[0]), int(meta.frame_size[1]))
 	pivot = Vector2(float(meta.pivot[0]), float(meta.pivot[1]))
 	units_per_px = float(meta.rig_units_per_px)
+	ball_offset = float(meta.get("ball_offset", 34.0))
 	var swap := _swap_table(variant)
 	for anim: String in meta.anims:
 		var a: Dictionary = meta.anims[anim]

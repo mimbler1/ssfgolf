@@ -74,7 +74,7 @@ func set_appearance(a: Dictionary) -> void:
 
 
 func _reset_ball() -> void:
-	var bx := golfer.position.x + Golfer.BALL_OFFSET * 3.0
+	var bx := golfer.position.x + golfer.ball_offset() * 3.0
 	var hit := _terrain.raycast(Vector2(bx, golfer.position.y - 300), Vector2.DOWN, 800)
 	_ball.pos = (hit.pos if hit.hit else Vector2(bx, golfer.position.y)) + Vector2(0, -27)
 	_ball.vel = Vector2.ZERO

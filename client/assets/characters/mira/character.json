@@ -3,310 +3,543 @@
  "id": "mira",
  "name": "Mira",
  "frame_size": [
-  48,
-  64
+  96,
+  128
  ],
  "pivot": [
-  22,
-  61
+  48,
+  124
  ],
  "rig_units_per_px": 1.5384615384615383,
+ "ball_offset": 58.8,
  "anims": {
-  "idle": {
-   "sheet": "idle.png",
-   "loop": true,
-   "frames": [
-    {
-     "name": "idle_0",
-     "rect": [
-      0,
-      0,
-      48,
-      64
-     ],
-     "ms": 260,
-     "anchors": {
-      "club_grip": [
-       31,
-       37
-      ],
-      "club_head": [
-       47,
-       59
-      ]
-     }
-    },
-    {
-     "name": "idle_1",
-     "rect": [
-      48,
-      0,
-      48,
-      64
-     ],
-     "ms": 200,
-     "anchors": {
-      "club_grip": [
-       31,
-       38
-      ],
-      "club_head": [
-       47,
-       59
-      ]
-     }
-    },
-    {
-     "name": "idle_2",
-     "rect": [
-      96,
-      0,
-      48,
-      64
-     ],
-     "ms": 260,
-     "anchors": {
-      "club_grip": [
-       31,
-       38
-      ],
-      "club_head": [
-       47,
-       59
-      ]
-     }
-    },
-    {
-     "name": "idle_3",
-     "rect": [
-      144,
-      0,
-      48,
-      64
-     ],
-     "ms": 220,
-     "anchors": {
-      "club_grip": [
-       31,
-       37
-      ],
-      "club_head": [
-       47,
-       59
-      ]
-     }
-    },
-    {
-     "name": "idle_2",
-     "rect": [
-      192,
-      0,
-      48,
-      64
-     ],
-     "ms": 200,
-     "anchors": {
-      "club_grip": [
-       31,
-       38
-      ],
-      "club_head": [
-       47,
-       59
-      ]
-     }
-    },
-    {
-     "name": "idle_1",
-     "rect": [
-      240,
-      0,
-      48,
-      64
-     ],
-     "ms": 200,
-     "anchors": {
-      "club_grip": [
-       31,
-       38
-      ],
-      "club_head": [
-       47,
-       59
-      ]
-     }
-    }
-   ],
-   "target_frames": 6,
-   "contact_frame": null
-  },
   "swing": {
    "sheet": "swing.png",
    "loop": false,
    "frames": [
     {
      "name": "address",
+     "ms": 70,
+     "anchors": {
+      "club_grip": [
+       60,
+       84
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       60,
+       37
+      ]
+     },
      "rect": [
       0,
       0,
-      48,
-      64
-     ],
-     "ms": 60,
-     "anchors": {
-      "club_grip": [
-       31,
-       37
-      ],
-      "club_head": [
-       47,
-       59
-      ]
-     }
+      96,
+      128
+     ]
     },
     {
      "name": "takeaway",
-     "rect": [
-      48,
-      0,
-      48,
-      64
-     ],
      "ms": 60,
      "anchors": {
       "club_grip": [
-       23,
-       34
+       52,
+       84
       ],
       "club_head": [
-       7,
-       48
+       16,
+       99
+      ],
+      "head_top": [
+       58,
+       37
       ]
-     }
-    },
-    {
-     "name": "halfback",
+     },
      "rect": [
       96,
       0,
-      48,
-      64
-     ],
+      96,
+      128
+     ]
+    },
+    {
+     "name": "halfback",
      "ms": 60,
      "anchors": {
       "club_grip": [
-       16,
-       31
+       34,
+       72
       ],
       "club_head": [
-       12,
-       11
-      ]
-     }
-    },
-    {
-     "name": "top",
-     "rect": [
-      144,
-      0,
-      48,
-      64
-     ],
-     "ms": 80,
-     "anchors": {
-      "club_grip": [
-       17,
-       15
+       30,
+       33
       ],
-      "club_head": [
-       35,
-       7
+      "head_top": [
+       58,
+       35
       ]
-     }
-    },
-    {
-     "name": "down",
+     },
      "rect": [
       192,
       0,
-      48,
-      64
-     ],
-     "ms": 40,
-     "anchors": {
-      "club_grip": [
-       20,
-       28
-      ],
-      "club_head": [
-       2,
-       20
-      ]
-     }
+      96,
+      128
+     ]
     },
     {
-     "name": "impact",
-     "rect": [
-      240,
-      0,
-      48,
-      64
-     ],
-     "ms": 50,
-     "anchors": {
-      "club_grip": [
-       32,
-       38
-      ],
-      "club_head": [
-       47,
-       59
-      ]
-     }
-    },
-    {
-     "name": "follow",
-     "rect": [
-      288,
-      0,
-      48,
-      64
-     ],
+     "name": "top",
      "ms": 90,
      "anchors": {
       "club_grip": [
-       37,
-       23
+       42,
+       50
       ],
       "club_head": [
-       46,
-       5
+       76,
+       32
+      ],
+      "head_top": [
+       58,
+       35
       ]
-     }
+     },
+     "rect": [
+      288,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "down",
+     "ms": 40,
+     "anchors": {
+      "club_grip": [
+       44,
+       79
+      ],
+      "club_head": [
+       20,
+       48
+      ],
+      "head_top": [
+       58,
+       36
+      ]
+     },
+     "rect": [
+      384,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "impact",
+     "ms": 50,
+     "anchors": {
+      "club_grip": [
+       62,
+       84
+      ],
+      "club_head": [
+       79,
+       120
+      ],
+      "head_top": [
+       60,
+       37
+      ]
+     },
+     "rect": [
+      480,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "follow",
+     "ms": 90,
+     "anchors": {
+      "club_grip": [
+       71,
+       68
+      ],
+      "club_head": [
+       83,
+       31
+      ],
+      "head_top": [
+       61,
+       36
+      ]
+     },
+     "rect": [
+      576,
+      0,
+      96,
+      128
+     ]
     },
     {
      "name": "finish",
-     "rect": [
-      336,
-      0,
-      48,
-      64
-     ],
-     "ms": 500,
+     "ms": 520,
      "anchors": {
       "club_grip": [
-       24,
-       10
+       52,
+       51
       ],
       "club_head": [
-       7,
-       12
+       14,
+       60
+      ],
+      "head_top": [
+       58,
+       32
       ]
-     }
+     },
+     "rect": [
+      672,
+      0,
+      96,
+      128
+     ]
     }
    ],
    "target_frames": 8,
    "contact_frame": 5
+  },
+  "idle": {
+   "sheet": "idle.png",
+   "loop": true,
+   "frames": [
+    {
+     "name": "idle_0",
+     "ms": 240,
+     "anchors": {
+      "club_grip": [
+       60,
+       84
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       60,
+       37
+      ]
+     },
+     "rect": [
+      0,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_1",
+     "ms": 160,
+     "anchors": {
+      "club_grip": [
+       60,
+       84
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       60,
+       38
+      ]
+     },
+     "rect": [
+      96,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_2",
+     "ms": 220,
+     "anchors": {
+      "club_grip": [
+       60,
+       85
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       60,
+       38
+      ]
+     },
+     "rect": [
+      192,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_3",
+     "ms": 200,
+     "anchors": {
+      "club_grip": [
+       60,
+       85
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       60,
+       38
+      ]
+     },
+     "rect": [
+      288,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_4",
+     "ms": 160,
+     "anchors": {
+      "club_grip": [
+       60,
+       85
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       60,
+       38
+      ]
+     },
+     "rect": [
+      384,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_5",
+     "ms": 180,
+     "anchors": {
+      "club_grip": [
+       60,
+       84
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       60,
+       38
+      ]
+     },
+     "rect": [
+      480,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_6",
+     "ms": 200,
+     "anchors": {
+      "club_grip": [
+       60,
+       84
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       60,
+       37
+      ]
+     },
+     "rect": [
+      576,
+      0,
+      96,
+      128
+     ]
+    }
+   ],
+   "target_frames": 7,
+   "contact_frame": null
+  },
+  "victory": {
+   "sheet": "victory.png",
+   "loop": true,
+   "frames": [
+    {
+     "name": "vic_0",
+     "ms": 220,
+     "anchors": {
+      "club_grip": [
+       37,
+       74
+      ],
+      "club_head": [
+       19,
+       40
+      ],
+      "head_top": [
+       55,
+       38
+      ]
+     },
+     "rect": [
+      0,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "vic_1",
+     "ms": 110,
+     "anchors": {
+      "club_grip": [
+       46,
+       43
+      ],
+      "club_head": [
+       26,
+       10
+      ],
+      "head_top": [
+       54,
+       36
+      ]
+     },
+     "rect": [
+      96,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "vic_2",
+     "ms": 150,
+     "anchors": {
+      "club_grip": [
+       40,
+       39
+      ],
+      "club_head": [
+       17,
+       8
+      ],
+      "head_top": [
+       53,
+       34
+      ]
+     },
+     "rect": [
+      192,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "vic_3",
+     "ms": 130,
+     "anchors": {
+      "club_grip": [
+       42,
+       40
+      ],
+      "club_head": [
+       24,
+       5
+      ],
+      "head_top": [
+       54,
+       36
+      ]
+     },
+     "rect": [
+      288,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "vic_2",
+     "ms": 150,
+     "anchors": {
+      "club_grip": [
+       40,
+       39
+      ],
+      "club_head": [
+       17,
+       8
+      ],
+      "head_top": [
+       53,
+       34
+      ]
+     },
+     "rect": [
+      384,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "vic_1",
+     "ms": 110,
+     "anchors": {
+      "club_grip": [
+       46,
+       43
+      ],
+      "club_head": [
+       26,
+       10
+      ],
+      "head_top": [
+       54,
+       36
+      ]
+     },
+     "rect": [
+      480,
+      0,
+      96,
+      128
+     ]
+    }
+   ],
+   "target_frames": 6,
+   "contact_frame": null
   }
  },
  "palette": {},
@@ -316,8 +549,9 @@
  "equipment_slots": {},
  "surfaces": {},
  "source": {
-  "generator": "tools/artgen (SDXL + pixel-art-xl LoRA), pose-guided paint-over",
-  "guide": "art/characters/guides/mira.png",
-  "painted": "art/characters/painted/mira.png"
- }
+  "generator": "tools/artgen v4 (shaded pose guide -> SDXL + pixel-art-xl paint-over -> g4_px clean-up)",
+  "frames": "art/characters/mira/v4/",
+  "picks": "art/characters/mira/v4/picks.json"
+ },
+ "portrait": "portrait.png"
 }

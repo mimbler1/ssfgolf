@@ -47,7 +47,9 @@ func _initialize() -> void:
 					var h: Vector2 = p.hf if p.club_mode == "front" else p.hb
 					_check(h.distance_to(p.grip) < 6.0, tag + " one-hand club detached")
 				var b := g.visual_bounds(an, t)
-				_check(b.size.y > 30.0 and b.size.y < 160.0 and b.size.x < 160.0, tag + " bounds %s" % b)
+				# v4 sprite golfers are ~84 art px tall at 2 world px per art px (tall hats reach ~105 px)
+				var lim := 200.0 if CharacterDefs.is_sprite(id) else 160.0
+				_check(b.size.y > 30.0 and b.size.y < lim and b.size.x < lim, tag + " bounds %s" % b)
 				count += 1
 		var ib := Golfer.idle_bounds({"character": id})
 		_check(ib.end.y > -1.0 and ib.end.y < 8.0, "%s stands on the ground (bottom %.1f)" % [id, ib.end.y])

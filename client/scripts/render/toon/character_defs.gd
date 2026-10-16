@@ -38,8 +38,9 @@ const SLOTS := ["body_color", "outline_color", "head_shape", "face", "hat", "shi
 const ROSTER := {
 	# Hand-authored sprite character (art/characters/adventurer). Hidden from the roster until its
 	# full animation set is drawn and approved; reachable by id for review (--dev-character).
-	# Sprite golfers (v3 art direction): generated + cleaned pixel art, pose-guided animation
-	# (tools/artgen, docs/SPRITE_PIPELINE.md). Idle + swing so far; other anims fall back to idle.
+	# Sprite golfers (v4 art direction): generated + cleaned pixel art, pose-guided animation
+	# (tools/artgen/g4_*, docs/SPRITE_PIPELINE.md, docs/CHARACTER_CONVERSION.md). Idle, swing and
+	# victory; other anims fall back to idle. Toon "colors"/"rig" kept as data only.
 	"rex": {
 		"name": "Rex", "tagline": "Never met a fairway he couldn't fly over.",
 		"kind": "human", "builder": "sprite", "rarity": "common", "unlock": {"type": "default"},
@@ -67,17 +68,17 @@ const ROSTER := {
 		"hidden": true,
 	},
 	"stickman": {
-		"name": "Stickman", "tagline": "The classic. Yours to design from head to toe.",
-		"kind": "classic", "builder": "classic", "rarity": "common", "unlock": {"type": "default"},
+		"name": "Stickman", "tagline": "The classic. Lean, mean and all about the swing.",
+		"kind": "classic", "builder": "sprite", "rarity": "common", "unlock": {"type": "default"},
 		"scale": 1.0, "rig": {},
 		"colors": {"shoe": "#2b2d42"},
-		"compat": ["body_color", "outline_color", "head_shape", "face", "hat", "shirt", "proportions"],
+		"compat": [],
 		"motion": {"walk": "step"},
 		"ball": "#ffffff", "trail": "#ffd166",
 	},
 	"bolt": {
 		"name": "Bolt", "tagline": "Caddie bot 3000. Calculates every bounce.",
-		"kind": "robot", "builder": "robot", "rarity": "rare", "unlock": {"type": "default"},
+		"kind": "robot", "builder": "sprite", "rarity": "rare", "unlock": {"type": "default"},
 		"scale": 1.0,
 		"rig": {"leg": 12.0, "body": 20.0, "r": [10.5, 10.5, 10.0], "head_r": 14.0, "head_sink": 1.0,
 			"shoulder_t": 0.7, "reach": 16.0, "arm_w": 1.9, "hand_r": 3.6, "club": 23.0, "lean": 0.04},
@@ -89,7 +90,7 @@ const ROSTER := {
 	},
 	"pirate": {
 		"name": "Cap'n Slice", "tagline": "Never met a water hazard he couldn't sail over.",
-		"kind": "human", "builder": "pirate", "rarity": "rare", "unlock": {"type": "default"},
+		"kind": "human", "builder": "sprite", "rarity": "rare", "unlock": {"type": "default"},
 		"scale": 1.02,
 		"rig": {"r": [12.0, 11.0, 9.5], "body": 25.0, "head_r": 14.0, "arm_w": 2.3},
 		"colors": {"coat": "#2b4a8c", "trim": "#ffd166", "skin": "#eaa87c", "beard": "#d4572a", "wood": "#a0673d",
@@ -100,7 +101,7 @@ const ROSTER := {
 	},
 	"wizard": {
 		"name": "Fizzwick", "tagline": "Swears the ball goes wherever he tells it.",
-		"kind": "human", "builder": "wizard", "rarity": "epic", "unlock": {"type": "default"},
+		"kind": "human", "builder": "sprite", "rarity": "epic", "unlock": {"type": "default"},
 		"scale": 1.0,
 		"rig": {"r": [12.0, 10.0, 8.5], "leg": 3.0, "body": 25.0, "head_r": 13.5, "arm_w": 2.0},
 		"colors": {"robe": "#6c4bd8", "gold": "#ffd166", "skin": "#f5c9a6", "beard": "#f4f6fb", "spark": "#fff3b0"},
@@ -110,7 +111,7 @@ const ROSTER := {
 	},
 	"dino": {
 		"name": "Tee-Rex", "tagline": "Tiny arms. Enormous drives.",
-		"kind": "creature", "builder": "dino", "rarity": "epic", "unlock": {"type": "default"},
+		"kind": "creature", "builder": "sprite", "rarity": "epic", "unlock": {"type": "default"},
 		"scale": 1.08,
 		"rig": {"leg": 7.0, "body": 22.0, "r": [12.5, 11.0, 9.0], "head_r": 12.5, "head_sink": 5.0,
 			"shoulder_t": 0.62, "reach": 9.5, "arm_w": 1.9, "hand_r": 2.6, "club": 27.0, "lean": 0.34, "feet": 6.5},
@@ -122,7 +123,7 @@ const ROSTER := {
 	},
 	"astronaut": {
 		"name": "Nova", "tagline": "Practised her drive in zero gravity. Twice.",
-		"kind": "human", "builder": "astronaut", "rarity": "epic", "unlock": {"type": "default"},
+		"kind": "human", "builder": "sprite", "rarity": "epic", "unlock": {"type": "default"},
 		"scale": 1.0,
 		"rig": {"r": [12.5, 12.0, 10.0], "body": 24.0, "head_r": 14.5, "head_sink": 2.5, "arm_w": 2.7, "hand_r": 3.9, "leg": 6.0},
 		"colors": {"suit": "#f4f6fb", "accent": "#ff8c42", "grey": "#b9c3d6", "panel": "#2b3a66", "visor": "#2b3a66",
@@ -133,7 +134,7 @@ const ROSTER := {
 	},
 	"skeleton": {
 		"name": "Rattles", "tagline": "All skin and no bones. Wait, other way round.",
-		"kind": "undead", "builder": "skeleton", "rarity": "rare", "unlock": {"type": "default"},
+		"kind": "undead", "builder": "sprite", "rarity": "rare", "unlock": {"type": "default"},
 		"scale": 1.0,
 		"rig": {"r": [9.5, 9.5, 8.5], "body": 24.0, "arm_w": 1.6, "hand_r": 3.0, "head_r": 14.0, "head_sink": 3.0, "leg": 8.0},
 		"colors": {"bone": "#f3ecd8", "vest": "#3f8f5a", "vest2": "#f2c14e", "vest3": "#2c6b43", "glow": "#7df9ff",
@@ -144,7 +145,7 @@ const ROSTER := {
 	},
 	"frost": {
 		"name": "Frost", "tagline": "Gentle yeti. Plays every course barefoot.",
-		"kind": "creature", "builder": "frost", "rarity": "rare", "unlock": {"type": "default"},
+		"kind": "creature", "builder": "sprite", "rarity": "rare", "unlock": {"type": "default"},
 		"scale": 1.06,
 		"rig": {"r": [15.0, 14.5, 12.0], "body": 22.0, "leg": 3.0, "head_r": 14.0, "head_sink": 6.0, "arm_w": 3.2,
 			"hand_r": 4.4, "feet": 7.5, "shoulder_t": 0.7},
@@ -155,7 +156,7 @@ const ROSTER := {
 	},
 	"cowboy": {
 		"name": "Dusty", "tagline": "Fastest backswing in the West.",
-		"kind": "human", "builder": "cowboy", "rarity": "uncommon", "unlock": {"type": "default"},
+		"kind": "human", "builder": "sprite", "rarity": "uncommon", "unlock": {"type": "default"},
 		"scale": 1.0,
 		"rig": {"r": [9.5, 8.8, 8.2], "body": 30.0, "head_r": 13.0, "leg": 7.0, "arm_w": 2.1, "reach": 18.0},
 		"colors": {"skin": "#e7a97e", "hat": "#a8743f", "leather": "#8b5a2b", "gold": "#ffd166", "boot": "#6b3e22",
@@ -166,7 +167,7 @@ const ROSTER := {
 	},
 	"knight": {
 		"name": "Sir Putts", "tagline": "Sworn to protect the green.",
-		"kind": "armored", "builder": "knight", "rarity": "legendary", "unlock": {"type": "default"},
+		"kind": "armored", "builder": "sprite", "rarity": "legendary", "unlock": {"type": "default"},
 		"scale": 1.0,
 		"rig": {"r": [12.5, 11.5, 10.0], "body": 25.0, "head_r": 13.5, "head_sink": 2.0, "arm_w": 2.6, "hand_r": 3.8},
 		"colors": {"steel": "#c3cbd9", "gold": "#ffd166", "tabard": "#3a5bd9", "cape": "#c62f3a", "plume": "#ef476f",
@@ -177,7 +178,7 @@ const ROSTER := {
 	},
 	"ace": {
 		"name": "Ace", "tagline": "Tour pro. Fairways fear him.",
-		"kind": "human", "builder": "ace", "rarity": "uncommon", "unlock": {"type": "default"},
+		"kind": "human", "builder": "sprite", "rarity": "uncommon", "unlock": {"type": "default"},
 		"scale": 1.0,
 		"rig": {"r": [10.5, 9.8, 8.5], "body": 28.0, "head_r": 13.5},
 		"colors": {"skin": "#f1b98c", "hair": "#5b3a29", "shirt": "#1f4e8c", "pants": "#d9c8a2", "shoe2": "#6b3f26", "hat2": "#1f4e8c"},
@@ -187,7 +188,7 @@ const ROSTER := {
 	},
 	"nana": {
 		"name": "Nana Birdie", "tagline": "Eighty-one years young. Still outdrives you.",
-		"kind": "human", "builder": "nana", "rarity": "rare", "unlock": {"type": "default"},
+		"kind": "human", "builder": "sprite", "rarity": "rare", "unlock": {"type": "default"},
 		"scale": 0.94,
 		"rig": {"r": [11.5, 10.5, 9.0], "body": 23.0, "head_r": 14.0, "leg": 6.0},
 		"colors": {"skin": "#f6d2b8", "hair": "#e6e3ef", "shirt": "#ff8fab", "shirt2": "#fff6f0", "pants": "#9d8df1",
@@ -198,7 +199,7 @@ const ROSTER := {
 	},
 	"brick": {
 		"name": "Brick", "tagline": "Lumberjack. Swings like he's felling an oak.",
-		"kind": "human", "builder": "brick", "rarity": "uncommon", "unlock": {"type": "default"},
+		"kind": "human", "builder": "sprite", "rarity": "uncommon", "unlock": {"type": "default"},
 		"scale": 1.06,
 		"rig": {"r": [13.5, 13.0, 11.0], "body": 27.0, "arm_w": 3.0, "hand_r": 4.0, "head_r": 14.0},
 		"colors": {"skin": "#e9a87c", "hair": "#c8562a", "shirt": "#c62f3a", "shirt2": "#2b1f2a", "pants": "#3e5f9e",
@@ -209,7 +210,7 @@ const ROSTER := {
 	},
 	"skipper": {
 		"name": "Skipper", "tagline": "Ten years old. Already has a hole-in-one.",
-		"kind": "human", "builder": "skipper", "rarity": "uncommon", "unlock": {"type": "default"},
+		"kind": "human", "builder": "sprite", "rarity": "uncommon", "unlock": {"type": "default"},
 		"scale": 0.86,
 		"rig": {"r": [10.0, 9.5, 8.5], "body": 20.0, "head_r": 15.5, "leg": 8.0},
 		"colors": {"skin": "#c98a5e", "hair": "#2b1d16", "shirt": "#ffd166", "shirt2": "#ef476f", "pants": "#2f6fb5",

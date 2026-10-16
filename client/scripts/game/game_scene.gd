@@ -372,7 +372,7 @@ func _update_golfer(slot: int, s: Dictionary, speed: float) -> void:
 			facing = 1.0 if cos(shot.angle) >= 0.0 else -1.0
 		else:
 			facing = 1.0 if view.terrain.cup_pos.x >= s.pos.x else -1.0
-		var gx: float = s.pos.x - facing * Golfer.BALL_OFFSET * GOLFER_SCALE
+		var gx: float = s.pos.x - facing * g.ball_offset() * GOLFER_SCALE
 		var hit := view.terrain.raycast(Vector2(gx, s.pos.y - 70.0), Vector2.DOWN, 160.0)
 		on_floor = hit.hit and hit.normal.y < -0.5 and not bool(s.stuck)
 		if on_floor:
@@ -1155,7 +1155,7 @@ func _update_bubbles() -> void:
 			continue
 		var anchor: Vector2 = balls[slot].position + Vector2(0, -26)
 		if golfers.has(slot) and golfers[slot].visible:
-			anchor = golfers[slot].position + Vector2(0, -112 * GOLFER_SCALE)
+			anchor = golfers[slot].position + Vector2(0, -(golfers[slot].head_height() + 14.0) * GOLFER_SCALE)
 		node.position = anchor
 
 

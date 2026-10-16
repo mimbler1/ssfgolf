@@ -1,0 +1,557 @@
+{
+ "format": 1,
+ "id": "stickman",
+ "name": "Stickman",
+ "frame_size": [
+  96,
+  128
+ ],
+ "pivot": [
+  48,
+  124
+ ],
+ "rig_units_per_px": 1.5384615384615383,
+ "ball_offset": 58.8,
+ "anims": {
+  "swing": {
+   "sheet": "swing.png",
+   "loop": false,
+   "frames": [
+    {
+     "name": "address",
+     "ms": 70,
+     "anchors": {
+      "club_grip": [
+       60,
+       83
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       60,
+       37
+      ]
+     },
+     "rect": [
+      0,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "takeaway",
+     "ms": 60,
+     "anchors": {
+      "club_grip": [
+       51,
+       83
+      ],
+      "club_head": [
+       15,
+       98
+      ],
+      "head_top": [
+       58,
+       37
+      ]
+     },
+     "rect": [
+      96,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "halfback",
+     "ms": 60,
+     "anchors": {
+      "club_grip": [
+       35,
+       71
+      ],
+      "club_head": [
+       31,
+       32
+      ],
+      "head_top": [
+       58,
+       37
+      ]
+     },
+     "rect": [
+      192,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "top",
+     "ms": 90,
+     "anchors": {
+      "club_grip": [
+       41,
+       50
+      ],
+      "club_head": [
+       75,
+       32
+      ],
+      "head_top": [
+       57,
+       37
+      ]
+     },
+     "rect": [
+      288,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "down",
+     "ms": 40,
+     "anchors": {
+      "club_grip": [
+       42,
+       76
+      ],
+      "club_head": [
+       18,
+       45
+      ],
+      "head_top": [
+       60,
+       37
+      ]
+     },
+     "rect": [
+      384,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "impact",
+     "ms": 50,
+     "anchors": {
+      "club_grip": [
+       61,
+       83
+      ],
+      "club_head": [
+       79,
+       120
+      ],
+      "head_top": [
+       61,
+       38
+      ]
+     },
+     "rect": [
+      480,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "follow",
+     "ms": 90,
+     "anchors": {
+      "club_grip": [
+       70,
+       69
+      ],
+      "club_head": [
+       82,
+       32
+      ],
+      "head_top": [
+       62,
+       38
+      ]
+     },
+     "rect": [
+      576,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "finish",
+     "ms": 520,
+     "anchors": {
+      "club_grip": [
+       52,
+       48
+      ],
+      "club_head": [
+       14,
+       57
+      ],
+      "head_top": [
+       59,
+       36
+      ]
+     },
+     "rect": [
+      672,
+      0,
+      96,
+      128
+     ]
+    }
+   ],
+   "target_frames": 8,
+   "contact_frame": 5
+  },
+  "idle": {
+   "sheet": "idle.png",
+   "loop": true,
+   "frames": [
+    {
+     "name": "idle_0",
+     "ms": 240,
+     "anchors": {
+      "club_grip": [
+       60,
+       83
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       60,
+       37
+      ]
+     },
+     "rect": [
+      0,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_1",
+     "ms": 160,
+     "anchors": {
+      "club_grip": [
+       60,
+       83
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       60,
+       38
+      ]
+     },
+     "rect": [
+      96,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_2",
+     "ms": 220,
+     "anchors": {
+      "club_grip": [
+       60,
+       84
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       60,
+       38
+      ]
+     },
+     "rect": [
+      192,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_3",
+     "ms": 200,
+     "anchors": {
+      "club_grip": [
+       60,
+       84
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       60,
+       38
+      ]
+     },
+     "rect": [
+      288,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_4",
+     "ms": 160,
+     "anchors": {
+      "club_grip": [
+       60,
+       84
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       60,
+       38
+      ]
+     },
+     "rect": [
+      384,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_5",
+     "ms": 180,
+     "anchors": {
+      "club_grip": [
+       60,
+       83
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       60,
+       38
+      ]
+     },
+     "rect": [
+      480,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_6",
+     "ms": 200,
+     "anchors": {
+      "club_grip": [
+       60,
+       83
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       60,
+       37
+      ]
+     },
+     "rect": [
+      576,
+      0,
+      96,
+      128
+     ]
+    }
+   ],
+   "target_frames": 7,
+   "contact_frame": null
+  },
+  "victory": {
+   "sheet": "victory.png",
+   "loop": true,
+   "frames": [
+    {
+     "name": "vic_0",
+     "ms": 220,
+     "anchors": {
+      "club_grip": [
+       38,
+       74
+      ],
+      "club_head": [
+       20,
+       40
+      ],
+      "head_top": [
+       56,
+       40
+      ]
+     },
+     "rect": [
+      0,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "vic_1",
+     "ms": 110,
+     "anchors": {
+      "club_grip": [
+       43,
+       42
+      ],
+      "club_head": [
+       23,
+       9
+      ],
+      "head_top": [
+       56,
+       36
+      ]
+     },
+     "rect": [
+      96,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "vic_2",
+     "ms": 150,
+     "anchors": {
+      "club_grip": [
+       41,
+       40
+      ],
+      "club_head": [
+       18,
+       9
+      ],
+      "head_top": [
+       54,
+       35
+      ]
+     },
+     "rect": [
+      192,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "vic_3",
+     "ms": 130,
+     "anchors": {
+      "club_grip": [
+       44,
+       43
+      ],
+      "club_head": [
+       26,
+       8
+      ],
+      "head_top": [
+       53,
+       36
+      ]
+     },
+     "rect": [
+      288,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "vic_2",
+     "ms": 150,
+     "anchors": {
+      "club_grip": [
+       41,
+       40
+      ],
+      "club_head": [
+       18,
+       9
+      ],
+      "head_top": [
+       54,
+       35
+      ]
+     },
+     "rect": [
+      384,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "vic_1",
+     "ms": 110,
+     "anchors": {
+      "club_grip": [
+       43,
+       42
+      ],
+      "club_head": [
+       23,
+       9
+      ],
+      "head_top": [
+       56,
+       36
+      ]
+     },
+     "rect": [
+      480,
+      0,
+      96,
+      128
+     ]
+    }
+   ],
+   "target_frames": 6,
+   "contact_frame": null
+  }
+ },
+ "palette": {},
+ "regions": {},
+ "recolor_regions": [],
+ "variants": {},
+ "equipment_slots": {},
+ "surfaces": {},
+ "source": {
+  "generator": "tools/artgen v4 (shaded pose guide -> SDXL + pixel-art-xl paint-over -> g4_px clean-up)",
+  "frames": "art/characters/stickman/v4/",
+  "picks": "art/characters/stickman/v4/picks.json"
+ },
+ "portrait": "portrait.png"
+}

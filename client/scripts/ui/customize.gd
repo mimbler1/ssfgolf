@@ -320,6 +320,8 @@ func _refresh() -> void:
 		var b: Button = _cat_buttons[c]
 		var ok := CharacterDefs.accepts(id, CATEGORY_SLOT[c])
 		b.disabled = not ok
+		# Toon customisation tabs don't apply to sprite golfers: hide them rather than grey them out.
+		b.visible = ok
 		b.tooltip_text = "" if ok else "%s wears a signature look. Pick the Stickman to customise this." % d.name
 	_ball.ball_color = Color(current.ballColor)
 	_ball.trail_color = Color(current.trailColor)
@@ -368,7 +370,7 @@ func _show_category(c: String) -> void:
 	var scroll_to: Control = null
 	match c:
 		"Character":
-			_muted("Pick who you play as. Every golfer hits exactly the same; the Stickman is fully customisable.")
+			_muted("Pick who you play as. Every golfer hits exactly the same: looks never change the ball or its physics. Unlock more golfers from card packs in Collection.")
 			var ids: Array = CharacterDefs.ids()
 			var looks: Array = []
 			for id: String in ids:
@@ -911,14 +913,14 @@ class _Podium extends Control:
 		# Headroom for swings and jumps above the idle pose.
 		var by := maxf(b.size.y, 78.0) * 1.3
 		var group_l := minf(b.position.x, -20.0)
-		var group_r := Golfer.BALL_OFFSET + 8.0
+		var group_r := golfer.ball_offset() + 8.0
 		_scale = minf(size.y * 0.86 / by, size.x * 0.8 / (group_r - group_l))
 		_ground = Vector2(size.x * 0.5 - (group_l + group_r) * 0.5 * _scale, size.y * 0.86)
 		golfer.scale = Vector2(_scale, _scale)
 		golfer.position = _ground
 		if ball:
 			ball.radius = 9.0 / 1.3 * _scale
-			ball.home = _ground + Vector2(Golfer.BALL_OFFSET * _scale, -ball.radius)
+			ball.home = _ground + Vector2(golfer.ball_offset() * _scale, -ball.radius)
 		queue_redraw()
 
 	func _process(delta: float) -> void:

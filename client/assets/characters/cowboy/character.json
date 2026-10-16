@@ -1,0 +1,557 @@
+{
+ "format": 1,
+ "id": "cowboy",
+ "name": "Dusty",
+ "frame_size": [
+  96,
+  128
+ ],
+ "pivot": [
+  48,
+  124
+ ],
+ "rig_units_per_px": 1.5384615384615383,
+ "ball_offset": 58.8,
+ "anims": {
+  "swing": {
+   "sheet": "swing.png",
+   "loop": false,
+   "frames": [
+    {
+     "name": "address",
+     "ms": 70,
+     "anchors": {
+      "club_grip": [
+       61,
+       86
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       59,
+       35
+      ]
+     },
+     "rect": [
+      0,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "takeaway",
+     "ms": 60,
+     "anchors": {
+      "club_grip": [
+       54,
+       84
+      ],
+      "club_head": [
+       18,
+       99
+      ],
+      "head_top": [
+       58,
+       35
+      ]
+     },
+     "rect": [
+      96,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "halfback",
+     "ms": 60,
+     "anchors": {
+      "club_grip": [
+       37,
+       72
+      ],
+      "club_head": [
+       33,
+       33
+      ],
+      "head_top": [
+       57,
+       36
+      ]
+     },
+     "rect": [
+      192,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "top",
+     "ms": 90,
+     "anchors": {
+      "club_grip": [
+       44,
+       54
+      ],
+      "club_head": [
+       78,
+       36
+      ],
+      "head_top": [
+       57,
+       36
+      ]
+     },
+     "rect": [
+      288,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "down",
+     "ms": 40,
+     "anchors": {
+      "club_grip": [
+       43,
+       76
+      ],
+      "club_head": [
+       19,
+       45
+      ],
+      "head_top": [
+       58,
+       36
+      ]
+     },
+     "rect": [
+      384,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "impact",
+     "ms": 50,
+     "anchors": {
+      "club_grip": [
+       56,
+       82
+      ],
+      "club_head": [
+       79,
+       120
+      ],
+      "head_top": [
+       58,
+       36
+      ]
+     },
+     "rect": [
+      480,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "follow",
+     "ms": 90,
+     "anchors": {
+      "club_grip": [
+       72,
+       70
+      ],
+      "club_head": [
+       84,
+       33
+      ],
+      "head_top": [
+       61,
+       37
+      ]
+     },
+     "rect": [
+      576,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "finish",
+     "ms": 520,
+     "anchors": {
+      "club_grip": [
+       50,
+       48
+      ],
+      "club_head": [
+       12,
+       57
+      ],
+      "head_top": [
+       58,
+       32
+      ]
+     },
+     "rect": [
+      672,
+      0,
+      96,
+      128
+     ]
+    }
+   ],
+   "target_frames": 8,
+   "contact_frame": 5
+  },
+  "idle": {
+   "sheet": "idle.png",
+   "loop": true,
+   "frames": [
+    {
+     "name": "idle_0",
+     "ms": 240,
+     "anchors": {
+      "club_grip": [
+       61,
+       86
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       59,
+       35
+      ]
+     },
+     "rect": [
+      0,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_1",
+     "ms": 160,
+     "anchors": {
+      "club_grip": [
+       61,
+       86
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       59,
+       36
+      ]
+     },
+     "rect": [
+      96,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_2",
+     "ms": 220,
+     "anchors": {
+      "club_grip": [
+       61,
+       87
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       59,
+       36
+      ]
+     },
+     "rect": [
+      192,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_3",
+     "ms": 200,
+     "anchors": {
+      "club_grip": [
+       61,
+       87
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       59,
+       36
+      ]
+     },
+     "rect": [
+      288,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_4",
+     "ms": 160,
+     "anchors": {
+      "club_grip": [
+       61,
+       87
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       59,
+       36
+      ]
+     },
+     "rect": [
+      384,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_5",
+     "ms": 180,
+     "anchors": {
+      "club_grip": [
+       61,
+       86
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       59,
+       36
+      ]
+     },
+     "rect": [
+      480,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_6",
+     "ms": 200,
+     "anchors": {
+      "club_grip": [
+       61,
+       86
+      ],
+      "club_head": [
+       78,
+       120
+      ],
+      "head_top": [
+       59,
+       35
+      ]
+     },
+     "rect": [
+      576,
+      0,
+      96,
+      128
+     ]
+    }
+   ],
+   "target_frames": 7,
+   "contact_frame": null
+  },
+  "victory": {
+   "sheet": "victory.png",
+   "loop": true,
+   "frames": [
+    {
+     "name": "vic_0",
+     "ms": 220,
+     "anchors": {
+      "club_grip": [
+       40,
+       74
+      ],
+      "club_head": [
+       22,
+       40
+      ],
+      "head_top": [
+       54,
+       36
+      ]
+     },
+     "rect": [
+      0,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "vic_1",
+     "ms": 110,
+     "anchors": {
+      "club_grip": [
+       41,
+       38
+      ],
+      "club_head": [
+       21,
+       5
+      ],
+      "head_top": [
+       55,
+       34
+      ]
+     },
+     "rect": [
+      96,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "vic_2",
+     "ms": 150,
+     "anchors": {
+      "club_grip": [
+       40,
+       38
+      ],
+      "club_head": [
+       17,
+       7
+      ],
+      "head_top": [
+       55,
+       34
+      ]
+     },
+     "rect": [
+      192,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "vic_3",
+     "ms": 130,
+     "anchors": {
+      "club_grip": [
+       43,
+       42
+      ],
+      "club_head": [
+       25,
+       7
+      ],
+      "head_top": [
+       54,
+       34
+      ]
+     },
+     "rect": [
+      288,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "vic_2",
+     "ms": 150,
+     "anchors": {
+      "club_grip": [
+       40,
+       38
+      ],
+      "club_head": [
+       17,
+       7
+      ],
+      "head_top": [
+       55,
+       34
+      ]
+     },
+     "rect": [
+      384,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "vic_1",
+     "ms": 110,
+     "anchors": {
+      "club_grip": [
+       41,
+       38
+      ],
+      "club_head": [
+       21,
+       5
+      ],
+      "head_top": [
+       55,
+       34
+      ]
+     },
+     "rect": [
+      480,
+      0,
+      96,
+      128
+     ]
+    }
+   ],
+   "target_frames": 6,
+   "contact_frame": null
+  }
+ },
+ "palette": {},
+ "regions": {},
+ "recolor_regions": [],
+ "variants": {},
+ "equipment_slots": {},
+ "surfaces": {},
+ "source": {
+  "generator": "tools/artgen v4 (shaded pose guide -> SDXL + pixel-art-xl paint-over -> g4_px clean-up)",
+  "frames": "art/characters/cowboy/v4/",
+  "picks": "art/characters/cowboy/v4/picks.json"
+ },
+ "portrait": "portrait.png"
+}

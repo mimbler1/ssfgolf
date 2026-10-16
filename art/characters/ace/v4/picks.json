@@ -1,0 +1,84 @@
+{
+ "colors": 40,
+ "prompt": "pixel art, 2d game sprite, crisp pixels, dark outline, rich cel shading, detailed, single tall confident pro tour golfer man, navy blue baseball cap, short brown hair, navy polo shirt with white collar, khaki trousers, brown leather belt, brown golf shoes, white golf glove, full body, side view facing right, golf swing pose, hands clasped together, plain flat light grey background",
+ "frames": {
+  "address": {
+   "file": "address_b_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "b"
+  },
+  "takeaway": {
+   "file": "takeaway_b_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "b"
+  },
+  "halfback": {
+   "file": "halfback_b_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "b"
+  },
+  "top": {
+   "file": "top_b_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "b"
+  },
+  "down": {
+   "file": "down_b_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "b"
+  },
+  "impact": {
+   "file": "impact_b_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "b"
+  },
+  "follow": {
+   "file": "follow_b_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "b"
+  },
+  "finish": {
+   "file": "finish_b_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "b"
+  },
+  "vic_0": {
+   "file": "vic_0_b_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "b"
+  },
+  "vic_1": {
+   "file": "vic_1_b_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "b"
+  },
+  "vic_2": {
+   "file": "vic_2_b_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "b"
+  },
+  "vic_3": {
+   "file": "vic_3_b_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "b"
+  },
+  "stand": {
+   "file": "stand_b_s60_11.png",
+   "seed": 11,
+   "strength": 0.6,
+   "tag": "b"
+  }
+ }
+}

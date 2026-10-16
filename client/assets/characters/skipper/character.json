@@ -1,0 +1,557 @@
+{
+ "format": 1,
+ "id": "skipper",
+ "name": "Skipper",
+ "frame_size": [
+  96,
+  128
+ ],
+ "pivot": [
+  48,
+  124
+ ],
+ "rig_units_per_px": 1.5384615384615383,
+ "ball_offset": 53.2,
+ "anims": {
+  "swing": {
+   "sheet": "swing.png",
+   "loop": false,
+   "frames": [
+    {
+     "name": "address",
+     "ms": 70,
+     "anchors": {
+      "club_grip": [
+       57,
+       90
+      ],
+      "club_head": [
+       75,
+       121
+      ],
+      "head_top": [
+       58,
+       46
+      ]
+     },
+     "rect": [
+      0,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "takeaway",
+     "ms": 60,
+     "anchors": {
+      "club_grip": [
+       52,
+       89
+      ],
+      "club_head": [
+       20,
+       101
+      ],
+      "head_top": [
+       56,
+       46
+      ]
+     },
+     "rect": [
+      96,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "halfback",
+     "ms": 60,
+     "anchors": {
+      "club_grip": [
+       37,
+       80
+      ],
+      "club_head": [
+       33,
+       46
+      ],
+      "head_top": [
+       57,
+       46
+      ]
+     },
+     "rect": [
+      192,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "top",
+     "ms": 90,
+     "anchors": {
+      "club_grip": [
+       43,
+       62
+      ],
+      "club_head": [
+       73,
+       45
+      ],
+      "head_top": [
+       56,
+       47
+      ]
+     },
+     "rect": [
+      288,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "down",
+     "ms": 40,
+     "anchors": {
+      "club_grip": [
+       44,
+       84
+      ],
+      "club_head": [
+       23,
+       57
+      ],
+      "head_top": [
+       56,
+       46
+      ]
+     },
+     "rect": [
+      384,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "impact",
+     "ms": 50,
+     "anchors": {
+      "club_grip": [
+       60,
+       89
+      ],
+      "club_head": [
+       76,
+       121
+      ],
+      "head_top": [
+       58,
+       47
+      ]
+     },
+     "rect": [
+      480,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "follow",
+     "ms": 90,
+     "anchors": {
+      "club_grip": [
+       67,
+       74
+      ],
+      "club_head": [
+       78,
+       42
+      ],
+      "head_top": [
+       59,
+       46
+      ]
+     },
+     "rect": [
+      576,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "finish",
+     "ms": 520,
+     "anchors": {
+      "club_grip": [
+       51,
+       57
+      ],
+      "club_head": [
+       17,
+       65
+      ],
+      "head_top": [
+       58,
+       44
+      ]
+     },
+     "rect": [
+      672,
+      0,
+      96,
+      128
+     ]
+    }
+   ],
+   "target_frames": 8,
+   "contact_frame": 5
+  },
+  "idle": {
+   "sheet": "idle.png",
+   "loop": true,
+   "frames": [
+    {
+     "name": "idle_0",
+     "ms": 240,
+     "anchors": {
+      "club_grip": [
+       57,
+       90
+      ],
+      "club_head": [
+       75,
+       121
+      ],
+      "head_top": [
+       58,
+       46
+      ]
+     },
+     "rect": [
+      0,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_1",
+     "ms": 160,
+     "anchors": {
+      "club_grip": [
+       57,
+       90
+      ],
+      "club_head": [
+       75,
+       121
+      ],
+      "head_top": [
+       58,
+       47
+      ]
+     },
+     "rect": [
+      96,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_2",
+     "ms": 220,
+     "anchors": {
+      "club_grip": [
+       57,
+       91
+      ],
+      "club_head": [
+       75,
+       121
+      ],
+      "head_top": [
+       58,
+       47
+      ]
+     },
+     "rect": [
+      192,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_3",
+     "ms": 200,
+     "anchors": {
+      "club_grip": [
+       57,
+       91
+      ],
+      "club_head": [
+       75,
+       121
+      ],
+      "head_top": [
+       58,
+       47
+      ]
+     },
+     "rect": [
+      288,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_4",
+     "ms": 160,
+     "anchors": {
+      "club_grip": [
+       57,
+       91
+      ],
+      "club_head": [
+       75,
+       121
+      ],
+      "head_top": [
+       58,
+       47
+      ]
+     },
+     "rect": [
+      384,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_5",
+     "ms": 180,
+     "anchors": {
+      "club_grip": [
+       57,
+       90
+      ],
+      "club_head": [
+       75,
+       121
+      ],
+      "head_top": [
+       58,
+       47
+      ]
+     },
+     "rect": [
+      480,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "idle_6",
+     "ms": 200,
+     "anchors": {
+      "club_grip": [
+       57,
+       90
+      ],
+      "club_head": [
+       75,
+       121
+      ],
+      "head_top": [
+       58,
+       46
+      ]
+     },
+     "rect": [
+      576,
+      0,
+      96,
+      128
+     ]
+    }
+   ],
+   "target_frames": 7,
+   "contact_frame": null
+  },
+  "victory": {
+   "sheet": "victory.png",
+   "loop": true,
+   "frames": [
+    {
+     "name": "vic_0",
+     "ms": 220,
+     "anchors": {
+      "club_grip": [
+       40,
+       82
+      ],
+      "club_head": [
+       24,
+       51
+      ],
+      "head_top": [
+       53,
+       47
+      ]
+     },
+     "rect": [
+      0,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "vic_1",
+     "ms": 110,
+     "anchors": {
+      "club_grip": [
+       40,
+       47
+      ],
+      "club_head": [
+       22,
+       18
+      ],
+      "head_top": [
+       54,
+       45
+      ]
+     },
+     "rect": [
+      96,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "vic_2",
+     "ms": 150,
+     "anchors": {
+      "club_grip": [
+       41,
+       49
+      ],
+      "club_head": [
+       21,
+       22
+      ],
+      "head_top": [
+       54,
+       45
+      ]
+     },
+     "rect": [
+      192,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "vic_3",
+     "ms": 130,
+     "anchors": {
+      "club_grip": [
+       43,
+       53
+      ],
+      "club_head": [
+       27,
+       22
+      ],
+      "head_top": [
+       54,
+       44
+      ]
+     },
+     "rect": [
+      288,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "vic_2",
+     "ms": 150,
+     "anchors": {
+      "club_grip": [
+       41,
+       49
+      ],
+      "club_head": [
+       21,
+       22
+      ],
+      "head_top": [
+       54,
+       45
+      ]
+     },
+     "rect": [
+      384,
+      0,
+      96,
+      128
+     ]
+    },
+    {
+     "name": "vic_1",
+     "ms": 110,
+     "anchors": {
+      "club_grip": [
+       40,
+       47
+      ],
+      "club_head": [
+       22,
+       18
+      ],
+      "head_top": [
+       54,
+       45
+      ]
+     },
+     "rect": [
+      480,
+      0,
+      96,
+      128
+     ]
+    }
+   ],
+   "target_frames": 6,
+   "contact_frame": null
+  }
+ },
+ "palette": {},
+ "regions": {},
+ "recolor_regions": [],
+ "variants": {},
+ "equipment_slots": {},
+ "surfaces": {},
+ "source": {
+  "generator": "tools/artgen v4 (shaded pose guide -> SDXL + pixel-art-xl paint-over -> g4_px clean-up)",
+  "frames": "art/characters/skipper/v4/",
+  "picks": "art/characters/skipper/v4/picks.json"
+ },
+ "portrait": "portrait.png"
+}
