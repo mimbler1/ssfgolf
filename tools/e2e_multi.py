@@ -1,6 +1,6 @@
 """Multi-client online soak test: one dedicated server + N headless bot clients (2-6).
 
-  python tools/e2e_multi.py [N] [--target POINTS] [--no-abilities]
+  python tools/e2e_multi.py [N] [--target POINTS] [--no-abilities] [--drop]
 
 The server runs in insecure dev mode (no backend) on the full six-course pool. Every bot
 auto-aims with the shared physics predictor, fires random abilities with spin and triggers them
@@ -27,6 +27,7 @@ def main():
     n = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else 6
     target = sys.argv[sys.argv.index("--target") + 1] if "--target" in sys.argv else "6"
     abilities = "--no-abilities" not in sys.argv
+    drop = "--drop" in sys.argv
     os.makedirs(LOGS, exist_ok=True)
     t0 = time.time()
     server = subprocess.Popen([GODOT, "--headless", "--path", CLIENT, "--", "--server", "--port", PORT, "--insecure-dev",
@@ -39,6 +40,9 @@ def main():
                 "--connect", "127.0.0.1:" + PORT, "--dev-name", NAMES[i], "--quit-after", "900"]
         if abilities:
             args.append("--abilities")
+        if drop and i == 1:
+            # Player 2 loses its connection mid-match and rejoins with the same token.
+            args += ["--drop-after", "22"]
         clients.append(subprocess.Popen(args, stdout=open(os.path.join(LOGS, "client_%d.log" % i), "w"),
                                         stderr=subprocess.STDOUT, text=True))
     codes = [c.wait() for c in clients]
@@ -62,6 +66,10 @@ def main():
             ev.get("explode", 0), ev.get("hole_end", 0)))
         if int(welcomed.group(2)) != n:
             ok = False
+        if drop and i == 1:
+            rejoined = "rejoining" in log and log.count("welcomed as slot") >= 2
+            print("  client 1 dropped and rejoined mid-match: %s" % ("yes" if rejoined else "NO"))
+            ok = ok and rejoined
         if "SCRIPT ERROR" in log:
             print("  client %d log has SCRIPT ERROR" % i)
             ok = False

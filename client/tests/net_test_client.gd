@@ -17,6 +17,14 @@ var _emote_at := -1.0
 var _use_abilities := false
 var _activate_at := -1.0
 var _abilities_fired := 0
+## --drop-after S: drop the connection abruptly at S seconds, then rejoin with the same token.
+var _drop_at := -1.0
+var _rejoin_at := -1.0
+var _token := ""
+var _host := ""
+var _port := 7777
+var _match := "dev"
+var _rejoined := false
 
 
 func _ready() -> void:
@@ -24,9 +32,18 @@ func _ready() -> void:
 	var hp := _arg(args, "--connect", "127.0.0.1:7777").split(":")
 	_name = _arg(args, "--dev-name", "Bot")
 	var token := _arg(args, "--token", "dev:" + _name)
+	_token = token
+	_host = hp[0]
+	_port = int(hp[1])
+	_match = _arg(args, "--match", "dev")
+	_drop_at = float(_arg(args, "--drop-after", "-1"))
 	_quit_after = float(_arg(args, "--quit-after", "240"))
 	_leave_at = float(_arg(args, "--leave-after", "-1"))
 	_use_abilities = args.has("--abilities")
+	_make_view()
+
+
+func _make_view() -> void:
 	view = NetMatchView.new()
 	add_child(view)
 	view.welcomed.connect(func() -> void:
@@ -39,7 +56,7 @@ func _ready() -> void:
 		print("[%s] connection lost: %s" % [_name, r])
 		_finish(3))
 	view.game_event.connect(_on_event)
-	view.connect_to(hp[0], int(hp[1]), token, _arg(args, "--match", "dev"))
+	view.connect_to(_host, _port, _token, _match)
 
 
 static func _arg(args: PackedStringArray, key: String, fallback: String) -> String:
@@ -79,6 +96,24 @@ func _process(delta: float) -> void:
 	if _t > _quit_after:
 		print("[%s] TIMEOUT after %.0fs events=%s" % [_name, _t, JSON.stringify(_events)])
 		get_tree().quit(4)
+		return
+	if _drop_at > 0.0 and _t > _drop_at:
+		# Abrupt drop (no goodbye), like a lost connection; the server keeps our slot during the grace.
+		print("[%s] dropping connection" % _name)
+		_drop_at = -1.0
+		view._shutdown(false)   # disconnects our signal handlers, then closes the peer abruptly
+		view.queue_free()
+		view = null
+		_rejoin_at = _t + 3.0
+		return
+	if _rejoin_at > 0.0:
+		if _t > _rejoin_at:
+			_rejoin_at = -1.0
+			_rejoined = true
+			print("[%s] rejoining" % _name)
+			_make_view()
+		return
+	if view == null:
 		return
 	if _leave_at > 0.0 and _t > _leave_at:
 		print("[%s] leaving deliberately" % _name)
