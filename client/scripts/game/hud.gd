@@ -128,13 +128,20 @@ func _build_controls_card() -> Control:
 	grid.add_theme_constant_override("h_separation", 10)
 	grid.add_theme_constant_override("v_separation", 6)
 	panel.add_child(grid)
+	var classic := str(Settings.get_value("gameplay", "control_style")) == "classic"
 	var rows := [
 		["Drag", "Aim, release to shoot"],
 		[_short_key("cancel_aim"), "Cancel the shot"],
-		["1 - 6", "Pick a ball"],
-		[_short_key("activate_ability"), "Trigger it mid-flight"],
-		[_short_key("reset_ball"), "Back to last spot"],
 	]
+	if classic:
+		rows = [
+			["%s / %s" % [_short_key("aim_left"), _short_key("aim_right")], "Aim"],
+			[_short_key("swing"), "Start / stop the power meter"],
+		]
+	rows.append(["%s / %s" % [_short_key("spin_top"), _short_key("spin_back")], "Spin (hold in flight)"])
+	rows.append(["1 - 6, " + _short_key("ability_page"), "Pick a ball, next page"])
+	rows.append([_short_key("activate_ability"), "Trigger it mid-flight"])
+	rows.append([_short_key("reset_ball"), "Back to last spot"])
 	rows.append(["Hold " + _short_key("emote_wheel"), "Emotes"])
 	for row: Array in rows:
 		var chip := PanelContainer.new()
