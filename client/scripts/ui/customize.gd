@@ -1008,6 +1008,13 @@ class _BallPreview extends Node2D:
 		if not flying and _wait > 0.0:
 			return
 		var r := radius
+		var strip := UIArt.tex("ball/ball_tint_spin.png")
+		if strip:
+			texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			var fw := strip.get_width() / 8
+			var fi := posmod(int(pos.x / 30.0), 8) if flying else 0
+			draw_texture_rect_region(strip, Rect2(pos - Vector2(r, r), Vector2(r, r) * 2.0), Rect2(fi * fw, 0, fw, strip.get_height()), ball_color)
+			return
 		draw_circle(pos, r + maxf(3.0, r * 0.14), Color("1b2040"), true, -1.0, true)
 		draw_circle(pos, r, ball_color, true, -1.0, true)
 		draw_circle(pos + Vector2(r * 0.18, r * 0.2), r * 0.72, ball_color.darkened(0.12), true, -1.0, true)
