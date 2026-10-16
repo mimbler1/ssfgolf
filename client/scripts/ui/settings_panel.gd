@@ -105,6 +105,7 @@ func _show_tab(name: String) -> void:
 			_option("Controls", ["blitz", "classic"], ["Blitz: drag and release", "Classic: arrow keys + power meter"], "gameplay", "control_style")
 			_option("Drag direction (Blitz)", ["pull", "push"], ["Pull back (slingshot)", "Push toward target"], "gameplay", "aim_mode")
 			_slider("Drag length for full power (Blitz)", "gameplay", "aim_distance", 140.0, 520.0)
+			_toggle("Dotted aim guide (predicted flight path)", "gameplay", "aim_dots")
 			_slider("Screen shake", "gameplay", "screen_shake", 0.0, 1.0)
 			_toggle("Reduced motion (no shake, flyovers or score pops)", "gameplay", "reduced_motion")
 		"Controls":

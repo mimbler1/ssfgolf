@@ -26,7 +26,7 @@ Debug and tooling paths stay; anything a player sees is replaced.
 | `render/terrain_view.gd` (non-art branch) | Flat-colour soil, bands and polygon decor when a theme has no `"art"` | Authored `WorldArt` materials. Every course theme must ship art; the vector branch then stays only as a debug fallback | Meadow done; Beach, Sticky, Snow, Lab and Spin to come with Milestones 6–7 |
 | `render/backdrop.gd` (non-art branch) | Gradient sky and flat polygon mountains | Illustrated parallax layers per theme | Meadow done; other themes as above |
 | `render/ball_view.gd` | Ball as shaded circles, spin marks, trail line, cooldown ring | Sprite ball (rotation frames), sprite trail particles. Keep a thin outline ring for readability (directive 17.14) | Not started |
-| `render/trajectory_view.gd` | Dotted trajectory | Removed for normal shots (Milestone 4). The Laser Ball guide gets its own sprite-dot style | Pending Milestone 4 |
+| `render/trajectory_view.gd` | Dotted trajectory | Restored for every shot as pixel-square dots in the ball colour (Settings > Gameplay > Dotted aim guide, on by default). The Laser Ball keeps its longer beam guide | Done |
 | `render/fx_layer.gd` (particle pass) | Spark, confetti and droplet circles | Flipbooks already cover impact, dust, splash, sparkle and flame; particles move to sprite textures | Partly done |
 | `ui/menu_backdrop.gd` | Foreground hill, flag and golfer for the menus | Meadow stage art and a sprite golfer | Partly done (inherits the meadow art; its golfer follows the roster conversion) |
 

@@ -1,8 +1,8 @@
 class_name AimView
 extends Node2D
 ## The aim indicator around the local ball: a chunky pixel arrow (direction + power), the launch
-## spin, the classic power meter and the putting tag. It never shows where the ball will go; only
-## the Laser Ball guide (TrajectoryView) does that.
+## spin, the classic power meter and the putting tag. Where the ball will go is drawn separately by
+## TrajectoryView (the dotted aim guide, or the Laser Ball's beam).
 ##
 const PX := 2.0
 const INK := Color("141428")

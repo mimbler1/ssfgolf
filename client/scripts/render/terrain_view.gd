@@ -93,6 +93,35 @@ func build(p_terrain: SimTerrain, p_hole: Dictionary, p_theme: Dictionary, p_hol
 	add_child(forces)
 
 
+## Default contrast of the soil texture around its average colour (world.json soil "detail"
+## overrides it). 1.0 = the raw texture, which is too busy under gameplay.
+const SOIL_DETAIL := 0.35
+
+static var _mean_cache: Dictionary = {}
+
+
+## Average opaque colour of a texture (cached), used to calm the soil pattern.
+static func _mean_color(t: Texture2D) -> Color:
+	if t == null:
+		return Color(0.5, 0.5, 0.5)
+	if _mean_cache.has(t.resource_path):
+		return _mean_cache[t.resource_path]
+	var img := t.get_image()
+	if img.is_compressed():
+		img.decompress()
+	var sum := Color(0, 0, 0, 0)
+	var n := 0
+	for y in range(0, img.get_height(), 2):
+		for x in range(0, img.get_width(), 2):
+			var c := img.get_pixel(x, y)
+			if c.a > 0.5:
+				sum += c
+				n += 1
+	var mean := Color(sum.r / n, sum.g / n, sum.b / n) if n > 0 else Color(0.5, 0.5, 0.5)
+	_mean_cache[t.resource_path] = mean
+	return mean
+
+
 ## Authored-art build: same geometry as the procedural path, dressed in world materials.
 func _build_art() -> void:
 	var decor_back := Node2D.new()
@@ -112,6 +141,8 @@ func _build_art() -> void:
 	soil_mat.set_shader_parameter("top_y", min_y + 60.0)
 	soil_mat.set_shader_parameter("depth_px", float(sm.get("depth_px", 700)))
 	soil_mat.set_shader_parameter("dark", float(sm.get("depth_dark", 0.5)))
+	soil_mat.set_shader_parameter("detail", float(sm.get("detail", SOIL_DETAIL)))
+	soil_mat.set_shader_parameter("mean_color", _mean_color(soil))
 	_build_skirts()
 	for poly in terrain.polygons:
 		var p := art.textured_polygon(poly.points, soil)
@@ -174,44 +205,73 @@ func _build_art_decor(parent: Node2D) -> void:
 		if t == null:
 			continue
 		var flip := rng.randf() < 0.5
-		# world.json "decor_anchor": ground (default) | free (at x, y) | water (floats on the
-		# water surface under x) | ceiling (hangs from the surface above; ground if none).
+		# world.json "decor_anchor": ground (default) | water (bobs in the water under x) | ceiling
+		# (hangs from the surface above). Decor is never drawn floating in the air: anything that
+		# finds no surface to sit on is skipped.
 		var anchor := str((art.data.get("decor_anchor", {}) as Dictionary).get(str(d.get("type", "")), "ground"))
-		if anchor == "free":
-			parent.add_child(art.ground_sprite(t, pos, flip))
-			continue
 		if anchor == "water":
-			var placed := false
 			for z in terrain.zones:
 				var zr: Rect2 = z["rect"]
 				if z["type"] == "water" and pos.x >= zr.position.x and pos.x <= zr.end.x:
-					parent.add_child(art.ground_sprite(t, Vector2(pos.x, zr.position.y + art.scale * 4.0), flip))
-					placed = true
+					# Sink the lower part below the waterline (the water is drawn in front of decor).
+					parent.add_child(art.ground_sprite(t, Vector2(pos.x, zr.position.y + t.get_height() * art.scale * 0.4), flip))
 					break
-			if placed:
-				continue
+			continue
 		if anchor == "ceiling":
 			var up := terrain.raycast(pos + Vector2(0, 40), Vector2.UP, 400.0)
 			if up.hit and up.normal.y > 0.5:
 				var sp := art.ground_sprite(t, up.pos, flip)
 				sp.offset = Vector2(-t.get_width() * 0.5, 0)
 				parent.add_child(sp)
-				continue
-		var hit := terrain.raycast(pos + Vector2(0, -400), Vector2.DOWN, 1400.0)
-		if hit.hit:
-			pos = hit.pos
-		parent.add_child(art.ground_sprite(t, pos + Vector2(0, art.scale * 3.0), flip))
+			continue
+		var base := _decor_ground(pos, t.get_width() * art.scale)
+		if base.x == INF:
+			continue
+		parent.add_child(art.ground_sprite(t, base + Vector2(0, art.scale * 3.0), flip))
 
 
-## Finds terrain edges lying on the world's left/right bounds and extends them outward as flat
-## plateaus at the same height.
+## Where a ground decor sprite `width` px wide stands near `pos`: the lowest walkable surface point
+## under its footprint (so it never overhangs a slope; the part below the surface hides behind the
+## soil, which is drawn in front of decor). Searches down from just above the authored height so a
+## sprite under an overhang lands on the floor, not on the overhang's roof. Returns
+## Vector2(INF, INF) when there is no walkable surface (the sprite is then not drawn).
+func _decor_ground(pos: Vector2, width: float) -> Vector2:
+	var centre := _walkable_below(pos)
+	if centre.x == INF:
+		return centre
+	var lowest := centre.y
+	for dx in [-width * 0.35, width * 0.35]:
+		var side := _walkable_below(Vector2(pos.x + dx, centre.y))
+		if side.x != INF and absf(side.y - centre.y) < 60.0:
+			lowest = maxf(lowest, side.y)
+	return Vector2(centre.x, lowest)
+
+
+func _walkable_below(pos: Vector2) -> Vector2:
+	for start in [80.0, 400.0]:
+		var hit := terrain.raycast(pos + Vector2(0, -start), Vector2.DOWN, start + 1000.0)
+		if hit.hit and hit.normal.y < -0.6 and not terrain.is_point_solid(pos + Vector2(0, -start)):
+			return hit.pos
+	return Vector2(INF, INF)
+
+
+## Finds the terrain's outermost left/right edges and extends them outward as flat plateaus at the
+## same height, so the camera never sees past the end of the ground. The outer edge is taken from
+## the terrain itself (not the hole bounds), so ground that stops short of or overruns the bounds
+## is still continued without a gap.
 func _build_skirts() -> void:
 	skirts.clear()
 	var bd := terrain.bounds
+	var min_x := INF
+	var max_x := -INF
+	for poly in terrain.polygons:
+		for v: Vector2 in poly.points:
+			min_x = minf(min_x, v.x)
+			max_x = maxf(max_x, v.x)
 	for poly in terrain.polygons:
 		var pts: PackedVector2Array = poly.points
 		for side: float in [-1.0, 1.0]:
-			var edge_x: float = bd.position.x if side < 0.0 else bd.end.x
+			var edge_x: float = min_x if side < 0.0 else max_x
 			var top := INF
 			var bottom := -INF
 			for v in pts:

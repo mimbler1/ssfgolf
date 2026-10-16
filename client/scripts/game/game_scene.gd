@@ -712,7 +712,8 @@ func _update_controls(delta: float) -> void:
 		aim_view.classic = shot.style == "classic"
 		aim_view.color = Color(GameData.ability(_selected).get("color", "#ffffff"))
 		aim_view.blocked = view.local_shot_block() != ""
-	# Flight-path guide: Laser Ball only (or the practice debug overlay).
+	# Flight-path guide: the dotted aim guide (setting, on by default), the Laser Ball's longer beam,
+	# or the practice debug overlay.
 	var guide := _guide_style()
 	if show_arrow and guide != "" and (changed or _pending_predict or guide + _selected + str(shot.spin) != _last_predict_key):
 		_pending_predict = false
@@ -723,12 +724,15 @@ func _update_controls(delta: float) -> void:
 		_last_predict_key = ""
 
 
-## "laser" when the selected ball grants the aiming guide, "debug" for the practice overlay, else "".
+## "laser" when the selected ball grants its long guide, "debug" for the practice overlay, "dots" for
+## the standard dotted aim guide (Settings > Gameplay), else "".
 func _guide_style() -> String:
 	if str(GameData.ability(_selected).get("assist", "")) == "trajectory":
 		return "laser"
 	if _debug_traj and view.mode == "practice":
 		return "debug"
+	if bool(Settings.get_value("gameplay", "aim_dots")):
+		return "dots"
 	return ""
 
 
@@ -745,8 +749,15 @@ func _predict(guide: String) -> void:
 	var vel := Vector2.from_angle(shot.angle) * speed
 	var r := float(bal.physics.ball_radius)
 	var params: Dictionary = def.get("params", {})
-	var max_t := float(params.get("guide_time", 3.0)) if guide == "laser" else 6.0
-	var after := float(params.get("after_contact", 0.25)) if guide == "laser" else 1.2
+	# The dotted guide shows the first arc and a short roll-out; the Laser and debug views go further.
+	var max_t := 6.0
+	var after := 1.2
+	if guide == "laser":
+		max_t = float(params.get("guide_time", 3.0))
+		after = float(params.get("after_contact", 0.25))
+	elif guide == "dots":
+		max_t = 2.5
+		after = 0.28
 	var res := SimPhysics.predict(view.terrain, bal.physics, GameData.materials, s.pos, vel, r, 1.0, max_t, after, 2,
 		MatchSim.launch_spin(bal, vel, shot.spin, r), func(b: SimBall) -> void: MatchSim.apply_ability(b, def), view.terrain.cup_pos)
 	trajectory.set_path(res.points, res.contact_index, shot.shot_power(), Color(def.get("color", "#ffffff")), res.hazard, guide)

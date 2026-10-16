@@ -283,10 +283,10 @@
         "stroke"
       ],
       "assist": "trajectory",
-      "desc": "Shows a laser guide of the flight up to its first bounce while you aim.",
+      "desc": "Shows a laser guide of the whole flight, through its bounces, while you aim.",
       "params": {
-        "guide_time": 3.0,
-        "after_contact": 0.25
+        "guide_time": 5.0,
+        "after_contact": 1.6
       }
     },
     {

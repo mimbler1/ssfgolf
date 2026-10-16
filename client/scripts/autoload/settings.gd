@@ -43,7 +43,7 @@ const ACTIONS := {
 var values: Dictionary = {
 	"display": {"window_mode": "windowed", "vsync": true, "max_fps": 0},
 	"audio": {"master": 0.8, "sfx": 0.9, "music": 0.6},
-	"gameplay": {"control_style": "blitz", "aim_mode": "pull", "aim_distance": 280.0, "screen_shake": 1.0, "reduced_motion": false},
+	"gameplay": {"control_style": "blitz", "aim_mode": "pull", "aim_distance": 280.0, "screen_shake": 1.0, "reduced_motion": false, "aim_dots": true},
 	"network": {"backend_url": "http://127.0.0.1:8080"},
 }
 var bindings: Dictionary = {}  ## action -> Array of descriptors

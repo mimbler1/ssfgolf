@@ -1,10 +1,12 @@
 class_name TrajectoryView
 extends Node2D
-## Predicted flight path, computed from the same physics the server runs. It is shown ONLY:
-##  - as the Laser Ball's guide ("laser" style) while the Laser Ball is selected, or
-##  - as a practice-mode debug overlay ("debug" style) that the player switches on explicitly.
-## Regular shots never show it (docs/POWERUP_SPEC.md, Laser). It previews terrain only:
-## opponents, abilities triggered later and network latency can still change the outcome.
+## Predicted flight path, computed from the same physics the server runs. Styles:
+##  - "dots": the standard dotted aim guide for every shot (Settings > Gameplay, on by default),
+##    showing the first arc and a short roll-out;
+##  - "laser": the Laser Ball's longer beam guide while the Laser Ball is selected;
+##  - "debug": a practice-mode overlay that follows the whole flight.
+## It previews terrain only: opponents, abilities triggered later and network latency can still
+## change the outcome.
 
 var points: PackedVector2Array = PackedVector2Array()
 var contact_index: int = -1
@@ -43,6 +45,8 @@ func _draw() -> void:
 		return
 	if style == "laser":
 		_draw_laser()
+	elif style == "dots":
+		_draw_dots()
 	else:
 		_draw_debug()
 	if hazard:
@@ -95,7 +99,40 @@ func _draw_laser() -> void:
 		draw_arc(land, r, 0, TAU, 32, beam, 2.0)
 
 
-## Practice debug overlay: the old dotted path, white, clearly not the laser.
+## Standard aim guide: dots in the ball's colour that shrink and fade along the flight, dimmer after
+## the first bounce, with a landing marker. Square, pixel-snapped dots to match the pixel art.
+func _draw_dots() -> void:
+	var spacing := 18.0
+	var phase := fmod(_t * 40.0, spacing)
+	var acc := spacing - phase
+	var end_index := points.size() - 1
+	var ink := Color(0.08, 0.08, 0.16)
+	for i in range(1, points.size()):
+		var a := points[i - 1]
+		var b := points[i]
+		var seg := a.distance_to(b)
+		var d := 0.0
+		while acc <= seg - d:
+			d += acc
+			acc = spacing
+			var p := (a.lerp(b, d / seg) / 2.0).round() * 2.0
+			var k := float(i) / float(end_index)
+			var after := contact_index != -1 and i > contact_index
+			var alpha := (1.0 - k * 0.7) * (0.45 if after else 0.95)
+			var s := roundf(lerpf(8.0, 4.0, k) / 2.0) * 2.0
+			draw_rect(Rect2(p - Vector2(s, s) * 0.5 - Vector2(2, 2), Vector2(s + 4, s + 4)), Color(ink, alpha * 0.6))
+			draw_rect(Rect2(p - Vector2(s, s) * 0.5, Vector2(s, s)), Color(color, alpha))
+		acc -= seg - d
+	if contact_index > 0 and contact_index < points.size():
+		var land := points[contact_index]
+		var pulse := 0.5 + 0.5 * sin(_t * 6.0)
+		var r := 11.0 + pulse * 3.0
+		for side in [Vector2.RIGHT, Vector2.LEFT, Vector2.UP, Vector2.DOWN]:
+			draw_line(land + side * (r - 6.0), land + side * (r + 4.0), ink, 5.0)
+			draw_line(land + side * (r - 6.0), land + side * (r + 4.0), Color(color, 0.95), 3.0)
+
+
+## Practice debug overlay: the whole flight, white, clearly not the laser.
 func _draw_debug() -> void:
 	var spacing := 18.0
 	var phase := fmod(_t * 40.0, spacing)
