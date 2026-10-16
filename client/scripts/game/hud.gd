@@ -8,8 +8,7 @@ signal menu_pressed
 var view: MatchView
 var selected_ability: String = "standard"
 
-var _players_box: VBoxContainer
-var _player_rows: Dictionary = {}     ## slot -> {panel, name, pts}
+var _panels: ScorePanels
 var _banner_title: Label
 var _banner_sub: Label
 var _timer_pill: PanelContainer
@@ -35,26 +34,24 @@ func setup(p_view: MatchView) -> void:
 
 
 func _build() -> void:
-	# Player list (top-left).
-	_players_box = VBoxContainer.new()
-	UITheme.pin(_players_box, 0, 0, Vector2(24, 22), 1, 1)
-	_players_box.add_theme_constant_override("separation", 8)
-	_players_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_players_box)
-	for r in view.roster:
-		_add_player_row(r)
+	# SSF2-style player panels along the top (ScorePanels, HUD_SPEC.md).
+	_panels = ScorePanels.new()
+	add_child(_panels)
+	_panels.setup(view)
 
 	# Hole banner (top-centre).
 	var banner := VBoxContainer.new()
-	banner.custom_minimum_size = Vector2(600, 0)
+	banner.custom_minimum_size = Vector2(360, 0)
 	UITheme.pin(banner, 0.5, 0, Vector2(0, 10), 0, 1)
 	banner.alignment = BoxContainer.ALIGNMENT_BEGIN
 	banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	banner.add_theme_constant_override("separation", 0)
 	add_child(banner)
-	_banner_title = UITheme.styled_label("HOLE 1", 44, UITheme.PAPER, 10)
+	_banner_title = UITheme.styled_label("HOLE 1", 40, UITheme.PAPER, 10)
 	banner.add_child(_banner_title)
-	_banner_sub = UITheme.styled_label("", 24, UITheme.SUN, 7)
+	_banner_sub = UITheme.styled_label("", 21, UITheme.SUN, 7)
+	_banner_sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_banner_sub.custom_minimum_size = Vector2(360, 0)
 	banner.add_child(_banner_sub)
 	_timer_pill = PanelContainer.new()
 	var pill := UITheme.box(UITheme.CORAL, 20, UITheme.CORAL_DARK, 4)
@@ -66,9 +63,9 @@ func _build() -> void:
 	_timer_pill.visible = false
 	banner.add_child(_timer_pill)
 
-	# Menu button (top-right).
+	# Menu button (bottom-right; the top edge belongs to the player panels).
 	var menu := GameButton.make("☰", "GhostButton", Vector2(64, 64))
-	UITheme.pin(menu, 1, 0, Vector2(-24, 22), -1, 1)
+	UITheme.pin(menu, 1, 1, Vector2(-24, -24), -1, -1)
 	menu.tooltip_text = "Menu (Esc)"
 	menu.pressed.connect(func() -> void: menu_pressed.emit())
 	add_child(menu)
@@ -113,7 +110,7 @@ func _build() -> void:
 
 	_shots_label = UITheme.styled_label("", 26, UITheme.PAPER, 7)
 	_shots_label.custom_minimum_size = Vector2(230, 40)
-	UITheme.pin(_shots_label, 1, 1, Vector2(-28, -24), -1, -1)
+	UITheme.pin(_shots_label, 1, 1, Vector2(-104, -34), -1, -1)
 	_shots_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	add_child(_shots_label)
 
@@ -167,40 +164,6 @@ static func _short_key(action: String) -> String:
 	return {"Right Mouse": "R-Click", "Left Mouse": "L-Click", "Middle Mouse": "M-Click"}.get(label, label)
 
 
-func _add_player_row(r: Dictionary) -> void:
-	var slot := int(r.slot)
-	var panel := PanelContainer.new()
-	var is_local := slot == view.local_slot
-	var sb := UITheme.arcade_box(Color(UITheme.INK, 0.92), UITheme.SLOT_COLORS[slot % UITheme.SLOT_COLORS.size()] if is_local else UITheme.INK_LINE)
-	sb.content_margin_top = 5; sb.content_margin_bottom = 9; sb.content_margin_left = 16; sb.content_margin_right = 18
-	panel.add_theme_stylebox_override("panel", sb)
-	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var hb := HBoxContainer.new()
-	hb.add_theme_constant_override("separation", 10)
-	panel.add_child(hb)
-	var chip := ColorRect.new()
-	chip.custom_minimum_size = Vector2(14, 14)
-	chip.color = UITheme.SLOT_COLORS[slot % UITheme.SLOT_COLORS.size()]
-	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	hb.add_child(chip)
-	var name_l := Label.new()
-	name_l.text = str(r.name)
-	name_l.custom_minimum_size = Vector2(170, 0)
-	name_l.add_theme_font_override("font", UITheme.body_bold_font())
-	name_l.add_theme_font_size_override("font_size", 21)
-	name_l.clip_text = true
-	hb.add_child(name_l)
-	var pts := Label.new()
-	pts.add_theme_font_override("font", UITheme.heading_font())
-	pts.add_theme_font_size_override("font_size", 24)
-	pts.add_theme_color_override("font_color", UITheme.SUN)
-	pts.custom_minimum_size = Vector2(70, 0)
-	pts.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	hb.add_child(pts)
-	_players_box.add_child(panel)
-	_player_rows[slot] = {"panel": panel, "name": name_l, "pts": pts}
-
-
 func _add_card(a: Dictionary, index: int) -> void:
 	var id := str(a.id)
 	var panel := PanelContainer.new()
@@ -247,23 +210,6 @@ func _add_card(a: Dictionary, index: int) -> void:
 func _process(_delta: float) -> void:
 	if view == null:
 		return
-	# Players & points.
-	for slot: int in _player_rows:
-		var row: Dictionary = _player_rows[slot]
-		var ps := view.player_state(slot)
-		var bs := view.ball_state(slot)
-		if view.mode == "practice":
-			row.pts.text = "%d shots" % int(ps.get("hole_shots", 0))
-			row.pts.custom_minimum_size.x = 110
-		elif view.mode == "stroke":
-			row.pts.text = "%d strokes" % int(ps.get("strokes", 0))
-			row.pts.custom_minimum_size.x = 130
-		else:
-			row.pts.text = "%d / %d" % [int(ps.get("points", 0)), view.target_points]
-		var dim: bool = bs.get("forfeited", false) or not bs.get("connected", true)
-		row.panel.modulate.a = 0.45 if dim else 1.0
-		row.name.text = str(view.roster[slot].name) + ("  ⛳" if bs.get("finished", false) else "") + ("  (left)" if bs.get("forfeited", false) else ("  (reconnecting)" if not bs.get("connected", true) else ""))
-
 	# Finish window timer.
 	var ph := view.phase_state()
 	var dl: float = ph.get("deadline", INF)
@@ -309,7 +255,7 @@ func _process(_delta: float) -> void:
 		c.panel.position.y = -10.0 if sel else 0.0
 
 	var bs_local := view.ball_state(view.local_slot)
-	_shots_label.text = "Shots: %d" % int(me.get("hole_shots", 0)) if view.mode == "online" and not bs_local.get("finished", false) else ""
+	_shots_label.text = "Shots this hole: %d" % int(me.get("hole_shots", 0)) if view.mode == "online" and not bs_local.get("finished", false) else ""
 
 
 ## Shows one page of six balls (number keys 1-6 pick within the page; the page key flips).

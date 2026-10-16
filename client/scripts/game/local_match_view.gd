@@ -28,6 +28,32 @@ func setup_stroke(p_course_id: String, from_hole: int, appearance: Dictionary, d
 	_snap_prev()
 
 
+## Developer harness: a real local Blitz match (MatchSim "online" rules) with idle bot players,
+## used to test the HUD and match flow for 2-6 players without servers (--dev-blitz N).
+func setup_local_blitz(p_course_id: String, n: int, appearance: Dictionary, display_name: String) -> void:
+	mode = "online"
+	course_id = p_course_id
+	course = GameData.course(p_course_id)
+	balance = GameData.balance.duplicate(true)
+	sim = MatchSim.new(balance, GameData.materials, course, "online", 7)
+	var chars := ["rex", "mira", "bjorn", "ace", "nana", "bolt"]
+	var names := ["Bram", "Mira", "Kestrel", "Ace", "Nana Birdie", "Bolt-3000"]
+	roster = []
+	_prev_pos = []
+	_prev_rot = []
+	for i in n:
+		var app := appearance if i == 0 else Appearance.normalize({"character": chars[i % chars.size()]})
+		var nm: String = display_name if i == 0 else names[i % names.size()]
+		sim.add_player("p%d" % i, nm, app)
+		roster.append({"slot": i, "playerId": "p%d" % i, "name": nm, "appearance": app, "trophies": 0})
+		_prev_pos.append(Vector2.ZERO)
+		_prev_rot.append(0.0)
+	local_slot = 0
+	target_points = sim.target_points
+	allowed_abilities = sim.players[0].allowed_abilities
+	sim.start()
+
+
 func setup_practice(p_course_id: String, hole: int, appearance: Dictionary, display_name: String) -> void:
 	mode = "practice"
 	course_id = p_course_id

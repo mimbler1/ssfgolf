@@ -294,7 +294,7 @@ func _begin_hole(index: int, countdown: float) -> void:
 		"hole_id": str(hole.get("id", "")), "countdown": countdown})
 
 
-## Tee spots: up to six balls side by side around the tee, 18 px apart (just over a diameter).
+## Tee spots: up to six balls side by side around the tee, 24 px apart.
 func _tee_spot(slot: int) -> Vector2:
 	var n := players.size()
 	var hole: Dictionary = course.holes[hole_index] if hole_index >= 0 else {}
@@ -303,7 +303,7 @@ func _tee_spot(slot: int) -> Vector2:
 	if slot < spawns.size():
 		spot = Vector2(float(spawns[slot][0]), float(spawns[slot][1])) + Vector2(0, -200.0)
 	else:
-		var offset := (float(slot % MAX_PLAYERS) - float(mini(n, MAX_PLAYERS) - 1) * 0.5) * 20.0 if n > 1 else 0.0
+		var offset := (float(slot % MAX_PLAYERS) - float(mini(n, MAX_PLAYERS) - 1) * 0.5) * 24.0 if n > 1 else 0.0
 		spot = terrain.tee + Vector2(offset, -200.0)
 	var hit := terrain.surface_below(spot, 1200.0)
 	var ground: Vector2 = hit.pos if hit.hit else terrain.tee

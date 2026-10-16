@@ -25,6 +25,8 @@ var cooldown_frac: float = 0.0  ## 0 = ready, 1 = just shot
 var ready_to_shoot: bool = false
 var finished: bool = false
 var disconnected: bool = false
+## Name tag shown (the scene hides it while balls are bunched together, e.g. on the tee).
+var show_name: bool = true
 ## Ability states mirrored from the authoritative ball (snapshot flags).
 var shield: bool = false
 var iced: bool = false
@@ -155,7 +157,7 @@ func _draw() -> void:
 
 	if is_local and not finished:
 		_draw_local_marker()
-	elif display_name != "" and not finished:
+	elif display_name != "" and not finished and show_name:
 		_draw_name()
 
 

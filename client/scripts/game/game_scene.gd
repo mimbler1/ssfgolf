@@ -85,7 +85,15 @@ func _ready() -> void:
 		_hook_view()
 		var app := Appearance.normalize(_local_appearance())
 		var pname := str(Backend.profile.get("displayName", "You"))
-		if str(params.get("mode", "practice")) == "stroke":
+		var dbl := OS.get_cmdline_user_args().find("--dev-blitz")
+		if dbl != -1:
+			lv.setup_local_blitz(str(params.get("course", GameData.POOL_ID)), int(OS.get_cmdline_user_args()[dbl + 1]), app, pname)
+			var dpts := OS.get_cmdline_user_args().find("--dev-points")
+			if dpts != -1:
+				var vals := OS.get_cmdline_user_args()[dpts + 1].split(",")
+				for i in mini(vals.size(), lv.sim.players.size()):
+					lv.sim.players[i].points = int(vals[i])
+		elif str(params.get("mode", "practice")) == "stroke":
 			lv.setup_stroke(str(params.get("course", "golf_land")), int(params.get("hole", 0)), app, pname, bool(params.get("clean", false)))
 		else:
 			lv.setup_practice(str(params.get("course", "golf_land")), int(params.get("hole", 0)), app, pname)
@@ -281,6 +289,13 @@ func _update_ball(slot: int, _delta: float) -> void:
 	bv.visible_ball = bool(s.active) and not bool(s.finished)
 	bv.finished = bool(s.finished)
 	bv.disconnected = bool(s.forfeited)
+	# Hide name tags while balls are bunched up (the tee); the HUD panels identify players there.
+	var crowded := false
+	for other: int in balls:
+		if other != slot and balls[other].visible_ball and (balls[other].position as Vector2).distance_to(s.pos) < 46.0:
+			crowded = true
+			break
+	bv.show_name = not crowded or (s.vel as Vector2).length() > 120.0
 	bv.shield = bool(s.get("shield", false))
 	bv.iced = bool(s.get("ice", false))
 	bv.anti_grav = bool(s.get("anti_grav", false))
