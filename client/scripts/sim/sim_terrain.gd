@@ -278,10 +278,14 @@ const CUP_CAPTURE_SPEED := 620.0
 
 ## True when the ball counts as holed: it has fallen deep into the cup at any speed,
 ## or it has dipped into the cup mouth while moving slowly enough (arcade-forgiving lip).
+## Only the cup's own cavity counts: a ball further below (e.g. on a floor under an upper-deck
+## green, or in water under an island green) is not in the cup.
 func cup_captures(pos: Vector2, radius: float, speed: float) -> bool:
 	if not has_cup:
 		return false
 	if pos.x <= cup_left + 1.0 or pos.x >= cup_right - 1.0:
+		return false
+	if pos.y > cup_floor_y + 2.0:
 		return false
 	if pos.y > cup_pos.y + radius * 0.9:
 		return true
