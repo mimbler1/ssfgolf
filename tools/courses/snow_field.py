@@ -1,14 +1,19 @@
-"""Course 4: Snow Field - snow and ice (docs/COURSE_MANIFEST.md).
+"""Course 4: Snow Field - snow and ice (docs/COURSE_MANIFEST.md, docs/COURSE_REFERENCE.md).
 
-Original layouts. Snow and ice are different physics materials: snow is soft, grabs the ball and
-plugs it on landing; ice is almost frictionless, so balls (and spin) slide. Holes mix both with
-water, steep slopes and a ski jump. The Ice Ball ability can freeze the lakes.
+Rebuilt in Super Stickman Golf 3's structure (tour 1, course 4; nine holes). SSG3's Snow Field
+pars and geometry are not available, so the pars here are design pars and every layout is
+original. Snow (the base ground) is soft, grabs the ball and plugs landings; ice is almost
+frictionless; greens are frosted turf ("grass"). Verified detail kept as a design constraint:
+hole 4 can be aced touching only the green (tests/ace_search.gd --only grass proves it). Par on
+SSG3's Snow Field unlocks the Ice Ball, which freezes the lakes here.
+
+Every solid piece is attached to the ground (no floating platforms).
 """
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from lib import P, ground, left_wall, right_wall, block, poly, water, pond, deco, hole, write_course  # noqa: E402
+from lib import P, ground, left_wall, right_wall, pond, deco, hole, write_course  # noqa: E402
 
 THEME = {
     "id": "snow", "art": "snow",
@@ -20,100 +25,120 @@ THEME = {
 }
 S = "snow"
 I = "ice"
+G = "grass"   # frosted putting green (art: cap_green)
+R = "rock"
+
+
+def green(points):
+    """Mark a run of surface points as putting green."""
+    return [P(x, y, m=G) for x, y in points]
 
 
 def h1():
-    return hole("sf_01", "First Frost", 3, (-200, -1500, 3300, 2200), (360, 0), (2300, -20),
-        [ground(left_wall() + [P(520, 0), P(900, -10), P(1200, -20), P(1500, -20, m=I), P(1950, -20), P(2050, -20), P(2600, -20),
-            P(2700, -40)] + right_wall(3100, -900, -60), material=S)],
-        decor=[deco("pine", 650, 0), deco("snowman", 1100, -20), deco("pine", 2700, -40), deco("rock", 1800, -20)],
-        notes="Snow holds the ball; the strip of ice in front of the green does not. Land past it or roll across it gently.")
+    return hole("sf_01", "First Frost", 4, (-200, -1600, 4600, 2300), (360, 0), (3500, -20),
+        [ground(left_wall() + [P(520, 0), P(900, -30), P(1300, -60), P(1700, -40), P(2000, -20), P(2300, -20, m=I),
+            P(2800, -20)] + green([(3100, -26), (3300, -30), (3500, -20), (3700, -32)]) + [P(3850, -42)] +
+            right_wall(4400, -1000, -60), material=S)],
+        decor=[deco("pine", 650, -5), deco("snowman", 1300, -60), deco("pine", 1900, -25), deco("ice_chunk", 2550, -20),
+               deco("pine", 4000, -50)],
+        notes="A rolling snowfield. Snow grabs the ball; the strip of ice in front of the green does not. Land past it or roll across it gently onto a green that gathers toward the cup.")
 
 
 def h2():
-    return hole("sf_02", "The Rink", 3, (-200, -1400, 3800, 2100), (360, 0), (3160, -10),
-        [ground(left_wall() + [P(520, 0), P(800, 0, m=I), P(2900, 0), P(3000, -10), P(3260, -10), P(3330, -40, m="rock"),
-            P(3380, -140)] + right_wall(3700, -900, -160), material=S)],
-        decor=[deco("pine", 600, 0), deco("flag_small", 1800, 0), deco("pine", 3450, -300)],
-        notes="A long sheet of ice. Power is everything: a putt-weight shot slides for hundreds of pixels. A rock lip behind the green stops the worst overruns.")
+    return hole("sf_02", "Ice Rink", 4, (-200, -1600, 4800, 2300), (360, 0), (3550, -150),
+        [ground(left_wall() + [P(520, 0), P(800, 0), P(900, 0, m=I), P(2900, 0), P(2950, 0, c=True, m=R), P(2990, -150, c=True)] +
+            green([(3200, -150), (3400, -152), (3550, -144), (3750, -154)]) + [P(3950, -162)] +
+            right_wall(4600, -1100, -180), material=S)],
+        decor=[deco("pine", 650, 0), deco("ice_chunk", 1500, 0), deco("ice_chunk", 2400, 0), deco("snowman", 3300, -150),
+               deco("pine", 4100, -165)],
+        notes="A long sheet of ice runs to a rock step. A putt-weight shot slides for hundreds of pixels: judge the power to stop on the ice by the step, or carry onto the green.")
 
 
 def h3():
-    return hole("sf_03", "Slalom", 4, (-200, -2200, 4200, 2900), (360, -900), (3500, -20),
-        [ground([P(-200, -1500, c=True), P(-90, -1440), P(20, -1100), P(120, -940), P(260, -900), P(520, -900), P(700, -860),
-            P(950, -740), P(1150, -690, m=I), P(1300, -640), P(1450, -560), P(1700, -470, m=I), P(1850, -420), P(2050, -330),
-            P(2300, -240, m=I), P(2450, -190), P(2700, -110), P(2950, -40), P(3200, -20), P(3600, -20), P(3800, -40)] +
-            right_wall(4000, -900, -60), material=S)],
-        decor=[deco("pine", 400, -900), deco("pine", 1000, -730), deco("flag_slalom", 1500, -550), deco("flag_slalom", 2350, -230),
-               deco("pine", 3700, -40)],
-        notes="Downhill through gates of ice. Every icy patch speeds the ball up the hill's fall line.")
+    return hole("sf_03", "Slalom", 4, (-200, -2000, 5000, 2700), (380, -700), (4100, 6),
+        [ground([P(-200, -1300, c=True), P(-90, -1240), P(20, -900), P(120, -740), P(260, -700), P(600, -700), P(800, -650),
+            P(1100, -540, m=I), P(1400, -430), P(1700, -330, m=I), P(2000, -240), P(2300, -160, m=I), P(2600, -90),
+            P(2900, -40), P(3200, -10), P(3600, 0)] + green([(3850, 2), (4100, 6), (4300, 0)]) + [P(4400, -10)] +
+            right_wall(4800, -1100, -40), material=S)],
+        decor=[deco("pine", 450, -700), deco("flag_slalom", 1250, -490), deco("flag_slalom", 1850, -285),
+               deco("flag_slalom", 2450, -125), deco("pine", 3000, -30), deco("snowman", 4450, -12)],
+        notes="Downhill through the slalom: bands of ice speed the ball up, bands of snow slow it down. Land on the snow and let it run.")
 
 
 def h4():
-    return hole("sf_04", "Frozen Lake", 4, (-200, -1500, 3700, 2200), (360, 0), (1900, -60),
-        [ground(left_wall() + [P(520, 0), P(760, 10), P(820, 60, c=True), P(840, 240, c=True, m="rock"), P(2860, 240, c=True),
-            P(2880, 60, c=True), P(2940, 0), P(3100, -10)] + right_wall(3500, -900, -30), material=S),
-         poly([P(1700, -60, m=S), P(1820, -66), P(1980, -66), P(2100, -60), P(2120, 20, m="rock"), P(2000, 70), P(1800, 70),
-               P(1680, 20)], "rock", smooth=True)],
-        zones=[water(844, 80, 2856, 260)],
-        decor=[deco("pine", 600, 0), deco("pine", 3000, -10), deco("ice_chunk", 1300, 80), deco("ice_chunk", 2500, 80)],
-        notes="An island green in a frozen-over lake that is not frozen enough to stand on. Carry it, or bring an Ice Ball.")
+    return hole("sf_04", "Summit Green", 4, (-200, -1900, 4200, 2600), (360, -600), (2400, -304),
+        [ground([P(-200, -1200, c=True), P(-90, -1140), P(20, -850), P(120, -640), P(260, -600), P(600, -600), P(700, -560),
+            P(800, -420, m=R), P(900, -150), P(1000, -20), P(1300, 0), P(1600, 0), P(1800, 0), P(1880, 0, c=True, m=R),
+            P(1920, -330, c=True)] + green([(1960, -332), (2150, -336), (2280, -330), (2340, -316), (2400, -304), (2460, -316),
+            (2520, -330), (2650, -338)]) + [P(2750, -340), P(2900, -346), P(3300, -360)] + right_wall(4000, -1200, -380), material=S)],
+        decor=[deco("pine", 480, -600), deco("snowman", 1400, 0), deco("pine", 1700, 0), deco("summit_flag", 2800, -335),
+               deco("pine", 3200, -355)],
+        notes="From the high tee, carry the snowy valley to a bowl-shaped green on the plateau. Land on the green and it can feed all the way into the cup.")
 
 
 def h5():
-    return hole("sf_05", "Avalanche Ridge", 4, (-200, -2100, 3400, 2800), (360, 0), (2600, -760),
-        [ground(left_wall() + [P(520, 0), P(800, -60), P(1000, -200, m=I), P(1150, -280), P(1300, -300), P(1500, -420, m=I),
-            P(1650, -500), P(1800, -520), P(2000, -640, m=I), P(2150, -720), P(2300, -750), P(2500, -760), P(2800, -760),
-            P(2900, -780)] + right_wall(3200, -1500, -800), material=S)],
-        decor=[deco("pine", 650, -10), deco("rock", 1300, -300), deco("pine", 1800, -520), deco("snowman", 2450, -760)],
-        notes="Uphill in steps. The icy ramps between the shelves send short shots sliding back down.")
+    p1, z1 = pond(1250, 2050, -10, 160, bed=R)
+    p2, z2 = pond(2350, 3300, -10, 160, bed=R)
+    return hole("sf_05", "Frozen Lake", 5, (-200, -1700, 5400, 2400), (360, 0), (4300, -36),
+        [ground(left_wall() + [P(520, 0), P(900, -10), P(1100, -10, m=I), P(1200, -10)] + p1 +
+            [P(2120, -40, m=R), P(2200, -60), P(2280, -40)] + p2 + [P(3450, -20), P(3800, -30)] +
+            green([(4100, -40), (4300, -36), (4500, -44)]) + [P(4650, -50)] + right_wall(5200, -1100, -70), material=S)],
+        zones=[z1, z2],
+        decor=[deco("pine", 650, -5), deco("ice_chunk", 1650, 40), deco("rock", 2200, -60), deco("ice_chunk", 2800, 40),
+               deco("pine", 3600, -25), deco("snowman", 4700, -52)],
+        notes="A lake split by a rocky spit. Hop the spit to cross in two, play round the long way, or freeze the water with the Ice Ball.")
 
 
 def h6():
-    return hole("sf_06", "Icicle Cave", 4, (-200, -1600, 3600, 2300), (360, 0), (2500, 0),
-        [ground(left_wall() + [P(520, 0), P(900, 0), P(1100, 0, m=I), P(2200, 0), P(2300, 0), P(2700, 0), P(2800, -20)] +
-            right_wall(3400, -1000, -40), material=S),
-         poly([P(1050, -250, c=True, m="rock"), P(1300, -200), P(1600, -230), P(1900, -190), P(2200, -220), P(3400, -260, c=True),
-               P(3400, -1200, c=True), P(1300, -1200, c=True), P(1100, -700), P(1000, -400)], "rock", smooth=True)],
-        decor=[deco("icicle", 1350, -205), deco("icicle", 1750, -215), deco("icicle", 2150, -215), deco("pine", 700, 0)],
-        notes="A low cave with an ice floor. Run it in under the icicles; it will keep sliding if you hit it too hard.")
+    return hole("sf_06", "Ice Cave", 4, (-200, -2100, 5000, 2800), (360, 0), (3900, 4),
+        [ground(left_wall() + [P(520, 0), P(900, -20), P(1300, -30), P(1700, -10), P(1950, -80), P(2150, -90), P(2350, -20),
+            P(2500, 0, m=I), P(3750, 0, m=G), P(3900, 4, m=G), P(4050, 0), P(4150, 0, c=True, m=R), P(4150, -200, c=True, m=R),
+            P(2500, -200, c=True, m=R), P(2460, -300, c=True), P(3000, -600), P(3800, -900), P(4800, -1000, c=True)], material=S)],
+        decor=[deco("pine", 650, -5), deco("snowman", 1350, -30), deco("rock", 2050, -88), deco("icicle", 2900, -190),
+               deco("icicle", 3400, -190), deco("icicle", 3800, -190), deco("pine", 3100, -650)],
+        notes="Clear the snow hump, then run the ball into the low ice cave under the mountain. The ice floor keeps it sliding toward the green at the back; the back wall sends overhit shots back.")
 
 
 def h7():
-    return hole("sf_07", "Ski Jump", 4, (-200, -2200, 4200, 2900), (360, -800), (3300, 0),
-        [ground([P(-200, -1500, c=True), P(-90, -1440), P(20, -1000), P(120, -840), P(260, -800), P(480, -800), P(600, -760),
-            P(700, -680, m=I), P(900, -470), P(1080, -330), P(1200, -300), P(1260, -320, c=True), P(1290, -330, c=True),
-            P(1300, 200, c=True), P(2350, 200, c=True), P(2360, 20, c=True), P(2500, 0), P(3000, 0), P(3600, 0), P(3700, -20)] +
-            right_wall(4000, -900, -40), material=S)],
-        zones=[water(1310, 120, 2340, 260)],
-        decor=[deco("pine", 400, -800), deco("flag_slalom", 1150, -310), deco("pine", 2700, 0), deco("snowman", 3500, 0)],
-        notes="Roll down the icy in-run and off the kicker: the jump carries the gap. A soft flighted shot works too.")
+    return hole("sf_07", "Glacier Climb", 5, (-200, -2200, 5000, 2900), (360, 0), (4100, -796),
+        [ground(left_wall() + [P(520, 0), P(900, 0), P(1100, -20), P(1300, -30, c=True, m=R), P(1340, -260, c=True),
+            P(1600, -270), P(1800, -280, m=I), P(2300, -430), P(2400, -440), P(2500, -440, c=True, m=R), P(2540, -640, c=True),
+            P(2800, -650), P(3100, -660, m=I), P(3300, -700), P(3400, -700, c=True, m=R), P(3440, -800, c=True)] +
+            green([(3700, -800), (3900, -800), (4100, -796), (4300, -806)]) + [P(4450, -816)] +
+            right_wall(4800, -1600, -840), material=S)],
+        decor=[deco("pine", 650, 0), deco("rock", 1500, -268), deco("ice_chunk", 2050, -355), deco("pine", 2700, -650),
+               deco("ice_chunk", 3200, -680), deco("summit_flag", 4400, -812)],
+        notes="Rock steps and icy ramps lead up the glacier. A ball that stops on an uphill ice ramp slides back down: carry past the top of each ramp.")
 
 
 def h8():
-    return hole("sf_08", "Crevasse", 4, (-200, -1600, 3500, 2600), (360, 0), (2560, -40),
-        [ground(left_wall() + [P(520, 0), P(900, -10), P(1150, -20, m=I), P(1260, -20), P(1300, 40, c=True), P(1330, 700, c=True),
-            P(1620, 700, c=True), P(1650, 40, c=True), P(1700, -30), P(2000, -40), P(2400, -40), P(2700, -40), P(2800, -60)] +
-            right_wall(3300, -900, -80), material=S, bottom=900)],
-        zones=[water(1334, 560, 1616, 760)],
-        decor=[deco("pine", 700, -10), deco("ice_chunk", 1200, -20), deco("pine", 2200, -40), deco("rock", 1750, -30)],
-        notes="A deep crack in the ice field. The lip in front of it is ice, so lay up early or commit to the carry.")
+    return hole("sf_08", "Crevasse", 4, (-200, -1600, 4600, 2300), (360, 0), (3500, -14),
+        [ground(left_wall() + [P(520, 0), P(900, -10), P(1300, -20), P(1500, -20, m=I), P(1880, -20, c=True, m=R),
+            P(1900, 420, c=True, m=S), P(2180, 420, c=True, m=R), P(2200, -20, c=True), P(2500, -20), P(2900, -20)] +
+            green([(3300, -20), (3500, -14), (3700, -22)]) + [P(3850, -30)] + right_wall(4400, -900, -50), material=S)],
+        decor=[deco("pine", 650, -5), deco("ice_chunk", 1700, -20), deco("rock", 2400, -20), deco("snowman", 2800, -20),
+               deco("pine", 4000, -40)],
+        notes="A deep crevasse cuts the ice field, and the lip in front of it is ice. Lay up on the snow early or commit to the carry; a ball in the crack has a steep climb out.")
 
 
 def h9():
-    return hole("sf_09", "Summit", 5, (-200, -2400, 4400, 3100), (360, 0), (3750, -1060),
-        [ground(left_wall() + [P(520, 0), P(800, -40), P(1100, -120, m=I), P(1300, -160), P(1500, -170), P(1700, -260),
-            P(1900, -420, m="rock"), P(1980, -560), P(2100, -600), P(2400, -620, m=I), P(2600, -620), P(2800, -700),
-            P(3000, -860, m="rock"), P(3080, -1000), P(3200, -1050), P(3500, -1060), P(3900, -1060), P(4000, -1080)] +
-            right_wall(4200, -1700, -1100), material=S)],
-        decor=[deco("pine", 650, -20), deco("pine", 1400, -165), deco("rock", 2000, -580), deco("snowman", 2700, -650),
-               deco("summit_flag", 3950, -1070)],
-        notes="The long climb to the top: snowfields, an icy plateau and two rocky steps.")
+    p, z = pond(900, 1500, -20, 120, bed=R)
+    return hole("sf_09", "Mountain Top", 5, (-200, -2400, 6200, 3100), (360, 0), (5300, -966),
+        [ground(left_wall() + [P(520, 0), P(800, -20)] + p + [P(1650, -40), P(1900, -120), P(2200, -200), P(2400, -240, m=I),
+            P(2900, -420), P(3000, -430), P(3100, -430, c=True, m=R), P(3140, -650, c=True), P(3400, -660), P(3700, -680),
+            P(3800, -690, c=True, m=R), P(3840, -900, c=True), P(4100, -910), P(4400, -930, m=I), P(4700, -950),
+            P(4900, -960)] + green([(5100, -970), (5300, -966), (5500, -976)]) + [P(5650, -990)] +
+            right_wall(6000, -1800, -1020), material=S)],
+        zones=[z],
+        decor=[deco("pine", 650, -10), deco("ice_chunk", 1200, 20), deco("pine", 2000, -150), deco("snowman", 3300, -655),
+               deco("pine", 4000, -905), deco("summit_flag", 5600, -985)],
+        notes="The climb to the summit: a frozen pond, an icy slope, two rock steps and a last icy run to the summit green.")
 
 
 def build():
     return write_course("snow_field", "Snow Field", THEME, [h1(), h2(), h3(), h4(), h5(), h6(), h7(), h8(), h9()], 4,
-                        "Medium", "Snow grabs, ice slides: power control, slopes and frozen water")
+                        "Medium", "Snow grabs, ice slides: power control, slopes and frozen water",
+                        {"parSource": "design", "layout": 2}, strict=True)
 
 
 if __name__ == "__main__":

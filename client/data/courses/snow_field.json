@@ -28,10 +28,217 @@
     {
       "id": "sf_01",
       "name": "First Frost",
-      "par": 3,
-      "bounds": {"x": -200, "y": -1500, "w": 3300, "h": 2200},
+      "par": 4,
+      "bounds": {"x": -200, "y": -1600, "w": 4600, "h": 2300},
       "tee": {"x": 360, "y": 0},
-      "cup": {"x": 2300, "y": -20},
+      "cup": {"x": 3500, "y": -20},
+      "terrain": [
+        {
+          "material": "snow",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -800, {"c": true}],
+            [-90, -740],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [900, -30],
+            [1300, -60],
+            [1700, -40],
+            [2000, -20],
+            [2300, -20, {"m": "ice"}],
+            [2800, -20],
+            [3100, -26, {"m": "grass"}],
+            [3300, -30, {"m": "grass"}],
+            [3500, -20, {"m": "grass"}],
+            [3700, -32, {"m": "grass"}],
+            [3850, -42],
+            [3980, -60],
+            [4130, -110],
+            [4250, -360],
+            [4400, -1000, {"c": true}],
+            [4400, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "pine", "x": 650, "y": -5, "scale": 1.0},
+        {"type": "snowman", "x": 1300, "y": -60, "scale": 1.0},
+        {"type": "pine", "x": 1900, "y": -25, "scale": 1.0},
+        {"type": "ice_chunk", "x": 2550, "y": -20, "scale": 1.0},
+        {"type": "pine", "x": 4000, "y": -50, "scale": 1.0}
+      ],
+      "notes": "A rolling snowfield. Snow grabs the ball; the strip of ice in front of the green does not. Land past it or roll across it gently onto a green that gathers toward the cup."
+    },
+    {
+      "id": "sf_02",
+      "name": "Ice Rink",
+      "par": 4,
+      "bounds": {"x": -200, "y": -1600, "w": 4800, "h": 2300},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 3550, "y": -150},
+      "terrain": [
+        {
+          "material": "snow",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -800, {"c": true}],
+            [-90, -740],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [800, 0],
+            [900, 0, {"m": "ice"}],
+            [2900, 0],
+            [2950, 0, {"c": true, "m": "rock"}],
+            [2990, -150, {"c": true}],
+            [3200, -150, {"m": "grass"}],
+            [3400, -152, {"m": "grass"}],
+            [3550, -144, {"m": "grass"}],
+            [3750, -154, {"m": "grass"}],
+            [3950, -162],
+            [4180, -180],
+            [4330, -230],
+            [4450, -480],
+            [4600, -1100, {"c": true}],
+            [4600, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "pine", "x": 650, "y": 0, "scale": 1.0},
+        {"type": "ice_chunk", "x": 1500, "y": 0, "scale": 1.0},
+        {"type": "ice_chunk", "x": 2400, "y": 0, "scale": 1.0},
+        {"type": "snowman", "x": 3300, "y": -150, "scale": 1.0},
+        {"type": "pine", "x": 4100, "y": -165, "scale": 1.0}
+      ],
+      "notes": "A long sheet of ice runs to a rock step. A putt-weight shot slides for hundreds of pixels: judge the power to stop on the ice by the step, or carry onto the green."
+    },
+    {
+      "id": "sf_03",
+      "name": "Slalom",
+      "par": 4,
+      "bounds": {"x": -200, "y": -2000, "w": 5000, "h": 2700},
+      "tee": {"x": 380, "y": -700},
+      "cup": {"x": 4100, "y": 6},
+      "terrain": [
+        {
+          "material": "snow",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -1300, {"c": true}],
+            [-90, -1240],
+            [20, -900],
+            [120, -740],
+            [260, -700],
+            [600, -700],
+            [800, -650],
+            [1100, -540, {"m": "ice"}],
+            [1400, -430],
+            [1700, -330, {"m": "ice"}],
+            [2000, -240],
+            [2300, -160, {"m": "ice"}],
+            [2600, -90],
+            [2900, -40],
+            [3200, -10],
+            [3600, 0],
+            [3850, 2, {"m": "grass"}],
+            [4100, 6, {"m": "grass"}],
+            [4300, 0, {"m": "grass"}],
+            [4400, -10],
+            [4530, -90],
+            [4650, -340],
+            [4800, -1100, {"c": true}],
+            [4800, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "pine", "x": 450, "y": -700, "scale": 1.0},
+        {"type": "flag_slalom", "x": 1250, "y": -490, "scale": 1.0},
+        {"type": "flag_slalom", "x": 1850, "y": -285, "scale": 1.0},
+        {"type": "flag_slalom", "x": 2450, "y": -125, "scale": 1.0},
+        {"type": "pine", "x": 3000, "y": -30, "scale": 1.0},
+        {"type": "snowman", "x": 4450, "y": -12, "scale": 1.0}
+      ],
+      "notes": "Downhill through the slalom: bands of ice speed the ball up, bands of snow slow it down. Land on the snow and let it run."
+    },
+    {
+      "id": "sf_04",
+      "name": "Summit Green",
+      "par": 4,
+      "bounds": {"x": -200, "y": -1900, "w": 4200, "h": 2600},
+      "tee": {"x": 360, "y": -600},
+      "cup": {"x": 2400, "y": -304},
+      "terrain": [
+        {
+          "material": "snow",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -1200, {"c": true}],
+            [-90, -1140],
+            [20, -850],
+            [120, -640],
+            [260, -600],
+            [600, -600],
+            [700, -560],
+            [800, -420, {"m": "rock"}],
+            [900, -150],
+            [1000, -20],
+            [1300, 0],
+            [1600, 0],
+            [1800, 0],
+            [1880, 0, {"c": true, "m": "rock"}],
+            [1920, -330, {"c": true}],
+            [1960, -332, {"m": "grass"}],
+            [2150, -336, {"m": "grass"}],
+            [2280, -330, {"m": "grass"}],
+            [2340, -316, {"m": "grass"}],
+            [2400, -304, {"m": "grass"}],
+            [2460, -316, {"m": "grass"}],
+            [2520, -330, {"m": "grass"}],
+            [2650, -338, {"m": "grass"}],
+            [2750, -340],
+            [2900, -346],
+            [3300, -360],
+            [3580, -380],
+            [3730, -430],
+            [3850, -680],
+            [4000, -1200, {"c": true}],
+            [4000, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "pine", "x": 480, "y": -600, "scale": 1.0},
+        {"type": "snowman", "x": 1400, "y": 0, "scale": 1.0},
+        {"type": "pine", "x": 1700, "y": 0, "scale": 1.0},
+        {"type": "summit_flag", "x": 2800, "y": -335, "scale": 1.0},
+        {"type": "pine", "x": 3200, "y": -355, "scale": 1.0}
+      ],
+      "notes": "From the high tee, carry the snowy valley to a bowl-shaped green on the plateau. Land on the green and it can feed all the way into the cup."
+    },
+    {
+      "id": "sf_05",
+      "name": "Frozen Lake",
+      "par": 5,
+      "bounds": {"x": -200, "y": -1700, "w": 5400, "h": 2400},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 4300, "y": -36},
       "terrain": [
         {
           "material": "snow",
@@ -45,167 +252,35 @@
             [220, 0],
             [520, 0],
             [900, -10],
-            [1200, -20],
-            [1500, -20, {"m": "ice"}],
-            [1950, -20],
-            [2050, -20],
-            [2600, -20],
-            [2700, -40],
-            [2830, -110],
-            [2950, -360],
-            [3100, -900, {"c": true}],
-            [3100, 700, {"c": true}],
+            [1100, -10, {"m": "ice"}],
+            [1200, -10],
+            [1250, -10],
+            [1285.0, 75.0],
+            [1320, 160, {"m": "rock"}],
+            [1980, 160],
+            [2015.0, 75.0],
+            [2050, -10],
+            [2120, -40, {"m": "rock"}],
+            [2200, -60],
+            [2280, -40],
+            [2350, -10],
+            [2385.0, 75.0],
+            [2420, 160, {"m": "rock"}],
+            [3230, 160],
+            [3265.0, 75.0],
+            [3300, -10],
+            [3450, -20],
+            [3800, -30],
+            [4100, -40, {"m": "grass"}],
+            [4300, -36, {"m": "grass"}],
+            [4500, -44, {"m": "grass"}],
+            [4650, -50],
+            [4780, -70],
+            [4930, -120],
+            [5050, -370],
+            [5200, -1100, {"c": true}],
+            [5200, 700, {"c": true}],
             [-200, 700, {"c": true}]
-          ]
-        }
-      ],
-      "zones": [],
-      "decor": [
-        {"type": "pine", "x": 650, "y": 0, "scale": 1.0},
-        {"type": "snowman", "x": 1100, "y": -20, "scale": 1.0},
-        {"type": "pine", "x": 2700, "y": -40, "scale": 1.0},
-        {"type": "rock", "x": 1800, "y": -20, "scale": 1.0}
-      ],
-      "notes": "Snow holds the ball; the strip of ice in front of the green does not. Land past it or roll across it gently."
-    },
-    {
-      "id": "sf_02",
-      "name": "The Rink",
-      "par": 3,
-      "bounds": {"x": -200, "y": -1400, "w": 3800, "h": 2100},
-      "tee": {"x": 360, "y": 0},
-      "cup": {"x": 3160, "y": -10},
-      "terrain": [
-        {
-          "material": "snow",
-          "smooth": true,
-          "kind": "ground",
-          "points": [
-            [-200, -800, {"c": true}],
-            [-90, -740],
-            [10, -330],
-            [100, -50],
-            [220, 0],
-            [520, 0],
-            [800, 0, {"m": "ice"}],
-            [2900, 0],
-            [3000, -10],
-            [3260, -10],
-            [3330, -40, {"m": "rock"}],
-            [3380, -140],
-            [3430, -210],
-            [3550, -460],
-            [3700, -900, {"c": true}],
-            [3700, 700, {"c": true}],
-            [-200, 700, {"c": true}]
-          ]
-        }
-      ],
-      "zones": [],
-      "decor": [
-        {"type": "pine", "x": 600, "y": 0, "scale": 1.0},
-        {"type": "flag_small", "x": 1800, "y": 0, "scale": 1.0},
-        {"type": "pine", "x": 3450, "y": -300, "scale": 1.0}
-      ],
-      "notes": "A long sheet of ice. Power is everything: a putt-weight shot slides for hundreds of pixels. A rock lip behind the green stops the worst overruns."
-    },
-    {
-      "id": "sf_03",
-      "name": "Slalom",
-      "par": 4,
-      "bounds": {"x": -200, "y": -2200, "w": 4200, "h": 2900},
-      "tee": {"x": 360, "y": -900},
-      "cup": {"x": 3500, "y": -20},
-      "terrain": [
-        {
-          "material": "snow",
-          "smooth": true,
-          "kind": "ground",
-          "points": [
-            [-200, -1500, {"c": true}],
-            [-90, -1440],
-            [20, -1100],
-            [120, -940],
-            [260, -900],
-            [520, -900],
-            [700, -860],
-            [950, -740],
-            [1150, -690, {"m": "ice"}],
-            [1300, -640],
-            [1450, -560],
-            [1700, -470, {"m": "ice"}],
-            [1850, -420],
-            [2050, -330],
-            [2300, -240, {"m": "ice"}],
-            [2450, -190],
-            [2700, -110],
-            [2950, -40],
-            [3200, -20],
-            [3600, -20],
-            [3800, -40],
-            [3850, -360],
-            [4000, -900, {"c": true}],
-            [4000, 700, {"c": true}],
-            [-200, 700, {"c": true}]
-          ]
-        }
-      ],
-      "zones": [],
-      "decor": [
-        {"type": "pine", "x": 400, "y": -900, "scale": 1.0},
-        {"type": "pine", "x": 1000, "y": -730, "scale": 1.0},
-        {"type": "flag_slalom", "x": 1500, "y": -550, "scale": 1.0},
-        {"type": "flag_slalom", "x": 2350, "y": -230, "scale": 1.0},
-        {"type": "pine", "x": 3700, "y": -40, "scale": 1.0}
-      ],
-      "notes": "Downhill through gates of ice. Every icy patch speeds the ball up the hill's fall line."
-    },
-    {
-      "id": "sf_04",
-      "name": "Frozen Lake",
-      "par": 4,
-      "bounds": {"x": -200, "y": -1500, "w": 3700, "h": 2200},
-      "tee": {"x": 360, "y": 0},
-      "cup": {"x": 1900, "y": -60},
-      "terrain": [
-        {
-          "material": "snow",
-          "smooth": true,
-          "kind": "ground",
-          "points": [
-            [-200, -800, {"c": true}],
-            [-90, -740],
-            [10, -330],
-            [100, -50],
-            [220, 0],
-            [520, 0],
-            [760, 10],
-            [820, 60, {"c": true}],
-            [840, 240, {"c": true, "m": "rock"}],
-            [2860, 240, {"c": true}],
-            [2880, 60, {"c": true}],
-            [2940, 0],
-            [3100, -10],
-            [3230, -80],
-            [3350, -330],
-            [3500, -900, {"c": true}],
-            [3500, 700, {"c": true}],
-            [-200, 700, {"c": true}]
-          ]
-        },
-        {
-          "material": "rock",
-          "smooth": true,
-          "kind": "island",
-          "points": [
-            [1700, -60, {"m": "snow"}],
-            [1820, -66],
-            [1980, -66],
-            [2100, -60],
-            [2120, 20, {"m": "rock"}],
-            [2000, 70],
-            [1800, 70],
-            [1680, 20]
           ]
         }
       ],
@@ -213,28 +288,39 @@
         {
           "type": "water",
           "points": [
-            [844, 80],
-            [2856, 80],
-            [2856, 260],
-            [844, 260]
+            [1254, 4],
+            [2046, 4],
+            [2046, 200],
+            [1254, 200]
+          ]
+        },
+        {
+          "type": "water",
+          "points": [
+            [2354, 4],
+            [3296, 4],
+            [3296, 200],
+            [2354, 200]
           ]
         }
       ],
       "decor": [
-        {"type": "pine", "x": 600, "y": 0, "scale": 1.0},
-        {"type": "pine", "x": 3000, "y": -10, "scale": 1.0},
-        {"type": "ice_chunk", "x": 1300, "y": 80, "scale": 1.0},
-        {"type": "ice_chunk", "x": 2500, "y": 80, "scale": 1.0}
+        {"type": "pine", "x": 650, "y": -5, "scale": 1.0},
+        {"type": "ice_chunk", "x": 1650, "y": 40, "scale": 1.0},
+        {"type": "rock", "x": 2200, "y": -60, "scale": 1.0},
+        {"type": "ice_chunk", "x": 2800, "y": 40, "scale": 1.0},
+        {"type": "pine", "x": 3600, "y": -25, "scale": 1.0},
+        {"type": "snowman", "x": 4700, "y": -52, "scale": 1.0}
       ],
-      "notes": "An island green in a frozen-over lake that is not frozen enough to stand on. Carry it, or bring an Ice Ball."
+      "notes": "A lake split by a rocky spit. Hop the spit to cross in two, play round the long way, or freeze the water with the Ice Ball."
     },
     {
-      "id": "sf_05",
-      "name": "Avalanche Ridge",
+      "id": "sf_06",
+      "name": "Ice Cave",
       "par": 4,
-      "bounds": {"x": -200, "y": -2100, "w": 3400, "h": 2800},
+      "bounds": {"x": -200, "y": -2100, "w": 5000, "h": 2800},
       "tee": {"x": 360, "y": 0},
-      "cup": {"x": 2600, "y": -760},
+      "cup": {"x": 3900, "y": 4},
       "terrain": [
         {
           "material": "snow",
@@ -247,42 +333,47 @@
             [100, -50],
             [220, 0],
             [520, 0],
-            [800, -60],
-            [1000, -200, {"m": "ice"}],
-            [1150, -280],
-            [1300, -300],
-            [1500, -420, {"m": "ice"}],
-            [1650, -500],
-            [1800, -520],
-            [2000, -640, {"m": "ice"}],
-            [2150, -720],
-            [2300, -750],
-            [2500, -760],
-            [2800, -760],
-            [2900, -780],
-            [3050, -1100],
-            [3200, -1500, {"c": true}],
-            [3200, 700, {"c": true}],
+            [900, -20],
+            [1300, -30],
+            [1700, -10],
+            [1950, -80],
+            [2150, -90],
+            [2350, -20],
+            [2500, 0, {"m": "ice"}],
+            [3750, 0, {"m": "grass"}],
+            [3900, 4, {"m": "grass"}],
+            [4050, 0],
+            [4150, 0, {"c": true, "m": "rock"}],
+            [4150, -200, {"c": true, "m": "rock"}],
+            [2500, -200, {"c": true, "m": "rock"}],
+            [2460, -300, {"c": true}],
+            [3000, -600],
+            [3800, -900],
+            [4800, -1000, {"c": true}],
+            [4800, 700, {"c": true}],
             [-200, 700, {"c": true}]
           ]
         }
       ],
       "zones": [],
       "decor": [
-        {"type": "pine", "x": 650, "y": -10, "scale": 1.0},
-        {"type": "rock", "x": 1300, "y": -300, "scale": 1.0},
-        {"type": "pine", "x": 1800, "y": -520, "scale": 1.0},
-        {"type": "snowman", "x": 2450, "y": -760, "scale": 1.0}
+        {"type": "pine", "x": 650, "y": -5, "scale": 1.0},
+        {"type": "snowman", "x": 1350, "y": -30, "scale": 1.0},
+        {"type": "rock", "x": 2050, "y": -88, "scale": 1.0},
+        {"type": "icicle", "x": 2900, "y": -190, "scale": 1.0},
+        {"type": "icicle", "x": 3400, "y": -190, "scale": 1.0},
+        {"type": "icicle", "x": 3800, "y": -190, "scale": 1.0},
+        {"type": "pine", "x": 3100, "y": -650, "scale": 1.0}
       ],
-      "notes": "Uphill in steps. The icy ramps between the shelves send short shots sliding back down."
+      "notes": "Clear the snow hump, then run the ball into the low ice cave under the mountain. The ice floor keeps it sliding toward the green at the back; the back wall sends overhit shots back."
     },
     {
-      "id": "sf_06",
-      "name": "Icicle Cave",
-      "par": 4,
-      "bounds": {"x": -200, "y": -1600, "w": 3600, "h": 2300},
+      "id": "sf_07",
+      "name": "Glacier Climb",
+      "par": 5,
+      "bounds": {"x": -200, "y": -2200, "w": 5000, "h": 2900},
       "tee": {"x": 360, "y": 0},
-      "cup": {"x": 2500, "y": 0},
+      "cup": {"x": 4100, "y": -796},
       "terrain": [
         {
           "material": "snow",
@@ -296,112 +387,51 @@
             [220, 0],
             [520, 0],
             [900, 0],
-            [1100, 0, {"m": "ice"}],
-            [2200, 0],
-            [2300, 0],
-            [2700, 0],
-            [2800, -20],
-            [2980, -40],
-            [3130, -90],
-            [3250, -340],
-            [3400, -1000, {"c": true}],
-            [3400, 700, {"c": true}],
+            [1100, -20],
+            [1300, -30, {"c": true, "m": "rock"}],
+            [1340, -260, {"c": true}],
+            [1600, -270],
+            [1800, -280, {"m": "ice"}],
+            [2300, -430],
+            [2400, -440],
+            [2500, -440, {"c": true, "m": "rock"}],
+            [2540, -640, {"c": true}],
+            [2800, -650],
+            [3100, -660, {"m": "ice"}],
+            [3300, -700],
+            [3400, -700, {"c": true, "m": "rock"}],
+            [3440, -800, {"c": true}],
+            [3700, -800, {"m": "grass"}],
+            [3900, -800, {"m": "grass"}],
+            [4100, -796, {"m": "grass"}],
+            [4300, -806, {"m": "grass"}],
+            [4450, -816],
+            [4530, -890],
+            [4650, -1140],
+            [4800, -1600, {"c": true}],
+            [4800, 700, {"c": true}],
             [-200, 700, {"c": true}]
-          ]
-        },
-        {
-          "material": "rock",
-          "smooth": true,
-          "kind": "island",
-          "points": [
-            [1050, -250, {"c": true, "m": "rock"}],
-            [1300, -200],
-            [1600, -230],
-            [1900, -190],
-            [2200, -220],
-            [3400, -260, {"c": true}],
-            [3400, -1200, {"c": true}],
-            [1300, -1200, {"c": true}],
-            [1100, -700],
-            [1000, -400]
           ]
         }
       ],
       "zones": [],
       "decor": [
-        {"type": "icicle", "x": 1350, "y": -205, "scale": 1.0},
-        {"type": "icicle", "x": 1750, "y": -215, "scale": 1.0},
-        {"type": "icicle", "x": 2150, "y": -215, "scale": 1.0},
-        {"type": "pine", "x": 700, "y": 0, "scale": 1.0}
+        {"type": "pine", "x": 650, "y": 0, "scale": 1.0},
+        {"type": "rock", "x": 1500, "y": -268, "scale": 1.0},
+        {"type": "ice_chunk", "x": 2050, "y": -355, "scale": 1.0},
+        {"type": "pine", "x": 2700, "y": -650, "scale": 1.0},
+        {"type": "ice_chunk", "x": 3200, "y": -680, "scale": 1.0},
+        {"type": "summit_flag", "x": 4400, "y": -812, "scale": 1.0}
       ],
-      "notes": "A low cave with an ice floor. Run it in under the icicles; it will keep sliding if you hit it too hard."
-    },
-    {
-      "id": "sf_07",
-      "name": "Ski Jump",
-      "par": 4,
-      "bounds": {"x": -200, "y": -2200, "w": 4200, "h": 2900},
-      "tee": {"x": 360, "y": -800},
-      "cup": {"x": 3300, "y": 0},
-      "terrain": [
-        {
-          "material": "snow",
-          "smooth": true,
-          "kind": "ground",
-          "points": [
-            [-200, -1500, {"c": true}],
-            [-90, -1440],
-            [20, -1000],
-            [120, -840],
-            [260, -800],
-            [480, -800],
-            [600, -760],
-            [700, -680, {"m": "ice"}],
-            [900, -470],
-            [1080, -330],
-            [1200, -300],
-            [1260, -320, {"c": true}],
-            [1290, -330, {"c": true}],
-            [1300, 200, {"c": true}],
-            [2350, 200, {"c": true}],
-            [2360, 20, {"c": true}],
-            [2500, 0],
-            [3000, 0],
-            [3600, 0],
-            [3700, -20],
-            [3850, -340],
-            [4000, -900, {"c": true}],
-            [4000, 700, {"c": true}],
-            [-200, 700, {"c": true}]
-          ]
-        }
-      ],
-      "zones": [
-        {
-          "type": "water",
-          "points": [
-            [1310, 120],
-            [2340, 120],
-            [2340, 260],
-            [1310, 260]
-          ]
-        }
-      ],
-      "decor": [
-        {"type": "pine", "x": 400, "y": -800, "scale": 1.0},
-        {"type": "flag_slalom", "x": 1150, "y": -310, "scale": 1.0},
-        {"type": "pine", "x": 2700, "y": 0, "scale": 1.0},
-        {"type": "snowman", "x": 3500, "y": 0, "scale": 1.0}
-      ],
-      "notes": "Roll down the icy in-run and off the kicker: the jump carries the gap. A soft flighted shot works too."
+      "notes": "Rock steps and icy ramps lead up the glacier. A ball that stops on an uphill ice ramp slides back down: carry past the top of each ramp."
     },
     {
       "id": "sf_08",
       "name": "Crevasse",
       "par": 4,
-      "bounds": {"x": -200, "y": -1600, "w": 3500, "h": 2600},
+      "bounds": {"x": -200, "y": -1600, "w": 4600, "h": 2300},
       "tee": {"x": 360, "y": 0},
-      "cup": {"x": 2560, "y": -40},
+      "cup": {"x": 3500, "y": -14},
       "terrain": [
         {
           "material": "snow",
@@ -415,52 +445,44 @@
             [220, 0],
             [520, 0],
             [900, -10],
-            [1150, -20, {"m": "ice"}],
-            [1260, -20],
-            [1300, 40, {"c": true}],
-            [1330, 700, {"c": true}],
-            [1620, 700, {"c": true}],
-            [1650, 40, {"c": true}],
-            [1700, -30],
-            [2000, -40],
-            [2400, -40],
-            [2700, -40],
-            [2800, -60],
-            [2880, -80],
-            [3030, -130],
-            [3150, -380],
-            [3300, -900, {"c": true}],
-            [3300, 900, {"c": true}],
-            [-200, 900, {"c": true}]
+            [1300, -20],
+            [1500, -20, {"m": "ice"}],
+            [1880, -20, {"c": true, "m": "rock"}],
+            [1900, 420, {"c": true, "m": "snow"}],
+            [2180, 420, {"c": true, "m": "rock"}],
+            [2200, -20, {"c": true}],
+            [2500, -20],
+            [2900, -20],
+            [3300, -20, {"m": "grass"}],
+            [3500, -14, {"m": "grass"}],
+            [3700, -22, {"m": "grass"}],
+            [3850, -30],
+            [3980, -50],
+            [4130, -100],
+            [4250, -350],
+            [4400, -900, {"c": true}],
+            [4400, 700, {"c": true}],
+            [-200, 700, {"c": true}]
           ]
         }
       ],
-      "zones": [
-        {
-          "type": "water",
-          "points": [
-            [1334, 560],
-            [1616, 560],
-            [1616, 760],
-            [1334, 760]
-          ]
-        }
-      ],
+      "zones": [],
       "decor": [
-        {"type": "pine", "x": 700, "y": -10, "scale": 1.0},
-        {"type": "ice_chunk", "x": 1200, "y": -20, "scale": 1.0},
-        {"type": "pine", "x": 2200, "y": -40, "scale": 1.0},
-        {"type": "rock", "x": 1750, "y": -30, "scale": 1.0}
+        {"type": "pine", "x": 650, "y": -5, "scale": 1.0},
+        {"type": "ice_chunk", "x": 1700, "y": -20, "scale": 1.0},
+        {"type": "rock", "x": 2400, "y": -20, "scale": 1.0},
+        {"type": "snowman", "x": 2800, "y": -20, "scale": 1.0},
+        {"type": "pine", "x": 4000, "y": -40, "scale": 1.0}
       ],
-      "notes": "A deep crack in the ice field. The lip in front of it is ice, so lay up early or commit to the carry."
+      "notes": "A deep crevasse cuts the ice field, and the lip in front of it is ice. Lay up on the snow early or commit to the carry; a ball in the crack has a steep climb out."
     },
     {
       "id": "sf_09",
-      "name": "Summit",
+      "name": "Mountain Top",
       "par": 5,
-      "bounds": {"x": -200, "y": -2400, "w": 4400, "h": 3100},
+      "bounds": {"x": -200, "y": -2400, "w": 6200, "h": 3100},
       "tee": {"x": 360, "y": 0},
-      "cup": {"x": 3750, "y": -1060},
+      "cup": {"x": 5300, "y": -966},
       "terrain": [
         {
           "material": "snow",
@@ -473,39 +495,63 @@
             [100, -50],
             [220, 0],
             [520, 0],
-            [800, -40],
-            [1100, -120, {"m": "ice"}],
-            [1300, -160],
-            [1500, -170],
-            [1700, -260],
-            [1900, -420, {"m": "rock"}],
-            [1980, -560],
-            [2100, -600],
-            [2400, -620, {"m": "ice"}],
-            [2600, -620],
-            [2800, -700],
-            [3000, -860, {"m": "rock"}],
-            [3080, -1000],
-            [3200, -1050],
-            [3500, -1060],
-            [3900, -1060],
-            [4000, -1080],
-            [4050, -1400],
-            [4200, -1700, {"c": true}],
-            [4200, 700, {"c": true}],
+            [800, -20],
+            [900, -20],
+            [935.0, 50.0],
+            [970, 120, {"m": "rock"}],
+            [1430, 120],
+            [1465.0, 50.0],
+            [1500, -20],
+            [1650, -40],
+            [1900, -120],
+            [2200, -200],
+            [2400, -240, {"m": "ice"}],
+            [2900, -420],
+            [3000, -430],
+            [3100, -430, {"c": true, "m": "rock"}],
+            [3140, -650, {"c": true}],
+            [3400, -660],
+            [3700, -680],
+            [3800, -690, {"c": true, "m": "rock"}],
+            [3840, -900, {"c": true}],
+            [4100, -910],
+            [4400, -930, {"m": "ice"}],
+            [4700, -950],
+            [4900, -960],
+            [5100, -970, {"m": "grass"}],
+            [5300, -966, {"m": "grass"}],
+            [5500, -976, {"m": "grass"}],
+            [5650, -990],
+            [5730, -1070],
+            [5850, -1320],
+            [6000, -1800, {"c": true}],
+            [6000, 700, {"c": true}],
             [-200, 700, {"c": true}]
           ]
         }
       ],
-      "zones": [],
-      "decor": [
-        {"type": "pine", "x": 650, "y": -20, "scale": 1.0},
-        {"type": "pine", "x": 1400, "y": -165, "scale": 1.0},
-        {"type": "rock", "x": 2000, "y": -580, "scale": 1.0},
-        {"type": "snowman", "x": 2700, "y": -650, "scale": 1.0},
-        {"type": "summit_flag", "x": 3950, "y": -1070, "scale": 1.0}
+      "zones": [
+        {
+          "type": "water",
+          "points": [
+            [904, -6],
+            [1496, -6],
+            [1496, 160],
+            [904, 160]
+          ]
+        }
       ],
-      "notes": "The long climb to the top: snowfields, an icy plateau and two rocky steps."
+      "decor": [
+        {"type": "pine", "x": 650, "y": -10, "scale": 1.0},
+        {"type": "ice_chunk", "x": 1200, "y": 20, "scale": 1.0},
+        {"type": "pine", "x": 2000, "y": -150, "scale": 1.0},
+        {"type": "snowman", "x": 3300, "y": -655, "scale": 1.0},
+        {"type": "pine", "x": 4000, "y": -905, "scale": 1.0},
+        {"type": "summit_flag", "x": 5600, "y": -985, "scale": 1.0}
+      ],
+      "notes": "The climb to the summit: a frozen pond, an icy slope, two rock steps and a last icy run to the summit green."
     }
-  ]
+  ],
+  "parSource": "design",
+  "layout": 2
 }

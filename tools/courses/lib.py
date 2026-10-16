@@ -140,6 +140,17 @@ def check_attached(h):
         assert ok, "%s: terrain piece %d floats (not connected to the ground)" % (h["id"], i)
     for d in h.get("decor", []):
         assert d["type"] not in FLOATING_DECOR, "%s: decor %s floats in mid-air" % (h["id"], d["type"])
+    # Ground outlines run left to right; stepping back is only allowed between hard corners
+    # (deliberate overhangs and undersides), never between smoothed points (that folds the outline).
+    for t in h["terrain"]:
+        if t.get("kind", "ground") != "ground":
+            continue
+        pts = t["points"]
+        for a_, b_ in zip(pts, pts[1:]):
+            if b_[0] < a_[0]:
+                ca = len(a_) > 2 and a_[2].get("c")
+                cb = len(b_) > 2 and b_[2].get("c")
+                assert ca and cb, "%s: outline folds back from x=%s to x=%s" % (h["id"], a_[0], b_[0])
 
 
 def cliff(x, y_from, y_to, lean=40, mat="rock"):

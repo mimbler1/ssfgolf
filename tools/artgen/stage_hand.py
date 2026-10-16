@@ -836,6 +836,11 @@ def build(theme: str) -> list[tuple[str, Image.Image, int]]:
     elif theme == "snow":
         s, sb = cap_snow(seed=31)
         out.append(("caps/snow", s, sb))
+        # Putting greens: low, tidy alpine turf with frost on the tips, so a green reads clearly
+        # against the snow (Snow Field hole 4 is aced touching only the green).
+        g, gb = cap_grass({"dark": hx("2f6448"), "mid": hx("4c9160"), "light": hx("7fbf7f"), "hi": hx("e8fbff"),
+                           "under": hx("3e4a66")}, seed=33, blades="moss")
+        out.append(("caps/green", g, gb))
         i, ib = cap_ice(seed=32)
         out.append(("caps/ice", i, ib))
         out.append(("decor/flag_small_a", flag_on_pole(["a8203a", "e0405a", "ff8f9a"], seed=3), 0))

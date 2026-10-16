@@ -34,7 +34,7 @@ def acid(x0, y0, x1, y1):
 def h1():
     return hole("sz_01", "First Stick", 4, (-200, -1800, 4200, 2500), (360, 0), (2900, -2),
         [ground(left_wall() + [P(520, 0), P(900, 0), P(1250, -10), P(1450, -10, c=True, m=GOO), P(1460, -440, c=True), P(1700, -450), P(1900, -430), P(2100, -330),
-            P(2250, -150), P(2350, -30), P(2450, -5), P(2300, -10), P(2650, -12), P(2900, -2), P(3100, -14), P(3400, -34)] +
+            P(2250, -150), P(2350, -30), P(2450, -5), P(2650, -12), P(2900, -2), P(3100, -14), P(3400, -34)] +
             right_wall(4000, -1100, -50))],
         decor=[deco("mushroom", 700, 0), deco("crystal", 1650, -450), deco("mushroom", 2550, -8), deco("crystal", 3500, -12)],
         notes="A rock mesa with a goo face. Land on top and roll down the back to the green; anything short sticks to the face and pops up from there.")

@@ -3,7 +3,9 @@ extends SceneTree
 ## that must be aceable (e.g. Beach Land hole 4, Snow Field hole 4) and to measure how narrow the
 ## window is. Prints every hit as angle (degrees above horizontal) and power.
 ##   godot --headless --path client --script res://tests/ace_search.gd -- --course beach_land --hole 3
-##       [--elev0 5 --elev1 80 --estep 0.25 --p0 0.3 --p1 1.0 --pstep 0.005] [--left]
+##       [--elev0 5 --elev1 80 --estep 0.25 --p0 0.3 --p1 1.0 --pstep 0.005] [--left] [--only grass]
+## --only <material>: the ace may touch only that material (and the cup). Every other surface is
+## wrapped in a thin acid strip, so a shot that touches it counts as a hazard, not an ace.
 
 var balance: Dictionary
 var materials: Dictionary
@@ -21,6 +23,8 @@ func _initialize() -> void:
 	var cid := args[args.find("--course") + 1]
 	var hi := int(_arg(args, "--hole", 0))
 	var course: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/courses/%s.json" % cid))
+	if args.has("--only"):
+		_guard_except(course.holes[hi], args[args.find("--only") + 1])
 	var sim := MatchSim.new(balance, materials, course, "practice", 1)
 	sim.add_player("p", "P", {})
 	sim.start_practice_hole(hi)
@@ -55,5 +59,26 @@ func _initialize() -> void:
 				print("  ACE elev %.2f power %.3f" % [elev, pw])
 			pw += ps
 		elev += es
-	print("%s hole %d: %d aces out of %d shots (%.3f%%)" % [cid, hi + 1, hits, total, 100.0 * hits / maxf(1.0, total)])
+	print("%s hole %d: %d aces out of %d shots (%.3f%%)%s" % [cid, hi + 1, hits, total, 100.0 * hits / maxf(1.0, total),
+		(" touching only %s" % args[args.find("--only") + 1]) if args.has("--only") else ""])
 	quit()
+
+
+## Wraps every terrain edge except `keep` and the cup in a thin acid strip (the band a touching
+## ball's centre passes through).
+func _guard_except(hole: Dictionary, keep: String) -> void:
+	var t := SimTerrain.new()
+	t.build(hole.duplicate(true))
+	var r := float(balance.physics.ball_radius)
+	for i in t.seg_a.size():
+		var mname := t.material_names[t.seg_mat[i]]
+		if mname == keep or mname == "cup":
+			continue
+		var a := t.seg_a[i]
+		var b := t.seg_b[i]
+		var n := t.seg_n[i]
+		var d := (b - a).normalized()
+		var arr: Array = []
+		for p: Vector2 in [a - d * 1.0, b + d * 1.0, b + d * 1.0 + n * (r + 2.0), a - d * 1.0 + n * (r + 2.0)]:
+			arr.append([p.x, p.y])
+		(hole.zones as Array).append({"type": "acid", "points": arr})

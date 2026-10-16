@@ -33,8 +33,8 @@
    "cap_base": 7
   },
   "grass": {
-   "cap": "terrain/cap_snow.png",
-   "cap_base": 7
+   "cap": "terrain/cap_green.png",
+   "cap_base": 11
   },
   "ice": {
    "cap": "terrain/cap_ice.png",
