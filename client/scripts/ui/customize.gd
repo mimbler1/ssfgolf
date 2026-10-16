@@ -50,6 +50,7 @@ var _t := 0.0
 
 func _ready() -> void:
 	RenderingServer.set_default_clear_color(Color("1b2040"))
+	Cosmetics.ensure_loaded()
 	current = Appearance.normalize(Backend.profile.get("appearance")) if not Backend.profile.is_empty() else LocalStore.appearance()
 	saved = current.duplicate(true)
 	var args := OS.get_cmdline_user_args()
@@ -74,6 +75,9 @@ func _ready() -> void:
 	var sa := args.find("--studio-anim")
 	if sa != -1 and sa + 1 < args.size():
 		_preview_anim.call_deferred(args[sa + 1])
+	# Ownership (Collection): refresh from the backend, then re-show locks.
+	if await Cosmetics.refresh():
+		_show_category(_category)
 
 
 func _build() -> void:
@@ -515,7 +519,17 @@ func _character_card(id: String, look: Dictionary, frame: Rect2) -> Control:
 		view.set_animated(true)
 		view.golfer.emote("wave"))
 	card.mouse_exited.connect(view.set_animated.bind(false))
+	var locked := not Cosmetics.owns("character", id)
+	if locked:
+		view.modulate = Color(0.35, 0.35, 0.45)
+		card.tooltip_text = "%s is locked. Find it in card packs (Collection)." % d.name
+		var lk := _chip("LOCKED", UITheme.PAPER, Color(0, 0, 0, 0.55))
+		foot.add_child(lk)
 	card.pressed.connect(func() -> void:
+		if locked:
+			Sfx.play("ui_deny", -6.0)
+			_status.text = "%s is locked: open card packs in Collection to unlock." % d.name
+			return
 		Sfx.play("ui_select", -6.0)
 		if str(current.character) != id:
 			current.character = id
@@ -690,6 +704,8 @@ func _thumb_card(label: String, full_look: Dictionary, patch: Dictionary, on_pic
 
 func _swatches(key: String) -> void:
 	var g := _grid(56)
+	# Ball and trail colours are collectibles (Collection); body/outline/hat/shirt colours are free.
+	var kind: String = {"ballColor": "ball", "trailColor": "trail"}.get(key, "")
 	for hex: String in Appearance.PALETTE:
 		var b := Button.new()
 		b.custom_minimum_size = Vector2(56, 50)
@@ -698,12 +714,23 @@ func _swatches(key: String) -> void:
 		_cards.append({"kind": "swatch", "node": b, "key": key, "hex": hex})
 		b.add_theme_stylebox_override("hover", UITheme.box(Color(hex).lightened(0.12), 12, UITheme.PAPER, 0, 0, 3))
 		b.add_theme_stylebox_override("pressed", UITheme.box(Color(hex), 12, UITheme.SUN, 0, 0, 4))
-		b.tooltip_text = hex
+		var locked := kind != "" and not Cosmetics.owns(kind, hex)
+		var it := Cosmetics.item_for(kind, hex) if kind != "" else {}
+		b.tooltip_text = (str(it.name) if not it.is_empty() else hex) + ("  (locked: card packs)" if locked else "")
+		if locked:
+			b.modulate = Color(0.4, 0.4, 0.45)
+			b.text = "?"
 		b.pressed.connect(func() -> void:
+			if locked:
+				Sfx.play("ui_deny", -8.0)
+				_status.text = "%s is locked: open card packs in Collection to unlock." % str(it.get("name", hex))
+				return
 			Sfx.play("ui_select", -8.0)
 			_set_part(key, hex)
 			_update_selection())
 		g.add_child(b)
+	if kind != "":
+		return
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 12)
 	var l := Label.new()

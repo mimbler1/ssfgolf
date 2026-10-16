@@ -1,0 +1,559 @@
+{
+ "version": 1,
+ "note": "Collection v1: only cosmetics that render in the game today (sprite characters, ball colours on the sprite ball, trail colours). Cosmetics never change physics.",
+ "rarities": {
+  "common": {
+   "weight": 62,
+   "refund": 10
+  },
+  "rare": {
+   "weight": 27,
+   "refund": 25
+  },
+  "epic": {
+   "weight": 9,
+   "refund": 60
+  },
+  "legendary": {
+   "weight": 2,
+   "refund": 150
+  }
+ },
+ "packs": [
+  {
+   "id": "basic",
+   "name": "Basic Pack",
+   "cost": 120,
+   "items": 3
+  },
+  {
+   "id": "premium",
+   "name": "Premium Pack",
+   "cost": 400,
+   "items": 4,
+   "guarantee": "epic"
+  }
+ ],
+ "items": [
+  {
+   "id": "char_rex",
+   "kind": "character",
+   "value": "rex",
+   "name": "Rex",
+   "rarity": "common",
+   "default": true
+  },
+  {
+   "id": "char_mira",
+   "kind": "character",
+   "value": "mira",
+   "name": "Mira",
+   "rarity": "rare",
+   "default": true
+  },
+  {
+   "id": "char_bjorn",
+   "kind": "character",
+   "value": "bjorn",
+   "name": "Bjorn",
+   "rarity": "epic",
+   "default": true
+  },
+  {
+   "id": "char_stickman",
+   "kind": "character",
+   "value": "stickman",
+   "name": "Stickman",
+   "rarity": "common",
+   "default": true
+  },
+  {
+   "id": "char_ace",
+   "kind": "character",
+   "value": "ace",
+   "name": "Ace",
+   "rarity": "common",
+   "default": false
+  },
+  {
+   "id": "char_brick",
+   "kind": "character",
+   "value": "brick",
+   "name": "Brick",
+   "rarity": "common",
+   "default": false
+  },
+  {
+   "id": "char_skipper",
+   "kind": "character",
+   "value": "skipper",
+   "name": "Skipper",
+   "rarity": "common",
+   "default": false
+  },
+  {
+   "id": "char_cowboy",
+   "kind": "character",
+   "value": "cowboy",
+   "name": "Dusty",
+   "rarity": "common",
+   "default": false
+  },
+  {
+   "id": "char_bolt",
+   "kind": "character",
+   "value": "bolt",
+   "name": "Bolt",
+   "rarity": "rare",
+   "default": false
+  },
+  {
+   "id": "char_pirate",
+   "kind": "character",
+   "value": "pirate",
+   "name": "Cap'n Slice",
+   "rarity": "rare",
+   "default": false
+  },
+  {
+   "id": "char_skeleton",
+   "kind": "character",
+   "value": "skeleton",
+   "name": "Rattles",
+   "rarity": "rare",
+   "default": false
+  },
+  {
+   "id": "char_frost",
+   "kind": "character",
+   "value": "frost",
+   "name": "Frost",
+   "rarity": "rare",
+   "default": false
+  },
+  {
+   "id": "char_nana",
+   "kind": "character",
+   "value": "nana",
+   "name": "Nana Birdie",
+   "rarity": "rare",
+   "default": false
+  },
+  {
+   "id": "char_wizard",
+   "kind": "character",
+   "value": "wizard",
+   "name": "Fizzwick",
+   "rarity": "epic",
+   "default": false
+  },
+  {
+   "id": "char_dino",
+   "kind": "character",
+   "value": "dino",
+   "name": "Tee-Rex",
+   "rarity": "epic",
+   "default": false
+  },
+  {
+   "id": "char_astronaut",
+   "kind": "character",
+   "value": "astronaut",
+   "name": "Nova",
+   "rarity": "epic",
+   "default": false
+  },
+  {
+   "id": "char_knight",
+   "kind": "character",
+   "value": "knight",
+   "name": "Sir Putts",
+   "rarity": "legendary",
+   "default": false
+  },
+  {
+   "id": "ball_ffffff",
+   "kind": "ball",
+   "value": "#ffffff",
+   "name": "Classic White Ball",
+   "rarity": "common",
+   "default": true
+  },
+  {
+   "id": "ball_f4f1de",
+   "kind": "ball",
+   "value": "#f4f1de",
+   "name": "Cream Ball",
+   "rarity": "common",
+   "default": true
+  },
+  {
+   "id": "ball_ffd166",
+   "kind": "ball",
+   "value": "#ffd166",
+   "name": "Sunbeam Ball",
+   "rarity": "common",
+   "default": true
+  },
+  {
+   "id": "ball_ffb703",
+   "kind": "ball",
+   "value": "#ffb703",
+   "name": "Marigold Ball",
+   "rarity": "common",
+   "default": false
+  },
+  {
+   "id": "ball_fb8500",
+   "kind": "ball",
+   "value": "#fb8500",
+   "name": "Tangerine Ball",
+   "rarity": "common",
+   "default": false
+  },
+  {
+   "id": "ball_e63946",
+   "kind": "ball",
+   "value": "#e63946",
+   "name": "Cherry Ball",
+   "rarity": "common",
+   "default": true
+  },
+  {
+   "id": "ball_ef476f",
+   "kind": "ball",
+   "value": "#ef476f",
+   "name": "Rose Ball",
+   "rarity": "common",
+   "default": false
+  },
+  {
+   "id": "ball_ff8fab",
+   "kind": "ball",
+   "value": "#ff8fab",
+   "name": "Bubblegum Ball",
+   "rarity": "common",
+   "default": true
+  },
+  {
+   "id": "ball_b5179e",
+   "kind": "ball",
+   "value": "#b5179e",
+   "name": "Orchid Ball",
+   "rarity": "epic",
+   "default": false
+  },
+  {
+   "id": "ball_7209b7",
+   "kind": "ball",
+   "value": "#7209b7",
+   "name": "Grape Ball",
+   "rarity": "epic",
+   "default": false
+  },
+  {
+   "id": "ball_4361ee",
+   "kind": "ball",
+   "value": "#4361ee",
+   "name": "Cobalt Ball",
+   "rarity": "common",
+   "default": true
+  },
+  {
+   "id": "ball_4cc9f0",
+   "kind": "ball",
+   "value": "#4cc9f0",
+   "name": "Sky Ball",
+   "rarity": "common",
+   "default": false
+  },
+  {
+   "id": "ball_06d6a0",
+   "kind": "ball",
+   "value": "#06d6a0",
+   "name": "Mint Ball",
+   "rarity": "common",
+   "default": true
+  },
+  {
+   "id": "ball_2a9d8f",
+   "kind": "ball",
+   "value": "#2a9d8f",
+   "name": "Lagoon Ball",
+   "rarity": "rare",
+   "default": false
+  },
+  {
+   "id": "ball_80ed99",
+   "kind": "ball",
+   "value": "#80ed99",
+   "name": "Lime Ball",
+   "rarity": "common",
+   "default": false
+  },
+  {
+   "id": "ball_588157",
+   "kind": "ball",
+   "value": "#588157",
+   "name": "Fern Ball",
+   "rarity": "rare",
+   "default": false
+  },
+  {
+   "id": "ball_8d6e63",
+   "kind": "ball",
+   "value": "#8d6e63",
+   "name": "Cocoa Ball",
+   "rarity": "rare",
+   "default": false
+  },
+  {
+   "id": "ball_e9c46a",
+   "kind": "ball",
+   "value": "#e9c46a",
+   "name": "Sand Ball",
+   "rarity": "rare",
+   "default": false
+  },
+  {
+   "id": "ball_adb5bd",
+   "kind": "ball",
+   "value": "#adb5bd",
+   "name": "Silver Ball",
+   "rarity": "rare",
+   "default": false
+  },
+  {
+   "id": "ball_6c757d",
+   "kind": "ball",
+   "value": "#6c757d",
+   "name": "Slate Ball",
+   "rarity": "common",
+   "default": false
+  },
+  {
+   "id": "ball_264653",
+   "kind": "ball",
+   "value": "#264653",
+   "name": "Deep Sea Ball",
+   "rarity": "rare",
+   "default": false
+  },
+  {
+   "id": "ball_2b2d42",
+   "kind": "ball",
+   "value": "#2b2d42",
+   "name": "Ink Ball",
+   "rarity": "common",
+   "default": true
+  },
+  {
+   "id": "ball_11121c",
+   "kind": "ball",
+   "value": "#11121c",
+   "name": "Night Ball",
+   "rarity": "epic",
+   "default": false
+  },
+  {
+   "id": "ball_000000",
+   "kind": "ball",
+   "value": "#000000",
+   "name": "Void Ball",
+   "rarity": "epic",
+   "default": false
+  },
+  {
+   "id": "trail_ffffff",
+   "kind": "trail",
+   "value": "#ffffff",
+   "name": "Classic White Trail",
+   "rarity": "common",
+   "default": true
+  },
+  {
+   "id": "trail_f4f1de",
+   "kind": "trail",
+   "value": "#f4f1de",
+   "name": "Cream Trail",
+   "rarity": "common",
+   "default": false
+  },
+  {
+   "id": "trail_ffd166",
+   "kind": "trail",
+   "value": "#ffd166",
+   "name": "Sunbeam Trail",
+   "rarity": "common",
+   "default": true
+  },
+  {
+   "id": "trail_ffb703",
+   "kind": "trail",
+   "value": "#ffb703",
+   "name": "Marigold Trail",
+   "rarity": "common",
+   "default": false
+  },
+  {
+   "id": "trail_fb8500",
+   "kind": "trail",
+   "value": "#fb8500",
+   "name": "Tangerine Trail",
+   "rarity": "common",
+   "default": true
+  },
+  {
+   "id": "trail_e63946",
+   "kind": "trail",
+   "value": "#e63946",
+   "name": "Cherry Trail",
+   "rarity": "common",
+   "default": true
+  },
+  {
+   "id": "trail_ef476f",
+   "kind": "trail",
+   "value": "#ef476f",
+   "name": "Rose Trail",
+   "rarity": "common",
+   "default": false
+  },
+  {
+   "id": "trail_ff8fab",
+   "kind": "trail",
+   "value": "#ff8fab",
+   "name": "Bubblegum Trail",
+   "rarity": "common",
+   "default": false
+  },
+  {
+   "id": "trail_b5179e",
+   "kind": "trail",
+   "value": "#b5179e",
+   "name": "Orchid Trail",
+   "rarity": "epic",
+   "default": true
+  },
+  {
+   "id": "trail_7209b7",
+   "kind": "trail",
+   "value": "#7209b7",
+   "name": "Grape Trail",
+   "rarity": "epic",
+   "default": false
+  },
+  {
+   "id": "trail_4361ee",
+   "kind": "trail",
+   "value": "#4361ee",
+   "name": "Cobalt Trail",
+   "rarity": "common",
+   "default": true
+  },
+  {
+   "id": "trail_4cc9f0",
+   "kind": "trail",
+   "value": "#4cc9f0",
+   "name": "Sky Trail",
+   "rarity": "common",
+   "default": true
+  },
+  {
+   "id": "trail_06d6a0",
+   "kind": "trail",
+   "value": "#06d6a0",
+   "name": "Mint Trail",
+   "rarity": "common",
+   "default": false
+  },
+  {
+   "id": "trail_2a9d8f",
+   "kind": "trail",
+   "value": "#2a9d8f",
+   "name": "Lagoon Trail",
+   "rarity": "rare",
+   "default": false
+  },
+  {
+   "id": "trail_80ed99",
+   "kind": "trail",
+   "value": "#80ed99",
+   "name": "Lime Trail",
+   "rarity": "common",
+   "default": true
+  },
+  {
+   "id": "trail_588157",
+   "kind": "trail",
+   "value": "#588157",
+   "name": "Fern Trail",
+   "rarity": "rare",
+   "default": false
+  },
+  {
+   "id": "trail_8d6e63",
+   "kind": "trail",
+   "value": "#8d6e63",
+   "name": "Cocoa Trail",
+   "rarity": "rare",
+   "default": false
+  },
+  {
+   "id": "trail_e9c46a",
+   "kind": "trail",
+   "value": "#e9c46a",
+   "name": "Sand Trail",
+   "rarity": "rare",
+   "default": false
+  },
+  {
+   "id": "trail_adb5bd",
+   "kind": "trail",
+   "value": "#adb5bd",
+   "name": "Silver Trail",
+   "rarity": "rare",
+   "default": false
+  },
+  {
+   "id": "trail_6c757d",
+   "kind": "trail",
+   "value": "#6c757d",
+   "name": "Slate Trail",
+   "rarity": "common",
+   "default": false
+  },
+  {
+   "id": "trail_264653",
+   "kind": "trail",
+   "value": "#264653",
+   "name": "Deep Sea Trail",
+   "rarity": "rare",
+   "default": false
+  },
+  {
+   "id": "trail_2b2d42",
+   "kind": "trail",
+   "value": "#2b2d42",
+   "name": "Ink Trail",
+   "rarity": "common",
+   "default": false
+  },
+  {
+   "id": "trail_11121c",
+   "kind": "trail",
+   "value": "#11121c",
+   "name": "Night Trail",
+   "rarity": "epic",
+   "default": false
+  },
+  {
+   "id": "trail_000000",
+   "kind": "trail",
+   "value": "#000000",
+   "name": "Void Trail",
+   "rarity": "epic",
+   "default": false
+  }
+ ]
+}

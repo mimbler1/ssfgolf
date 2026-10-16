@@ -4,6 +4,7 @@ import { requireSession } from '../auth/hooks.ts';
 import type { AppContext } from '../context.ts';
 import { forbidden, notFound, parse } from '../errors.ts';
 import { getMatchDetail, listMyMatches } from '../matches/results.ts';
+import { assertOwnsAppearance } from '../collection/collection.ts';
 import { AppearanceSchema, DisplayNameSchema } from './appearance.ts';
 import { levelForXp } from './level.ts';
 import { getPlayer, toProfile } from './repo.ts';
@@ -47,6 +48,10 @@ export async function profileRoutes(app: FastifyInstance, opts: { ctx: AppContex
       sets.push(`display_name = $${values.length}`);
     }
     if (body.appearance !== undefined) {
+      // Collectibles (characters, ball and trail colours) must be owned to be equipped.
+      const current = await getPlayer(pool, req.playerId);
+      if (!current) throw notFound('Player not found');
+      await assertOwnsAppearance(pool, req.playerId, body.appearance, current.appearance);
       values.push(JSON.stringify(body.appearance));
       sets.push(`appearance = $${values.length}`);
     }

@@ -18,6 +18,8 @@ func _ready() -> void:
 		Router.goto(Router.CUSTOMIZE)
 	elif args.has("--courses"):
 		Router.goto(Router.COURSES)
+	elif args.has("--collection"):
+		Router.goto(Router.COLLECTION)
 	elif args.has("--stroke"):
 		Router.goto(Router.GAME, {"mode": "stroke", "course": _arg(args, "--course", "golf_land"), "hole": int(_arg(args, "--hole", "0"))})
 	elif args.has("--practice"):

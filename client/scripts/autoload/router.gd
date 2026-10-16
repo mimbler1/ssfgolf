@@ -5,6 +5,7 @@ const MAIN_MENU := "res://scenes/main_menu.tscn"
 const GAME := "res://scenes/game.tscn"
 const CUSTOMIZE := "res://scenes/customize.tscn"
 const COURSES := "res://scenes/course_select.tscn"
+const COLLECTION := "res://scenes/collection.tscn"
 
 var params: Dictionary = {}
 var _layer: CanvasLayer

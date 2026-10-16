@@ -181,6 +181,26 @@ Use a simple in-memory per-IP token bucket: about 20 requests/second burst and 1
 
 ---
 
+### 1.7 Collection and packs (cosmetics only)
+
+The catalog lives in `backend/data/catalog.json`: sprite characters, ball colours and trail
+colours. Items marked `"default": true` are owned by everyone and are never stored. Cosmetics
+never affect gameplay.
+
+- `GET /v1/catalog` (auth) → `200` with the catalog: `{version, rarities: {common|rare|epic|legendary: {weight, refund}}, packs: [{id, name, cost, items, guarantee?}], items: [{id, kind: "character"|"ball"|"trail", value, name, rarity, default}]}`.
+- `GET /v1/collection` (auth) → `200 { "catalogVersion": 1, "owned": [ { "itemId": "char_rex", "copies": 1 } ] }`. Defaults are included.
+- `POST /v1/packs/:packId/open` (auth) → `200 { packId, cost, refund, coins, items: [ { itemId, kind, value, name, rarity, isNew, refund } ] }`.
+  - The whole opening runs in one transaction: the player row is locked, the cost is checked and spent, and items are rolled.
+  - Rolls use the server's crypto RNG with rarity weights, preferring items the player doesn't own yet.
+  - A pack's `guarantee` raises the floor for its first item.
+  - Duplicates refund their rarity's `refund` coins.
+  - Openings are logged in `pack_openings`.
+  - Errors: `404` unknown pack; `409` not enough coins (nothing is charged).
+- `PATCH /v1/me` with an `appearance` returns `403 not_owned` if it equips a collectible the player does not own.
+  - The checked fields are `character`, `ballColor` and `trailColor`.
+  - Values that are not catalog items (custom colours from older clients) are accepted.
+  - So is a value unchanged from the current appearance, so existing profiles keep working.
+
 ## 2. Game-server internal API (`/internal/...`)
 
 Every request requires the header `X-Server-Key: <GAME_SERVER_KEY>` (env). A wrong or missing key returns `401`.

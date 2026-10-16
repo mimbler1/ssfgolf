@@ -76,7 +76,7 @@ describe('profile', () => {
 
   it('PATCH /v1/me accepts a roster character and appearances without one', async () => {
     const g = await newGuest(t);
-    const withChar = { ...DEFAULT_APPEARANCE, character: 'brick' };
+    const withChar = { ...DEFAULT_APPEARANCE, character: 'rex' };
     const res = await t.app.inject({ method: 'PATCH', url: '/v1/me', headers: bearer(g.token), payload: { appearance: withChar } });
     assert.equal(res.statusCode, 200);
     assert.deepEqual(res.json().appearance, withChar);

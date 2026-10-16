@@ -32,6 +32,7 @@ func _initialize() -> void:
 	_run_section("test_six_players", func() -> void: test_six_players())
 	_run_section("test_launch_curve", func() -> void: test_launch_curve())
 	_run_section("test_unlocks", func() -> void: test_unlocks())
+	_run_section("test_collection_catalog", func() -> void: test_collection_catalog())
 
 	_write_report()
 	print("\n%d passed, %d failed" % [passes, failures])
@@ -620,6 +621,19 @@ func test_unlocks() -> void:
 	sim.set_allowed(sim.players[0], Unlocks.for_level(1))
 	check(sim.cmd_shoot(0, -0.8, 0.5, "laser") == "not_owned", "the server rejects a locked ball")
 	check(sim.cmd_shoot(1, -0.8, 0.5, "laser") == "", "another player with it unlocked may use it")
+	_section_ok = true
+
+
+func test_collection_catalog() -> void:
+	print("Collection catalog")
+	var client: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/catalog.json"))
+	var server: Variant = JSON.parse_string(FileAccess.get_file_as_string(ProjectSettings.globalize_path("res://../backend/data/catalog.json")))
+	check(client != null and client == server, "client offline catalog is identical to the backend catalog")
+	var missing: PackedStringArray = []
+	for it: Dictionary in (client as Dictionary).get("items", []):
+		if str(it.kind) == "character" and not CharacterDefs.has(str(it.value)):
+			missing.append(str(it.value))
+	check(missing.is_empty(), "every catalog golfer exists in the roster %s" % str(missing))
 	_section_ok = true
 
 
