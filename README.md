@@ -43,6 +43,20 @@ In each client, choose a name and press **PLAY ONLINE**. When two players queue,
 after 5 seconds in dev (20 seconds by default), or immediately when four are waiting.
 **Private Match** creates a room code that friends can join. **Practice** works offline.
 
+### Browser build with live reload
+
+```powershell
+powershell ./tools/get-godot.ps1 -WebTemplates   # once: installs the Godot web export templates
+./tools/dev.ps1 web                              # http://localhost:8060
+./tools/dev.ps1 web 30                           # same, plus `git pull` every 30 s
+```
+
+`tools/web_dev.py` exports the client with the **Web** preset into `build/web`, serves it, re-exports
+a few seconds after any file under `client/` changes, and reloads open tabs automatically. With a pull
+interval, anything pushed to the current branch (from this PC or another) appears without touching
+anything. The browser runs Practice and the Golfer Studio; online play needs the desktop client,
+because browsers cannot open the UDP (ENet) connection the game servers use.
+
 ### Playing over the internet
 
 - Run the backend somewhere reachable.

@@ -12,6 +12,8 @@
   ./tools/dev.ps1 all         # db + backend + 2 servers + 2 clients, each in its own window
   ./tools/dev.ps1 test        # all automated tests (sim, solver, backend, end-to-end)
   ./tools/dev.ps1 editor      # open the project in the Godot editor
+  ./tools/dev.ps1 web         # browser build on http://localhost:8060, rebuilds + reloads on every change
+  ./tools/dev.ps1 web 30      # same, and also git pull every 30 s so pushes show up automatically
 #>
 param(
   [Parameter(Position = 0)][string]$Command = "help",
@@ -88,5 +90,11 @@ switch ($Command) {
     python (Join-Path $Root "tools/e2e_online.py")
   }
   "editor" { Require-Godot; & $GodotGui --path $Client --editor }
+  "web" {
+    Require-Godot
+    $webArgs = @()
+    if ($PSBoundParameters.ContainsKey("Count")) { $webArgs = @("--pull", $Count) }
+    python (Join-Path $Root "tools/web_dev.py") @webArgs
+  }
   default { Get-Help $PSCommandPath -Detailed }
 }
