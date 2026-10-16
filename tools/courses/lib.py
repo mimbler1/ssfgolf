@@ -142,6 +142,11 @@ def check_attached(h):
         assert d["type"] not in FLOATING_DECOR, "%s: decor %s floats in mid-air" % (h["id"], d["type"])
 
 
+def cliff(x, y_from, y_to, lean=40, mat="rock"):
+    """A near-vertical face from (x, y_from) up or down to (x + lean, y_to), in material `mat`."""
+    return [P(x, y_from, c=True, m=mat), P(x + lean, y_to, c=True)]
+
+
 def bunker(x0, x1, y, depth=40, rim=None):
     """Surface points for a sand bunker dipping `depth` px below `y` between x0 and x1."""
     r = y if rim is None else rim

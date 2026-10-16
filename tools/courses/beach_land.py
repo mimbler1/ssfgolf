@@ -12,7 +12,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from lib import P, ground, left_wall, right_wall, block, poly, water, pond, bunker, deco, hole, write_course  # noqa: E402
+from lib import P, ground, left_wall, right_wall, block, poly, water, pond, bunker, cliff, deco, hole, write_course  # noqa: E402
 
 THEME = {
     "id": "beach", "art": "beach",
@@ -22,11 +22,6 @@ THEME = {
     "grass": "#a6d65a", "grass_light": "#d4ef8a", "grass_dark": "#6fa83a",
     "outline": "#3a2a20", "water_top": "#3fd0e0", "water_bottom": "#1878b8", "cloud": "#ffffff",
 }
-
-
-def cliff(x, y_from, y_to, lean=40, mat="rock"):
-    """A near-vertical rock face from (x, y_from) up or down to (x + lean, y_to)."""
-    return [P(x, y_from, c=True, m=mat), P(x + lean, y_to, c=True)]
 
 
 def h1():

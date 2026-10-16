@@ -4,7 +4,7 @@
   "version": 3,
   "order": 3,
   "difficulty": "Medium",
-  "mechanic": "Goo walls, ceilings and islands: shoot from wherever you stick",
+  "mechanic": "Goo walls, ledges and ceilings: shoot from wherever you stick",
   "theme": {
     "id": "sticky",
     "art": "sticky",
@@ -28,10 +28,10 @@
     {
       "id": "sz_01",
       "name": "First Stick",
-      "par": 3,
-      "bounds": {"x": -200, "y": -1800, "w": 3200, "h": 2500},
+      "par": 4,
+      "bounds": {"x": -200, "y": -1800, "w": 4200, "h": 2500},
       "tee": {"x": 360, "y": 0},
-      "cup": {"x": 2200, "y": 0},
+      "cup": {"x": 2900, "y": -2},
       "terrain": [
         {
           "material": "grass",
@@ -45,18 +45,25 @@
             [220, 0],
             [520, 0],
             [900, 0],
-            [1100, 0, {"c": true, "m": "sticky"}],
-            [1110, -520, {"c": true}],
-            [1260, -520, {"c": true, "m": "rock"}],
-            [1270, 0, {"c": true}],
-            [1500, 0],
-            [1900, 0],
-            [2300, 0],
-            [2500, -10],
-            [2630, -80],
-            [2750, -330],
-            [2900, -1000, {"c": true}],
-            [2900, 700, {"c": true}],
+            [1250, -10],
+            [1450, -10, {"c": true, "m": "sticky"}],
+            [1460, -440, {"c": true}],
+            [1700, -450],
+            [1900, -430],
+            [2100, -330],
+            [2250, -150],
+            [2350, -30],
+            [2450, -5],
+            [2300, -10],
+            [2650, -12],
+            [2900, -2],
+            [3100, -14],
+            [3400, -34],
+            [3580, -50],
+            [3730, -100],
+            [3850, -350],
+            [4000, -1100, {"c": true}],
+            [4000, 700, {"c": true}],
             [-200, 700, {"c": true}]
           ]
         }
@@ -64,135 +71,19 @@
       "zones": [],
       "decor": [
         {"type": "mushroom", "x": 700, "y": 0, "scale": 1.0},
-        {"type": "vine", "x": 1110, "y": -300, "scale": 1.0},
-        {"type": "mushroom", "x": 1700, "y": 0, "scale": 1.0},
-        {"type": "crystal", "x": 2450, "y": -10, "scale": 1.0}
+        {"type": "crystal", "x": 1650, "y": -450, "scale": 1.0},
+        {"type": "mushroom", "x": 2550, "y": -8, "scale": 1.0},
+        {"type": "crystal", "x": 3500, "y": -12, "scale": 1.0}
       ],
-      "notes": "A goo wall. Stick to its face, then pop the ball up and over from there; or clear it in one big shot."
+      "notes": "A rock mesa with a goo face. Land on top and roll down the back to the green; anything short sticks to the face and pops up from there."
     },
     {
       "id": "sz_02",
-      "name": "Ceiling Crawl",
+      "name": "Goo Ledges",
       "par": 4,
-      "bounds": {"x": -200, "y": -1800, "w": 3600, "h": 2500},
+      "bounds": {"x": -200, "y": -2000, "w": 4400, "h": 2700},
       "tee": {"x": 360, "y": 0},
-      "cup": {"x": 2820, "y": -40},
-      "terrain": [
-        {
-          "material": "grass",
-          "smooth": true,
-          "kind": "ground",
-          "points": [
-            [-200, -800, {"c": true}],
-            [-90, -740],
-            [10, -330],
-            [100, -50],
-            [220, 0],
-            [520, 0],
-            [760, 0],
-            [820, 20, {"c": true}],
-            [840, 260, {"c": true, "m": "rock"}],
-            [2260, 260, {"c": true}],
-            [2280, 20, {"c": true}],
-            [2360, -30],
-            [2600, -40],
-            [3000, -40],
-            [3130, -100],
-            [3250, -350],
-            [3400, -1000, {"c": true}],
-            [3400, 700, {"c": true}],
-            [-200, 700, {"c": true}]
-          ]
-        },
-        {
-          "material": "rock",
-          "smooth": false,
-          "kind": "island",
-          "points": [
-            [900, -420, {"c": true, "m": "sticky"}],
-            [2200, -420, {"c": true}],
-            [2200, -560, {"c": true, "m": "rock"}],
-            [900, -560, {"c": true}]
-          ]
-        }
-      ],
-      "zones": [
-        {
-          "type": "acid",
-          "points": [
-            [844, 140],
-            [2256, 140],
-            [2256, 300],
-            [844, 300]
-          ]
-        }
-      ],
-      "decor": [
-        {"type": "vine", "x": 1200, "y": -420, "scale": 1.0},
-        {"type": "vine", "x": 1800, "y": -420, "scale": 1.0},
-        {"type": "mushroom", "x": 600, "y": 0, "scale": 1.0},
-        {"type": "crystal", "x": 2700, "y": -40, "scale": 1.0}
-      ],
-      "notes": "A pit of bubbling goo with a sticky ceiling above it. Stick to the ceiling, then drop the ball forward to the green."
-    },
-    {
-      "id": "sz_03",
-      "name": "Glue Gully",
-      "par": 4,
-      "bounds": {"x": -200, "y": -1500, "w": 3900, "h": 2200},
-      "tee": {"x": 360, "y": 0},
-      "cup": {"x": 3200, "y": -30},
-      "terrain": [
-        {
-          "material": "grass",
-          "smooth": true,
-          "kind": "ground",
-          "points": [
-            [-200, -800, {"c": true}],
-            [-90, -740],
-            [10, -330],
-            [100, -50],
-            [220, 0],
-            [520, 0],
-            [800, -20],
-            [1000, -10, {"m": "sticky"}],
-            [1300, -10],
-            [1450, -60, {"m": "rock"}],
-            [1550, -90],
-            [1650, -60],
-            [1800, -10, {"m": "sticky"}],
-            [2150, -10],
-            [2300, -50, {"m": "rock"}],
-            [2420, -80],
-            [2540, -50],
-            [2700, -20, {"m": "sticky"}],
-            [2900, -20],
-            [3050, -30],
-            [3300, -30],
-            [3430, -90],
-            [3550, -340],
-            [3700, -900, {"c": true}],
-            [3700, 700, {"c": true}],
-            [-200, 700, {"c": true}]
-          ]
-        }
-      ],
-      "zones": [],
-      "decor": [
-        {"type": "mushroom", "x": 1550, "y": -90, "scale": 1.0},
-        {"type": "vine", "x": 1150, "y": -10, "scale": 1.0},
-        {"type": "mushroom", "x": 2420, "y": -80, "scale": 1.0},
-        {"type": "crystal", "x": 3400, "y": -30, "scale": 1.0}
-      ],
-      "notes": "Goo strips cover the low ground; rocky humps between them are safe. Land on a hump or past the goo."
-    },
-    {
-      "id": "sz_04",
-      "name": "Wall Climb",
-      "par": 4,
-      "bounds": {"x": -200, "y": -2300, "w": 3200, "h": 3000},
-      "tee": {"x": 360, "y": 0},
-      "cup": {"x": 2300, "y": -1000},
+      "cup": {"x": 2900, "y": -640},
       "terrain": [
         {
           "material": "grass",
@@ -207,59 +98,41 @@
             [520, 0],
             [800, 0],
             [1000, 0],
-            [1500, 0],
-            [1700, 0, {"c": true, "m": "sticky"}],
-            [1710, -980, {"c": true, "m": "rock"}],
-            [1760, -1000, {"c": true}],
-            [2100, -1000],
-            [2500, -1000],
-            [2600, -1020],
-            [2730, -1090],
-            [2850, -1340],
-            [3000, -1600, {"c": true}],
-            [3000, 700, {"c": true}],
+            [1060, 0, {"c": true, "m": "rock"}],
+            [1100, -200, {"c": true, "m": "sticky"}],
+            [1450, -200, {"c": true, "m": "rock"}],
+            [1490, -420, {"c": true, "m": "sticky"}],
+            [1850, -420, {"c": true, "m": "rock"}],
+            [1890, -640, {"c": true}],
+            [2200, -640],
+            [2600, -640],
+            [3600, -640],
+            [3780, -650],
+            [3930, -700],
+            [4050, -950],
+            [4200, -1400, {"c": true}],
+            [4200, 700, {"c": true}],
             [-200, 700, {"c": true}]
-          ]
-        },
-        {
-          "material": "sticky",
-          "smooth": false,
-          "kind": "island",
-          "points": [
-            [1050, -460, {"c": true, "m": "sticky"}],
-            [1130, -460, {"c": true}],
-            [1130, -330, {"c": true}],
-            [1050, -330, {"c": true}]
-          ]
-        },
-        {
-          "material": "sticky",
-          "smooth": false,
-          "kind": "island",
-          "points": [
-            [1350, -760, {"c": true, "m": "sticky"}],
-            [1430, -760, {"c": true}],
-            [1430, -620, {"c": true}],
-            [1350, -620, {"c": true}]
           ]
         }
       ],
       "zones": [],
       "decor": [
-        {"type": "vine", "x": 1090, "y": -460, "scale": 1.0},
-        {"type": "vine", "x": 1390, "y": -760, "scale": 1.0},
-        {"type": "mushroom", "x": 2000, "y": -1000, "scale": 1.0},
-        {"type": "crystal", "x": 2450, "y": -1000, "scale": 1.0}
+        {"type": "mushroom", "x": 700, "y": 0, "scale": 1.0},
+        {"type": "crystal", "x": 1280, "y": -200, "scale": 1.0},
+        {"type": "crystal", "x": 1670, "y": -420, "scale": 1.0},
+        {"type": "mushroom", "x": 2300, "y": -640, "scale": 1.0},
+        {"type": "mushroom", "x": 3400, "y": -640, "scale": 1.0}
       ],
-      "notes": "The green is a thousand pixels up. Climb it: goo blocks and a goo cliff face are the handholds."
+      "notes": "Climb two goo-topped ledges to the green. Goo stops the ball dead where it lands, so every landing is a new tee."
     },
     {
-      "id": "sz_05",
-      "name": "Goo Islands",
-      "par": 4,
-      "bounds": {"x": -200, "y": -1700, "w": 3800, "h": 2400},
+      "id": "sz_03",
+      "name": "Ceiling Crawl",
+      "par": 5,
+      "bounds": {"x": -200, "y": -2100, "w": 4400, "h": 2800},
       "tee": {"x": 360, "y": 0},
-      "cup": {"x": 3020, "y": -30},
+      "cup": {"x": 2700, "y": -20},
       "terrain": [
         {
           "material": "grass",
@@ -272,52 +145,23 @@
             [100, -50],
             [220, 0],
             [520, 0],
-            [700, 0],
-            [760, 30, {"c": true}],
-            [780, 300, {"c": true, "m": "rock"}],
-            [2620, 300, {"c": true}],
-            [2640, 30, {"c": true}],
+            [820, 0],
+            [860, 20, {"c": true, "m": "rock"}],
+            [880, 260, {"c": true, "m": "rock"}],
+            [2080, 260, {"c": true}],
+            [2100, 20, {"c": true}],
+            [2180, -20],
             [2700, -20],
-            [2900, -30],
-            [3200, -30],
-            [3330, -90],
-            [3450, -340],
-            [3600, -1000, {"c": true}],
-            [3600, 700, {"c": true}],
+            [3200, -20],
+            [3300, -20, {"c": true, "m": "rock"}],
+            [3300, -340, {"c": true, "m": "sticky"}],
+            [950, -340, {"c": true, "m": "rock"}],
+            [950, -1150, {"c": true}],
+            [2200, -1170],
+            [3300, -1190],
+            [4200, -1200, {"c": true}],
+            [4200, 700, {"c": true}],
             [-200, 700, {"c": true}]
-          ]
-        },
-        {
-          "material": "sticky",
-          "smooth": false,
-          "kind": "island",
-          "points": [
-            [1050, -120, {"c": true, "m": "sticky"}],
-            [1200, -120, {"c": true}],
-            [1200, -60, {"c": true}],
-            [1050, -60, {"c": true}]
-          ]
-        },
-        {
-          "material": "sticky",
-          "smooth": false,
-          "kind": "island",
-          "points": [
-            [1550, -260, {"c": true, "m": "sticky"}],
-            [1700, -260, {"c": true}],
-            [1700, -200, {"c": true}],
-            [1550, -200, {"c": true}]
-          ]
-        },
-        {
-          "material": "sticky",
-          "smooth": false,
-          "kind": "island",
-          "points": [
-            [2100, -140, {"c": true, "m": "sticky"}],
-            [2250, -140, {"c": true}],
-            [2250, -80, {"c": true}],
-            [2100, -80, {"c": true}]
           ]
         }
       ],
@@ -325,27 +169,253 @@
         {
           "type": "acid",
           "points": [
-            [784, 160],
-            [2616, 160],
-            [2616, 320],
-            [784, 320]
+            [884, 140],
+            [2076, 140],
+            [2076, 280],
+            [884, 280]
           ]
         }
       ],
       "decor": [
-        {"type": "mushroom", "x": 600, "y": 0, "scale": 1.0},
-        {"type": "crystal", "x": 2800, "y": -20, "scale": 1.0},
-        {"type": "vine", "x": 1625, "y": -260, "scale": 1.0}
+        {"type": "mushroom", "x": 650, "y": 0, "scale": 1.0},
+        {"type": "vine", "x": 1400, "y": -330, "scale": 1.0},
+        {"type": "vine", "x": 2300, "y": -330, "scale": 1.0},
+        {"type": "crystal", "x": 3150, "y": -20, "scale": 1.0},
+        {"type": "mushroom", "x": 2400, "y": -1170, "scale": 1.0}
       ],
-      "notes": "Three floating goo islands over a goo pit. Hop from island to island, sticking each time."
+      "notes": "An acid pit lies under a goo-lined overhang that reaches out from the far cliff. Stick to the ceiling well out over the pit, then drop forward onto the cove green."
+    },
+    {
+      "id": "sz_04",
+      "name": "Wall Climb",
+      "par": 5,
+      "bounds": {"x": -200, "y": -2400, "w": 3800, "h": 3100},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 2600, "y": -1000},
+      "terrain": [
+        {
+          "material": "grass",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -1300, {"c": true}],
+            [-90, -1240],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [900, 0],
+            [1250, 0],
+            [1300, 0, {"c": true, "m": "sticky"}],
+            [1300, -330, {"c": true}],
+            [1420, -332],
+            [1520, -330],
+            [1540, -330, {"c": true, "m": "sticky"}],
+            [1540, -660, {"c": true}],
+            [1660, -662],
+            [1760, -660],
+            [1780, -660, {"c": true, "m": "sticky"}],
+            [1780, -1000, {"c": true}],
+            [1950, -1005],
+            [2300, -1000],
+            [2900, -1000],
+            [3200, -1020],
+            [3330, -1090],
+            [3450, -1340],
+            [3600, -1800, {"c": true}],
+            [3600, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "mushroom", "x": 800, "y": 0, "scale": 1.0},
+        {"type": "crystal", "x": 1430, "y": -332, "scale": 1.0},
+        {"type": "mushroom", "x": 1660, "y": -662, "scale": 1.0},
+        {"type": "crystal", "x": 2100, "y": -1000, "scale": 1.0},
+        {"type": "mushroom", "x": 2900, "y": -1000, "scale": 1.0}
+      ],
+      "notes": "The green is a thousand pixels up a staircase of goo cliffs. Stick to a face, pop up onto the step above, and climb."
+    },
+    {
+      "id": "sz_05",
+      "name": "Glue Gully",
+      "par": 4,
+      "bounds": {"x": -200, "y": -1500, "w": 4800, "h": 2200},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 3800, "y": -30},
+      "terrain": [
+        {
+          "material": "grass",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -800, {"c": true}],
+            [-90, -740],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [800, -20],
+            [950, -10, {"m": "sticky"}],
+            [1250, -10],
+            [1400, -70, {"m": "rock"}],
+            [1520, -110],
+            [1640, -70],
+            [1800, -10, {"m": "sticky"}],
+            [2150, -10],
+            [2300, -80, {"m": "rock"}],
+            [2440, -120],
+            [2580, -80],
+            [2750, -10, {"m": "sticky"}],
+            [3100, -10],
+            [3250, -30],
+            [3600, -30],
+            [4100, -30],
+            [4180, -40],
+            [4330, -90],
+            [4450, -340],
+            [4600, -900, {"c": true}],
+            [4600, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "mushroom", "x": 650, "y": -15, "scale": 1.0},
+        {"type": "crystal", "x": 1520, "y": -110, "scale": 1.0},
+        {"type": "mushroom", "x": 2440, "y": -120, "scale": 1.0},
+        {"type": "crystal", "x": 3400, "y": -30, "scale": 1.0},
+        {"type": "mushroom", "x": 4000, "y": -30, "scale": 1.0}
+      ],
+      "notes": "Goo fills every trough; the rocky humps between them are safe. Land on a hump or carry the goo entirely."
     },
     {
       "id": "sz_06",
+      "name": "Low Ceiling",
+      "par": 5,
+      "bounds": {"x": -200, "y": -1900, "w": 5600, "h": 2600},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 4700, "y": -300},
+      "terrain": [
+        {
+          "material": "grass",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -1200, {"c": true}],
+            [2600, -1200, {"c": true, "m": "rock"}],
+            [2600, -430, {"c": true, "m": "sticky"}],
+            [1900, -430, {"c": true, "m": "sticky"}],
+            [1850, -320, {"c": true, "m": "sticky"}],
+            [1800, -430, {"c": true, "m": "sticky"}],
+            [1200, -430, {"c": true, "m": "sticky"}],
+            [1150, -320, {"c": true, "m": "sticky"}],
+            [1100, -430, {"c": true, "m": "sticky"}],
+            [60, -430, {"c": true}],
+            [140, -150],
+            [260, 0],
+            [520, 0],
+            [900, 0, {"m": "sticky"}],
+            [1150, 0],
+            [1500, -10],
+            [1900, -10],
+            [2300, -10],
+            [2700, -20],
+            [3000, -60],
+            [3300, -160],
+            [3600, -260],
+            [3900, -300],
+            [4200, -300, {"m": "sticky"}],
+            [4400, -300],
+            [4700, -300],
+            [5000, -310],
+            [5130, -370],
+            [5250, -620],
+            [5400, -1300, {"c": true}],
+            [5400, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "mushroom", "x": 600, "y": 0, "scale": 1.0},
+        {"type": "vine", "x": 700, "y": -420, "scale": 1.0},
+        {"type": "vine", "x": 1500, "y": -420, "scale": 1.0},
+        {"type": "vine", "x": 2300, "y": -420, "scale": 1.0},
+        {"type": "crystal", "x": 3500, "y": -230, "scale": 1.0},
+        {"type": "mushroom", "x": 4900, "y": -305, "scale": 1.0}
+      ],
+      "notes": "A long corridor under a goo-studded roof. Keep every shot low (anything that rises sticks to the ceiling), then climb out to the green."
+    },
+    {
+      "id": "sz_07",
+      "name": "The Chimney",
+      "par": 5,
+      "bounds": {"x": -200, "y": -2200, "w": 3400, "h": 2900},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 2300, "y": -900},
+      "terrain": [
+        {
+          "material": "grass",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -1200, {"c": true}],
+            [-90, -1140],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [800, 0],
+            [1060, 0],
+            [1100, 0, {"c": true, "m": "sticky"}],
+            [1100, -420, {"c": true, "m": "rock"}],
+            [1180, -420, {"c": true, "m": "rock"}],
+            [1180, 0, {"c": true}],
+            [1300, 0],
+            [1440, 0],
+            [1500, 0, {"c": true, "m": "rock"}],
+            [1500, -230, {"c": true, "m": "rock"}],
+            [1370, -230, {"c": true, "m": "rock"}],
+            [1370, -265, {"c": true}],
+            [1500, -265, {"c": true, "m": "rock"}],
+            [1500, -660, {"c": true, "m": "rock"}],
+            [1370, -660, {"c": true, "m": "rock"}],
+            [1370, -695, {"c": true}],
+            [1500, -695, {"c": true, "m": "rock"}],
+            [1500, -900, {"c": true}],
+            [1700, -905],
+            [2100, -900],
+            [2500, -900],
+            [2800, -920],
+            [2930, -990],
+            [3050, -1240],
+            [3200, -1700, {"c": true}],
+            [3200, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "mushroom", "x": 700, "y": 0, "scale": 1.0},
+        {"type": "crystal", "x": 1140, "y": -420, "scale": 1.0},
+        {"type": "mushroom", "x": 1950, "y": -900, "scale": 1.0},
+        {"type": "crystal", "x": 2650, "y": -905, "scale": 1.0}
+      ],
+      "notes": "A zigzag chimney: the pillar's goo face is the shortcut; without touching goo, climb from cliff ledge to pillar top to the higher ledge and over the lip."
+    },
+    {
+      "id": "sz_08",
       "name": "Sticky Trap",
       "par": 4,
-      "bounds": {"x": -200, "y": -1600, "w": 3400, "h": 2300},
+      "bounds": {"x": -200, "y": -1700, "w": 4400, "h": 2400},
       "tee": {"x": 360, "y": 0},
-      "cup": {"x": 2400, "y": -20},
+      "cup": {"x": 3100, "y": -20},
       "terrain": [
         {
           "material": "grass",
@@ -360,161 +430,45 @@
             [520, 0],
             [900, -10],
             [1300, -20],
-            [1700, -20],
-            [1950, -20, {"m": "sticky"}],
-            [2250, -20],
-            [2300, -20, {"m": "rock"}],
-            [2340, -40],
-            [2380, -20],
-            [2420, -20],
-            [2460, -40, {"m": "rock"}],
-            [2500, -20, {"m": "sticky"}],
-            [2800, -20],
-            [2900, -30],
-            [3050, -340],
-            [3200, -900, {"c": true}],
-            [3200, 700, {"c": true}],
+            [1500, -20, {"c": true, "m": "sticky"}],
+            [1540, -260, {"c": true, "m": "rock"}],
+            [1700, -270],
+            [1860, -260, {"c": true, "m": "rock"}],
+            [1900, -20, {"c": true}],
+            [2300, -20],
+            [2700, -20, {"m": "sticky"}],
+            [2980, -20, {"m": "rock"}],
+            [3020, -35],
+            [3060, -20],
+            [3140, -20, {"m": "rock"}],
+            [3180, -35],
+            [3220, -20, {"m": "sticky"}],
+            [3500, -20],
+            [3800, -30],
+            [3930, -90],
+            [4050, -340],
+            [4200, -900, {"c": true}],
+            [4200, 700, {"c": true}],
             [-200, 700, {"c": true}]
           ]
         }
       ],
       "zones": [],
       "decor": [
-        {"type": "mushroom", "x": 1000, "y": -10, "scale": 1.0},
-        {"type": "vine", "x": 2100, "y": -20, "scale": 1.0},
-        {"type": "vine", "x": 2650, "y": -20, "scale": 1.0},
-        {"type": "crystal", "x": 1500, "y": -20, "scale": 1.0}
+        {"type": "mushroom", "x": 700, "y": -5, "scale": 1.0},
+        {"type": "crystal", "x": 1700, "y": -270, "scale": 1.0},
+        {"type": "mushroom", "x": 2400, "y": -20, "scale": 1.0},
+        {"type": "crystal", "x": 3650, "y": -25, "scale": 1.0}
       ],
-      "notes": "A tiny green ringed by goo. Anything slightly long or short sticks and leaves an awkward chip."
-    },
-    {
-      "id": "sz_07",
-      "name": "The Chimney",
-      "par": 5,
-      "bounds": {"x": -200, "y": -2400, "w": 2800, "h": 3100},
-      "tee": {"x": 360, "y": 0},
-      "cup": {"x": 1760, "y": -1220},
-      "terrain": [
-        {
-          "material": "grass",
-          "smooth": true,
-          "kind": "ground",
-          "points": [
-            [-200, -800, {"c": true}],
-            [-90, -740],
-            [10, -330],
-            [100, -50],
-            [220, 0],
-            [520, 0],
-            [800, 0],
-            [1000, 0],
-            [1200, 0],
-            [1300, 0, {"c": true, "m": "sticky"}],
-            [1310, -900, {"c": true}],
-            [1560, -900, {"c": true}],
-            [1570, -1200, {"c": true}],
-            [1640, -1220],
-            [1900, -1220],
-            [2000, -1240],
-            [2130, -1310],
-            [2250, -1560],
-            [2400, -1700, {"c": true}],
-            [2400, 700, {"c": true}],
-            [-200, 700, {"c": true}]
-          ]
-        },
-        {
-          "material": "rock",
-          "smooth": false,
-          "kind": "island",
-          "points": [
-            [960, -420, {"c": true, "m": "rock"}],
-            [1060, -420, {"c": true, "m": "sticky"}],
-            [1060, 80, {"c": true, "m": "rock"}],
-            [960, 80, {"c": true, "m": "rock"}]
-          ]
-        }
-      ],
-      "zones": [],
-      "decor": [
-        {"type": "vine", "x": 1305, "y": -500, "scale": 1.0},
-        {"type": "crystal", "x": 1900, "y": -1220, "scale": 1.0},
-        {"type": "mushroom", "x": 700, "y": 0, "scale": 1.0}
-      ],
-      "notes": "A narrow shaft between two goo faces. Bounce-stick your way up it, then pop over the lip to the ledge green."
-    },
-    {
-      "id": "sz_08",
-      "name": "Under the Bridge",
-      "par": 4,
-      "bounds": {"x": -200, "y": -1600, "w": 3600, "h": 2300},
-      "tee": {"x": 360, "y": 0},
-      "cup": {"x": 2900, "y": -20},
-      "terrain": [
-        {
-          "material": "grass",
-          "smooth": true,
-          "kind": "ground",
-          "points": [
-            [-200, -800, {"c": true}],
-            [-90, -740],
-            [10, -330],
-            [100, -50],
-            [220, 0],
-            [520, 0],
-            [800, 0],
-            [900, 0],
-            [935.0, 90.0],
-            [970, 180, {"m": "rock"}],
-            [2230, 180],
-            [2265.0, 90.0],
-            [2300, 0],
-            [2500, -10],
-            [2800, -20],
-            [3100, -20],
-            [3250, -330],
-            [3400, -900, {"c": true}],
-            [3400, 700, {"c": true}],
-            [-200, 700, {"c": true}]
-          ]
-        },
-        {
-          "material": "wood",
-          "smooth": false,
-          "kind": "island",
-          "points": [
-            [1100, -300, {"c": true, "m": "wood"}],
-            [2100, -300, {"c": true}],
-            [2100, -260, {"c": true, "m": "sticky"}],
-            [1100, -260, {"c": true}]
-          ]
-        }
-      ],
-      "zones": [
-        {
-          "type": "water",
-          "points": [
-            [904, 14],
-            [2296, 14],
-            [2296, 220],
-            [904, 220]
-          ]
-        }
-      ],
-      "decor": [
-        {"type": "vine", "x": 1300, "y": -260, "scale": 1.0},
-        {"type": "vine", "x": 1900, "y": -260, "scale": 1.0},
-        {"type": "mushroom", "x": 2700, "y": -20, "scale": 1.0}
-      ],
-      "notes": "The bridge deck is ordinary wood on top but goo underneath. A low line sticks under it; a high one rides over."
+      "notes": "Hop the goo-faced ridge, then find a tiny green ringed by goo. Anything long or short sticks and leaves an awkward chip."
     },
     {
       "id": "sz_09",
       "name": "Goo Gauntlet",
       "par": 5,
-      "bounds": {"x": -200, "y": -2000, "w": 4400, "h": 2700},
+      "bounds": {"x": -200, "y": -2100, "w": 5000, "h": 2800},
       "tee": {"x": 360, "y": 0},
-      "cup": {"x": 3740, "y": -600},
+      "cup": {"x": 4200, "y": -600},
       "terrain": [
         {
           "material": "grass",
@@ -530,48 +484,46 @@
             [800, 0],
             [1000, 0, {"m": "sticky"}],
             [1300, 0],
-            [1400, 0, {"c": true, "m": "rock"}],
+            [1400, 0, {"c": true, "m": "sticky"}],
             [1420, -300, {"c": true}],
             [1500, -310],
             [1800, -310, {"m": "sticky"}],
             [2000, -310],
             [2100, -310, {"c": true, "m": "sticky"}],
             [2110, -600, {"c": true}],
-            [2300, -600],
-            [2700, -600],
-            [3000, -620, {"m": "rock"}],
-            [3100, -650],
-            [3200, -620],
-            [3500, -600],
-            [3900, -600],
-            [4000, -620],
-            [4050, -940],
-            [4200, -1300, {"c": true}],
-            [4200, 700, {"c": true}],
+            [2400, -600],
+            [2700, -600, {"m": "sticky"}],
+            [2900, -600],
+            [3100, -600],
+            [3300, -620, {"m": "rock"}],
+            [3400, -650],
+            [3500, -620],
+            [3700, -600],
+            [4000, -600],
+            [4300, -600],
+            [4500, -600, {"c": true, "m": "rock"}],
+            [4500, -880, {"c": true, "m": "sticky"}],
+            [3700, -880, {"c": true, "m": "rock"}],
+            [3700, -960, {"c": true}],
+            [4200, -980],
+            [4800, -1000, {"c": true}],
+            [4800, 700, {"c": true}],
             [-200, 700, {"c": true}]
-          ]
-        },
-        {
-          "material": "rock",
-          "smooth": false,
-          "kind": "island",
-          "points": [
-            [2500, -900, {"c": true, "m": "sticky"}],
-            [3300, -900, {"c": true}],
-            [3300, -1000, {"c": true, "m": "rock"}],
-            [2500, -1000, {"c": true}]
           ]
         }
       ],
       "zones": [],
       "decor": [
-        {"type": "mushroom", "x": 700, "y": 0, "scale": 1.0},
-        {"type": "vine", "x": 1150, "y": 0, "scale": 1.0},
+        {"type": "mushroom", "x": 650, "y": 0, "scale": 1.0},
         {"type": "crystal", "x": 1650, "y": -310, "scale": 1.0},
-        {"type": "vine", "x": 2105, "y": -450, "scale": 1.0},
-        {"type": "mushroom", "x": 3700, "y": -600, "scale": 1.0}
+        {"type": "mushroom", "x": 2500, "y": -600, "scale": 1.0},
+        {"type": "vine", "x": 3900, "y": -870, "scale": 1.0},
+        {"type": "vine", "x": 4350, "y": -870, "scale": 1.0},
+        {"type": "crystal", "x": 3400, "y": -650, "scale": 1.0}
       ],
-      "notes": "Goo on the floor, on the risers and on the ceiling. Use the risers to climb; avoid the floor strips."
+      "notes": "Goo on the floor, on the risers and on the ceiling over the green. Use the risers to climb, avoid the floor strips, and keep the approach under the overhang."
     }
-  ]
+  ],
+  "parSource": "design",
+  "layout": 2
 }
