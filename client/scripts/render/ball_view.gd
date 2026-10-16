@@ -41,6 +41,10 @@ var _shadow_y: float = 0.0
 var _shadow_dist: float = 999.0
 
 
+func _ready() -> void:
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+
+
 func _process(delta: float) -> void:
 	_t += delta
 	boosted = maxf(0.0, boosted - delta)
@@ -134,6 +138,21 @@ func _draw() -> void:
 	if finished or disconnected:
 		fill.a = 0.5
 
+	# Sprite ball (UI_ART.md): the greyscale spin strip tinted with the ball colour, frame chosen by
+	# rotation. Falls back to the drawn ball if the art is missing.
+	var strip := UIArt.tex("ball/ball_tint_spin.png")
+	if strip:
+		var n := 8
+		var fw := strip.get_width() / n
+		var fi := posmod(int(round(rot / (TAU / n))), n)
+		var d := radius * 2.0
+		draw_texture_rect_region(strip, Rect2(-radius, -radius, d, d), Rect2(fi * fw, 0, fw, strip.get_height()), fill)
+		_draw_states()
+		if is_local and not finished:
+			_draw_local_marker()
+		elif display_name != "" and not finished and show_name:
+			_draw_name()
+		return
 	draw_circle(Vector2.ZERO, radius + 2.2, outline, true, -1.0, true)
 	draw_circle(Vector2.ZERO, radius, fill, true, -1.0, true)
 	# Shading crescent (fixed light direction).

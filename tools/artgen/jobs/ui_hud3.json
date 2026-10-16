@@ -1,0 +1,5 @@
+[
+ {"name": "hud3_kit_s45", "seeds": [12141, 12142], "w": 1536, "h": 1024, "style": "@UI",
+  "init": "art/ui/guides/hud_kit.png", "strength": 0.45,
+  "prompt": "set of dark metal arcade game hud frames: square portrait frame with gold corners, two item cards, two glass energy cells, black background"}
+]

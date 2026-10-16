@@ -1,6 +1,8 @@
 class_name AbilityIcon
 extends Control
-## Vector icon for a ball ability. Draws centred in its rect.
+## Icon for a ball ability: the authored pixel-art icon (assets/ui/abilities/<id>.png, UI_ART.md)
+## drawn at the largest integer scale that fits, nearest filtered. The old vector glyph below is
+## only a fallback for an id without art.
 
 var ability: String = "standard":
 	set(v):
@@ -15,15 +17,29 @@ var _t := 0.0
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 
 
 func _process(delta: float) -> void:
 	_t += delta
-	if ability in ["nitro", "grenade"]:
+	if ability in ["nitro", "grenade"] and UIArt.ability_icon(ability) == null:
 		queue_redraw()
 
 
 func _draw() -> void:
+	var art := UIArt.ability_icon(ability)
+	if art:
+		var ts := art.get_size()
+		var k := maxf(1.0, floorf(minf(size.x / ts.x, size.y / ts.y)))
+		if minf(size.x / ts.x, size.y / ts.y) < 1.0:
+			k = minf(size.x / ts.x, size.y / ts.y)
+		var dst := Rect2(((size - ts * k) * 0.5).floor(), ts * k)
+		draw_texture_rect(art, dst, false, Color(0.45, 0.45, 0.5, 0.75) if dimmed else Color.WHITE)
+		return
+	_draw_vector()
+
+
+func _draw_vector() -> void:
 	var c := size * 0.5
 	var r := minf(size.x, size.y) * 0.36
 	var ink := Color("1b2040")

@@ -875,6 +875,7 @@ class _Podium extends Control:
 
 	func _ready() -> void:
 		resized.connect(fit)
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 
 	func fit() -> void:
 		if golfer == null or size.y <= 0.0:
@@ -898,6 +899,18 @@ class _Podium extends Control:
 		queue_redraw()
 
 	func _draw() -> void:
+		var pod := UIArt.tex("studio/podium.png")
+		if pod:
+			# Pixel podium at the golfer's pixel size (sprite px = rig units * 0.769 at scale 1),
+			# rounded to a whole number so both stay crisp. Its stand point is (100, 16).
+			var k := maxf(1.0, roundf(_scale * 0.769))
+			var glow := 0.5 + 0.5 * sin(_t * 1.5)
+			var c := Vector2(size.x * 0.5, _ground.y)
+			for i in 5:
+				draw_circle(c + Vector2(0, -40.0 * k), (80.0 - i * 13.0) * k, Color(1, 0.95, 0.75, 0.02 + glow * 0.01))
+			var at := (_ground - Vector2(100, 16) * k).floor()
+			draw_texture_rect(pod, Rect2(at, pod.get_size() * k), false)
+			return
 		var c := Vector2(size.x * 0.5, _ground.y)
 		var w := minf(size.x * 0.46, 70.0 * _scale)
 		var glow := 0.5 + 0.5 * sin(_t * 1.5)

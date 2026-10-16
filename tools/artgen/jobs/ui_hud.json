@@ -1,0 +1,20 @@
+[
+ {"name": "hud_panel_s40", "seeds": [12001, 12002, 12003], "w": 1408, "h": 512, "style": "@UI",
+  "init": "art/ui/guides/hud_panel.png", "strength": 0.4,
+  "prompt": "dark brushed metal arcade fighting game player name plate panel, steel bevel rim, gold trim stripes, rivets, black background"},
+ {"name": "hud_panel_s52", "seeds": [12011, 12012, 12013], "w": 1408, "h": 512, "style": "@UI",
+  "init": "art/ui/guides/hud_panel.png", "strength": 0.52,
+  "prompt": "dark brushed metal arcade fighting game player name plate panel, steel bevel rim, gold trim stripes, rivets, black background"},
+ {"name": "hud_kit_s40", "seeds": [12101, 12102, 12103], "w": 1536, "h": 1024, "style": "@UI",
+  "init": "art/ui/guides/hud_kit.png", "strength": 0.4,
+  "prompt": "set of dark metal arcade game hud frames: square portrait frame with gold corners, two item cards, two glass energy cells, black background"},
+ {"name": "hud_kit_s52", "seeds": [12111, 12112, 12113], "w": 1536, "h": 1024, "style": "@UI",
+  "init": "art/ui/guides/hud_kit.png", "strength": 0.52,
+  "prompt": "set of dark metal arcade game hud frames: square portrait frame with gold corners, two item cards, two glass energy cells, black background"},
+ {"name": "podium_s50", "seeds": [12201, 12202, 12203], "w": 1664, "h": 576, "style": "@PROP",
+  "init": "art/ui/guides/podium.png", "strength": 0.5,
+  "prompt": "round stone pedestal stage with a lush grass top, mossy cobblestone sides, small flowers, plain white background"},
+ {"name": "podium_s62", "seeds": [12211, 12212, 12213], "w": 1664, "h": 576, "style": "@PROP",
+  "init": "art/ui/guides/podium.png", "strength": 0.62,
+  "prompt": "round stone pedestal stage with a lush grass top, mossy cobblestone sides, small flowers, plain white background"}
+]

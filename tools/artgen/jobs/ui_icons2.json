@@ -1,0 +1,128 @@
+[
+ {
+  "name": "icon_nitro_s80",
+  "seeds": [
+   13001,
+   13002,
+   13003
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_nitro.png",
+  "strength": 0.8,
+  "prompt": "a white golf ball blasting forward trailing a roaring fire jet with flickering flame tongues and embers"
+ },
+ {
+  "name": "icon_free_shot_s80",
+  "seeds": [
+   13011,
+   13012,
+   13013
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_free_shot.png",
+  "strength": 0.8,
+  "prompt": "an ornate shiny golden ticket with an engraved border and a white star, gleaming gold"
+ },
+ {
+  "name": "icon_ice_s65",
+  "seeds": [
+   13021,
+   13022,
+   13023
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_ice.png",
+  "strength": 0.65,
+  "prompt": "a golf ball frozen inside a chunky block of clear blue ice, ice crystals, icicles"
+ },
+ {
+  "name": "icon_ice_s80",
+  "seeds": [
+   13031,
+   13032,
+   13033
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_ice.png",
+  "strength": 0.8,
+  "prompt": "a golf ball frozen inside a chunky block of clear blue ice, ice crystals, icicles"
+ },
+ {
+  "name": "icon_heavy_s80",
+  "seeds": [
+   13041,
+   13042,
+   13043
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_heavy.png",
+  "strength": 0.8,
+  "prompt": "a heavy cast iron kettlebell weight with a riveted steel band, scratched dark metal"
+ },
+ {
+  "name": "icon_zig_zag_s80",
+  "seeds": [
+   13051,
+   13052,
+   13053
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_zig_zag.png",
+  "strength": 0.8,
+  "prompt": "a jagged purple zig zag lightning bolt crackling with electricity and a small white golf ball"
+ },
+ {
+  "name": "icon_sticky_s80",
+  "seeds": [
+   13061,
+   13062,
+   13063
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_sticky.png",
+  "strength": 0.8,
+  "prompt": "a white golf ball covered in dripping glossy purple slime goo, thick drips"
+ },
+ {
+  "name": "icon_air_brake_s65",
+  "seeds": [
+   13071,
+   13072,
+   13073
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_air_brake.png",
+  "strength": 0.65,
+  "prompt": "a white golf ball hanging under an open cyan parachute with strings"
+ },
+ {
+  "name": "icon_grenade_s65",
+  "seeds": [
+   13081,
+   13082,
+   13083
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_grenade.png",
+  "strength": 0.65,
+  "prompt": "a green hand grenade with golf ball dimples, steel cap, lever and gold pull ring"
+ }
+]

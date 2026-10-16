@@ -1,0 +1,54 @@
+[
+ {
+  "name": "podium2_s55",
+  "seeds": [
+   12301,
+   12302
+  ],
+  "w": 1664,
+  "h": 576,
+  "style": "@PROP",
+  "init": "art/ui/guides/podium.png",
+  "strength": 0.55,
+  "prompt": "round stone pedestal with a lush grass top, mossy cobblestone sides, tiny flowers, plain white background"
+ },
+ {
+  "name": "podium2_s70",
+  "seeds": [
+   12311,
+   12312
+  ],
+  "w": 1664,
+  "h": 576,
+  "style": "@PROP",
+  "init": "art/ui/guides/podium.png",
+  "strength": 0.7,
+  "prompt": "round stone pedestal with a lush grass top, mossy cobblestone sides, tiny flowers, plain white background"
+ },
+ {
+  "name": "hud2_panel_s45",
+  "seeds": [
+   12031,
+   12032
+  ],
+  "w": 1408,
+  "h": 512,
+  "style": "@UI",
+  "init": "art/ui/guides/hud_panel.png",
+  "strength": 0.45,
+  "prompt": "dark brushed metal arcade fighting game player name plate panel, steel bevel rim, gold trim stripes, rivets, black background"
+ },
+ {
+  "name": "hud2_kit_s45",
+  "seeds": [
+   12131,
+   12132
+  ],
+  "w": 1536,
+  "h": 1024,
+  "style": "@UI",
+  "init": "art/ui/guides/hud_kit.png",
+  "strength": 0.45,
+  "prompt": "set of dark metal arcade game hud frames: square portrait frame with gold corners, two item cards, two glass energy cells, black background"
+ }
+]

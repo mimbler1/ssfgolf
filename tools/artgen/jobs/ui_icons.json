@@ -1,0 +1,392 @@
+[
+ {
+  "name": "icon_standard_s60",
+  "seeds": [
+   11001,
+   11002
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_standard.png",
+  "strength": 0.6,
+  "prompt": "a white golf ball with round dimples resting on a wooden golf tee"
+ },
+ {
+  "name": "icon_standard_s72",
+  "seeds": [
+   11001,
+   11002
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_standard.png",
+  "strength": 0.72,
+  "prompt": "a white golf ball with round dimples resting on a wooden golf tee"
+ },
+ {
+  "name": "icon_nitro_s60",
+  "seeds": [
+   11011,
+   11012
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_nitro.png",
+  "strength": 0.6,
+  "prompt": "a white golf ball blasting forward with a roaring orange rocket fire trail"
+ },
+ {
+  "name": "icon_nitro_s72",
+  "seeds": [
+   11011,
+   11012
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_nitro.png",
+  "strength": 0.72,
+  "prompt": "a white golf ball blasting forward with a roaring orange rocket fire trail"
+ },
+ {
+  "name": "icon_sticky_s60",
+  "seeds": [
+   11021,
+   11022
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_sticky.png",
+  "strength": 0.6,
+  "prompt": "a white golf ball covered in dripping glossy purple slime goo"
+ },
+ {
+  "name": "icon_sticky_s72",
+  "seeds": [
+   11021,
+   11022
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_sticky.png",
+  "strength": 0.72,
+  "prompt": "a white golf ball covered in dripping glossy purple slime goo"
+ },
+ {
+  "name": "icon_grenade_s60",
+  "seeds": [
+   11031,
+   11032
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_grenade.png",
+  "strength": 0.6,
+  "prompt": "a green hand grenade with golf ball dimples, steel cap, lever and gold pull ring"
+ },
+ {
+  "name": "icon_grenade_s72",
+  "seeds": [
+   11031,
+   11032
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_grenade.png",
+  "strength": 0.72,
+  "prompt": "a green hand grenade with golf ball dimples, steel cap, lever and gold pull ring"
+ },
+ {
+  "name": "icon_heavy_s60",
+  "seeds": [
+   11041,
+   11042
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_heavy.png",
+  "strength": 0.6,
+  "prompt": "a heavy dark iron kettlebell weight with riveted steel band"
+ },
+ {
+  "name": "icon_heavy_s72",
+  "seeds": [
+   11041,
+   11042
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_heavy.png",
+  "strength": 0.72,
+  "prompt": "a heavy dark iron kettlebell weight with riveted steel band"
+ },
+ {
+  "name": "icon_air_brake_s60",
+  "seeds": [
+   11051,
+   11052
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_air_brake.png",
+  "strength": 0.6,
+  "prompt": "a white golf ball hanging under an open cyan parachute"
+ },
+ {
+  "name": "icon_air_brake_s72",
+  "seeds": [
+   11051,
+   11052
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_air_brake.png",
+  "strength": 0.72,
+  "prompt": "a white golf ball hanging under an open cyan parachute"
+ },
+ {
+  "name": "icon_anti_grav_s60",
+  "seeds": [
+   11061,
+   11062
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_anti_grav.png",
+  "strength": 0.6,
+  "prompt": "a white golf ball levitating over glowing mint green hover rings, up arrows"
+ },
+ {
+  "name": "icon_anti_grav_s72",
+  "seeds": [
+   11061,
+   11062
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_anti_grav.png",
+  "strength": 0.72,
+  "prompt": "a white golf ball levitating over glowing mint green hover rings, up arrows"
+ },
+ {
+  "name": "icon_free_shot_s60",
+  "seeds": [
+   11071,
+   11072
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_free_shot.png",
+  "strength": 0.6,
+  "prompt": "a shiny golden admission ticket with a white star"
+ },
+ {
+  "name": "icon_free_shot_s72",
+  "seeds": [
+   11071,
+   11072
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_free_shot.png",
+  "strength": 0.72,
+  "prompt": "a shiny golden admission ticket with a white star"
+ },
+ {
+  "name": "icon_ice_s60",
+  "seeds": [
+   11081,
+   11082
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_ice.png",
+  "strength": 0.6,
+  "prompt": "a golf ball frozen in pale blue ice with sharp ice crystal shards"
+ },
+ {
+  "name": "icon_ice_s72",
+  "seeds": [
+   11081,
+   11082
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_ice.png",
+  "strength": 0.72,
+  "prompt": "a golf ball frozen in pale blue ice with sharp ice crystal shards"
+ },
+ {
+  "name": "icon_laser_s60",
+  "seeds": [
+   11091,
+   11092
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_laser.png",
+  "strength": 0.6,
+  "prompt": "a red targeting crosshair reticle around a white golf ball, laser beam"
+ },
+ {
+  "name": "icon_laser_s72",
+  "seeds": [
+   11091,
+   11092
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_laser.png",
+  "strength": 0.72,
+  "prompt": "a red targeting crosshair reticle around a white golf ball, laser beam"
+ },
+ {
+  "name": "icon_magnet_s60",
+  "seeds": [
+   11101,
+   11102
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_magnet.png",
+  "strength": 0.6,
+  "prompt": "a red horseshoe magnet with silver tips pulling a white golf ball"
+ },
+ {
+  "name": "icon_magnet_s72",
+  "seeds": [
+   11101,
+   11102
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_magnet.png",
+  "strength": 0.72,
+  "prompt": "a red horseshoe magnet with silver tips pulling a white golf ball"
+ },
+ {
+  "name": "icon_mulligan_s60",
+  "seeds": [
+   11111,
+   11112
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_mulligan.png",
+  "strength": 0.6,
+  "prompt": "a white golf ball inside a curved golden rewind arrow"
+ },
+ {
+  "name": "icon_mulligan_s72",
+  "seeds": [
+   11111,
+   11112
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_mulligan.png",
+  "strength": 0.72,
+  "prompt": "a white golf ball inside a curved golden rewind arrow"
+ },
+ {
+  "name": "icon_shield_s60",
+  "seeds": [
+   11121,
+   11122
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_shield.png",
+  "strength": 0.6,
+  "prompt": "a blue knight shield with silver rim and a golf ball emblem"
+ },
+ {
+  "name": "icon_shield_s72",
+  "seeds": [
+   11121,
+   11122
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_shield.png",
+  "strength": 0.72,
+  "prompt": "a blue knight shield with silver rim and a golf ball emblem"
+ },
+ {
+  "name": "icon_super_s60",
+  "seeds": [
+   11131,
+   11132
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_super.png",
+  "strength": 0.6,
+  "prompt": "a glowing golden golf ball with a bright yellow starburst aura"
+ },
+ {
+  "name": "icon_super_s72",
+  "seeds": [
+   11131,
+   11132
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_super.png",
+  "strength": 0.72,
+  "prompt": "a glowing golden golf ball with a bright yellow starburst aura"
+ },
+ {
+  "name": "icon_zig_zag_s60",
+  "seeds": [
+   11141,
+   11142
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_zig_zag.png",
+  "strength": 0.6,
+  "prompt": "a purple lightning bolt zig zag with a small white golf ball"
+ },
+ {
+  "name": "icon_zig_zag_s72",
+  "seeds": [
+   11141,
+   11142
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_zig_zag.png",
+  "strength": 0.72,
+  "prompt": "a purple lightning bolt zig zag with a small white golf ball"
+ }
+]

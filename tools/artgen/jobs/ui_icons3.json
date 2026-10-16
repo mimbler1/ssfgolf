@@ -1,0 +1,106 @@
+[
+ {
+  "name": "icon_anti_grav_r3s62",
+  "seeds": [
+   14001,
+   14002
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_anti_grav.png",
+  "strength": 0.62,
+  "prompt": "a white golf ball levitating above two glowing mint green hover rings with big up arrows"
+ },
+ {
+  "name": "icon_anti_grav_r3s75",
+  "seeds": [
+   14001,
+   14002
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_anti_grav.png",
+  "strength": 0.75,
+  "prompt": "a white golf ball levitating above two glowing mint green hover rings with big up arrows"
+ },
+ {
+  "name": "icon_magnet_r3s62",
+  "seeds": [
+   14011,
+   14012
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_magnet.png",
+  "strength": 0.62,
+  "prompt": "a red horseshoe magnet with silver tips pulling a white golf ball, magnetic waves"
+ },
+ {
+  "name": "icon_magnet_r3s75",
+  "seeds": [
+   14011,
+   14012
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_magnet.png",
+  "strength": 0.75,
+  "prompt": "a red horseshoe magnet with silver tips pulling a white golf ball, magnetic waves"
+ },
+ {
+  "name": "icon_mulligan_r3s62",
+  "seeds": [
+   14021,
+   14022
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_mulligan.png",
+  "strength": 0.62,
+  "prompt": "a white golf ball inside a thick golden rewind arrow"
+ },
+ {
+  "name": "icon_mulligan_r3s75",
+  "seeds": [
+   14021,
+   14022
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_mulligan.png",
+  "strength": 0.75,
+  "prompt": "a white golf ball inside a thick golden rewind arrow"
+ },
+ {
+  "name": "icon_zig_zag_r3s62",
+  "seeds": [
+   14031,
+   14032
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_zig_zag.png",
+  "strength": 0.62,
+  "prompt": "a jagged purple zig zag lightning bolt and a white golf ball"
+ },
+ {
+  "name": "icon_zig_zag_r3s75",
+  "seeds": [
+   14031,
+   14032
+  ],
+  "w": 1024,
+  "h": 1024,
+  "style": "@ICON",
+  "init": "art/ui/guides/icon_zig_zag.png",
+  "strength": 0.75,
+  "prompt": "a jagged purple zig zag lightning bolt and a white golf ball"
+ }
+]

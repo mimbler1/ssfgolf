@@ -78,7 +78,8 @@ func _build() -> void:
 	bottom.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(bottom)
 	_energy = _EnergyBar.new()
-	_energy.custom_minimum_size = Vector2(560, 34)
+	_energy.custom_minimum_size = Vector2(560, 52)
+	_energy.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_energy.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_energy.segments = int(_emax)
 	bottom.add_child(_energy)
@@ -174,7 +175,8 @@ static func _short_key(action: String) -> String:
 func _add_card(a: Dictionary, index: int) -> void:
 	var id := str(a.id)
 	var panel := PanelContainer.new()
-	panel.custom_minimum_size = Vector2(112, 132)
+	panel.custom_minimum_size = Vector2(124, 160)
+	panel.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	panel.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	panel.tooltip_text = "%s — %s energy\n%s" % [a.name, int(a.cost), a.desc]
@@ -195,7 +197,7 @@ func _add_card(a: Dictionary, index: int) -> void:
 	vb.add_child(key)
 	var icon := AbilityIcon.new()
 	icon.ability = id
-	icon.custom_minimum_size = Vector2(80, 62)
+	icon.custom_minimum_size = Vector2(96, 96) if UIArt.ability_icon(id) else Vector2(80, 62)
 	icon.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	vb.add_child(icon)
 	var name_l := Label.new()
@@ -253,9 +255,16 @@ func _process(_delta: float) -> void:
 		if c.get("key", "") == key:
 			continue
 		c["key"] = key
-		var sb := UITheme.arcade_box(Color(UITheme.INK, 0.94) if not sel else Color(col.darkened(0.45), 0.97),
-			col if sel else UITheme.INK_LINE, UITheme.SLANT * 0.6, 4 if sel else 3)
-		sb.content_margin_top = 6; sb.content_margin_bottom = 10; sb.content_margin_left = 10; sb.content_margin_right = 10
+		# Pixel-art card frame (gold rim when selected); arcade box only if the art is missing.
+		var sb: StyleBox = UIArt.nine("hud/ability_card_selected.png" if sel else "hud/ability_card.png", [12, 12, 12, 12], 2)
+		if sb:
+			sb.content_margin_top = 8; sb.content_margin_bottom = 12; sb.content_margin_left = 12; sb.content_margin_right = 12
+			(c.panel as Control).self_modulate = Color.WHITE if affordable or sel else Color(0.7, 0.7, 0.78)
+		else:
+			var fb := UITheme.arcade_box(Color(UITheme.INK, 0.94) if not sel else Color(col.darkened(0.45), 0.97),
+				col if sel else UITheme.INK_LINE, UITheme.SLANT * 0.6, 4 if sel else 3)
+			fb.content_margin_top = 6; fb.content_margin_bottom = 10; fb.content_margin_left = 10; fb.content_margin_right = 10
+			sb = fb
 		c.panel.add_theme_stylebox_override("panel", sb)
 		c.icon.dimmed = not affordable
 		c.cost.energy = energy
@@ -328,6 +337,11 @@ class _EnergyBar extends Control:
 
 	func _draw() -> void:
 		var r := Rect2(Vector2.ZERO, size)
+		var empty := UIArt.tex("hud/energy_cell_empty.png")
+		var full_t := UIArt.tex("hud/energy_cell_full.png")
+		if empty and full_t:
+			_draw_cells(empty, full_t)
+			return
 		draw_style_box(UITheme.arcade_box(Color(UITheme.INK, 0.94)), r)
 		var pad := 7.0
 		var inner := Rect2(r.position + Vector2(pad + 4, pad), r.size - Vector2(pad * 2 + 8, pad * 2 + 4))
@@ -358,6 +372,29 @@ class _EnergyBar extends Control:
 		draw_colored_polygon(bolt, Color("e0b3ff"))
 		draw_polyline(bolt + PackedVector2Array([bolt[0]]), UITheme.INK_LINE, 2.0, true)
 
+	## Pixel-art cells at 2x: a charging cell fills from the bottom.
+	func _draw_cells(empty: Texture2D, full_t: Texture2D) -> void:
+		var k := 2.0
+		var cs := empty.get_size() * k
+		var gap := 6.0
+		var total := segments * cs.x + (segments - 1) * gap
+		var x0 := floorf((size.x - total) * 0.5)
+		var y0 := floorf((size.y - cs.y) * 0.5)
+		for i in segments:
+			var at := Vector2(x0 + i * (cs.x + gap), y0)
+			draw_texture_rect(empty, Rect2(at, cs), false)
+			var fill := clampf(value - i, 0.0, 1.0)
+			if fill > 0.0:
+				var src_h := roundf(empty.get_size().y * fill)
+				var src := Rect2(0, empty.get_size().y - src_h, empty.get_size().x, src_h)
+				var dst := Rect2(at + Vector2(0, cs.y - src_h * k), Vector2(cs.x, src_h * k))
+				draw_texture_rect_region(full_t, dst, src, Color.WHITE if fill >= 1.0 else Color(0.75, 0.75, 0.85))
+		var f := UITheme.heading_font()
+		var txt := "%d" % int(floor(value + 0.0001))
+		var tp := Vector2(x0 - 44, size.y * 0.5 + 10)
+		draw_string_outline(f, tp, txt, HORIZONTAL_ALIGNMENT_RIGHT, 34, 28, 6, UITheme.INK_LINE)
+		draw_string(f, tp, txt, HORIZONTAL_ALIGNMENT_RIGHT, 34, 28, Color("8fe9ff"))
+
 
 class _CostPips extends Control:
 	var cost: int = 0
@@ -372,11 +409,16 @@ class _CostPips extends Control:
 			var f := UITheme.body_bold_font()
 			draw_string(f, Vector2(0, 12), "FREE", HORIZONTAL_ALIGNMENT_CENTER, size.x, 14, UITheme.MUTED)
 			return
-		var r := 5.0
-		var total := cost * (r * 2 + 3) - 3
-		var x0 := (size.x - total) * 0.5 + r
+		# Square pixel pips in the energy-cell cyan (one per energy point / charge).
+		var w := 8.0
+		var gap := 4.0
+		var total := cost * (w + gap) - gap
+		var x0 := floorf((size.x - total) * 0.5)
+		var y := floorf(size.y * 0.5 - w * 0.5)
 		for i in cost:
-			var c := Vector2(x0 + i * (r * 2 + 3), size.y * 0.5)
+			var x := x0 + i * (w + gap)
 			var lit := energy >= float(i + 1)
-			draw_circle(c, r + 1.5, UITheme.INK_LINE, true, -1.0, true)
-			draw_circle(c, r, Color("b65cff") if lit else Color(1, 1, 1, 0.15), true, -1.0, true)
+			draw_rect(Rect2(x - 2, y - 2, w + 4, w + 4), UITheme.INK_LINE)
+			draw_rect(Rect2(x, y, w, w), Color("39c6ff") if lit else Color(1, 1, 1, 0.14))
+			if lit:
+				draw_rect(Rect2(x, y, w, 2), Color("b8f1ff"))
