@@ -1,0 +1,35 @@
+Console output of the baseline run (build 51c2f1f + probe), 1920x1080, VSync off, RTX 4080 SUPER.
+The run stopped in cycle 3 (a probe bug, since fixed: it touched the studio before the scene change
+finished), so no JSON was written. The "proc" column is a Godot monitor that samples once per
+second and is not meaningful; the probe no longer records it.
+
+[perf] mem menu start           static 60.2 MB  objects 1894  nodes 105  orphans 0  video 87.5 MB  draws 101
+[perf] c0 open studio               frames  284  avg   5.57  p95  50.01  max  136.58  >33ms  26  proc 250.45
+[perf] mem c0 studio open       static 95.7 MB  objects 2402  nodes 279  orphans 0  video 103.8 MB  draws 2150
+[perf] c0 idle                      frames   28  avg  53.46  p95  57.65  max   58.99  >33ms  28  proc  69.29
+[perf] c0 scroll roster             frames   89  avg  53.77  p95  56.13  max   63.06  >33ms  89  proc  56.01
+[perf] c0 switch 30 characters      frames  119  avg  96.38  p95 149.57  max  154.12  >33ms 119  proc 200.29
+[perf] c0 headwear equip x20        frames   87  avg  70.23  p95 115.69  max  128.60  >33ms  87  proc 164.37
+[perf] c0 colour swatches x20       frames   83  avg  25.28  p95  55.36  max   61.48  >33ms  22  proc 108.08
+[perf] c0 preview all anims         frames  671  avg   7.38  p95  17.24  max   18.99  >33ms   0  proc  33.08
+[perf] c0 character tab             frames   13  avg  57.35  p95  68.59  max   68.59  >33ms  13  proc  38.84
+[perf] c0 save                      frames   12  avg  61.56  p95 112.90  max  112.90  >33ms  12  proc 154.41
+[perf] mem c0 before leave      static 109.1 MB  objects 2415  nodes 279  orphans 0  video 109.1 MB  draws 2480
+[perf] c0 back to menu              frames  409  avg   3.90  p95   3.87  max   59.61  >33ms   4  proc 131.84
+[perf] mem c0 menu              static 92.7 MB  objects 1965  nodes 105  orphans 0  video 96.1 MB  draws 407
+[perf] c1 open studio               frames   73  avg  21.91  p95  57.27  max   84.28  >33ms  25  proc  80.16
+[perf] mem c1 studio open       static 109.1 MB  objects 2409  nodes 279  orphans 0  video 109.1 MB  draws 2465
+[perf] c1 idle                      frames   25  avg  58.50  p95  60.54  max   61.18  >33ms  25  proc  70.38
+[perf] c1 scroll roster             frames   89  avg  60.60  p95  64.88  max   73.25  >33ms  89  proc  63.00
+[perf] c1 switch 30 characters      frames  119  avg  97.73  p95 150.37  max  157.93  >33ms 119  proc 202.11
+[perf] c1 headwear equip x20        frames   87  avg  69.79  p95 112.44  max  119.97  >33ms  87  proc 164.41
+[perf] c1 colour swatches x20       frames   83  avg  25.58  p95  55.41  max   59.46  >33ms  23  proc  99.27
+[perf] c1 preview all anims         frames  609  avg   8.12  p95  17.97  max   20.18  >33ms   0  proc  32.88
+[perf] c1 character tab             frames   12  avg  59.08  p95  60.09  max   60.09  >33ms  12  proc  38.59
+[perf] c1 save                      frames   13  avg  59.98  p95  62.75  max   62.75  >33ms  13  proc 136.60
+[perf] mem c1 before leave      static 109.3 MB  objects 2409  nodes 279  orphans 0  video 109.1 MB  draws 2480
+[perf] c1 back to menu              frames  388  avg   4.12  p95   4.03  max   60.92  >33ms   4  proc  80.03
+[perf] mem c1 menu              static 92.9 MB  objects 1965  nodes 105  orphans 0  video 96.1 MB  draws 407
+[perf] c2 open studio               frames   68  avg  22.73  p95  60.67  max   87.58  >33ms  23  proc  86.85
+[perf] mem c2 studio open       static 109.2 MB  objects 2409  nodes 279  orphans 0  video 109.1 MB  draws 2464
+[perf] c2 idle                      frames   23  avg  63.65  p95  66.71  max   67.00  >33ms  23  proc  77.16

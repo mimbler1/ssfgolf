@@ -23,6 +23,25 @@ func _ready() -> void:
 	_rect.modulate.a = 0.0
 	_layer.add_child(_rect)
 	_dev_screenshot_hook()
+	_dev_perf_hook()
+
+
+## Developer tool: `-- --profile perf --perf-studio out.json [--perf-cycles 3]` runs the studio benchmark.
+func _dev_perf_hook() -> void:
+	var args := OS.get_cmdline_user_args()
+	var i := args.find("--perf-studio")
+	if i == -1 or i + 1 >= args.size():
+		return
+	if args.find("--profile") == -1:
+		push_error("--perf-studio saves looks: run it with --profile perf so real player data is untouched")
+		get_tree().quit(1)
+		return
+	var probe := PerfProbe.new()
+	probe.out_path = args[i + 1]
+	var c := args.find("--perf-cycles")
+	if c != -1 and c + 1 < args.size():
+		probe.cycles = int(args[c + 1])
+	add_child(probe)
 
 
 ## Developer tool: `-- --screenshot out.png [--shot-delay 1.5]` saves the viewport and quits.

@@ -1,0 +1,373 @@
+{
+  "cpu": "Intel(R) Core(TM) Ultra 9 285K",
+  "engine": "4.7.2-stable (official)",
+  "gpu": "NVIDIA GeForce RTX 4080 SUPER",
+  "memory": [
+    {
+      "at": "menu start",
+      "draw_calls": 407,
+      "nodes": 105,
+      "objects": 1916,
+      "orphans": 0,
+      "static_mb": 61.19,
+      "video_mb": 88.12
+    },
+    {
+      "at": "c0 studio open",
+      "draw_calls": 2466,
+      "nodes": 311,
+      "objects": 2482,
+      "orphans": 0,
+      "static_mb": 92.62,
+      "video_mb": 99.26
+    },
+    {
+      "at": "c0 before leave",
+      "draw_calls": 2479,
+      "nodes": 311,
+      "objects": 2490,
+      "orphans": 0,
+      "static_mb": 97.9,
+      "video_mb": 103.81
+    },
+    {
+      "at": "c0 menu",
+      "draw_calls": 407,
+      "nodes": 105,
+      "objects": 1966,
+      "orphans": 0,
+      "static_mb": 81.69,
+      "video_mb": 96.87
+    },
+    {
+      "at": "c1 studio open",
+      "draw_calls": 2466,
+      "nodes": 311,
+      "objects": 2490,
+      "orphans": 0,
+      "static_mb": 97.86,
+      "video_mb": 103.76
+    },
+    {
+      "at": "c1 before leave",
+      "draw_calls": 2479,
+      "nodes": 311,
+      "objects": 2490,
+      "orphans": 0,
+      "static_mb": 97.92,
+      "video_mb": 103.81
+    },
+    {
+      "at": "c1 menu",
+      "draw_calls": 407,
+      "nodes": 105,
+      "objects": 1966,
+      "orphans": 0,
+      "static_mb": 81.71,
+      "video_mb": 96.87
+    },
+    {
+      "at": "c2 studio open",
+      "draw_calls": 2466,
+      "nodes": 311,
+      "objects": 2490,
+      "orphans": 0,
+      "static_mb": 97.87,
+      "video_mb": 103.76
+    },
+    {
+      "at": "c2 before leave",
+      "draw_calls": 2479,
+      "nodes": 311,
+      "objects": 2490,
+      "orphans": 0,
+      "static_mb": 97.93,
+      "video_mb": 103.81
+    },
+    {
+      "at": "c2 menu",
+      "draw_calls": 407,
+      "nodes": 105,
+      "objects": 1966,
+      "orphans": 0,
+      "static_mb": 81.72,
+      "video_mb": 96.87
+    }
+  ],
+  "phases": [
+    {
+      "avg_ms": 5.41,
+      "avg_process_ms": 88.14,
+      "frames": 295,
+      "max_ms": 127.79,
+      "p95_ms": 6.18,
+      "phase": "c0 open studio",
+      "stalls_over_33ms": 2
+    },
+    {
+      "avg_ms": 6.5,
+      "avg_process_ms": 79.84,
+      "frames": 230,
+      "max_ms": 12.23,
+      "p95_ms": 9.31,
+      "phase": "c0 idle",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 8.65,
+      "avg_process_ms": 14.66,
+      "frames": 89,
+      "max_ms": 14.25,
+      "p95_ms": 10.26,
+      "phase": "c0 scroll roster",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 6.12,
+      "avg_process_ms": 14.05,
+      "frames": 119,
+      "max_ms": 14.45,
+      "p95_ms": 12.72,
+      "phase": "c0 switch 30 characters",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 7.31,
+      "avg_process_ms": 23.27,
+      "frames": 87,
+      "max_ms": 43.45,
+      "p95_ms": 14.03,
+      "phase": "c0 headwear equip x20",
+      "stalls_over_33ms": 1
+    },
+    {
+      "avg_ms": 8.69,
+      "avg_process_ms": 53.92,
+      "frames": 83,
+      "max_ms": 16.79,
+      "p95_ms": 16.46,
+      "phase": "c0 colour swatches x20",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 3.7,
+      "avg_process_ms": 11.88,
+      "frames": 1330,
+      "max_ms": 5.62,
+      "p95_ms": 4.06,
+      "phase": "c0 preview all anims",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 4.32,
+      "avg_process_ms": 70.37,
+      "frames": 174,
+      "max_ms": 8.34,
+      "p95_ms": 4.65,
+      "phase": "c0 character tab",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 4.44,
+      "avg_process_ms": 46.45,
+      "frames": 179,
+      "max_ms": 5.68,
+      "p95_ms": 5.03,
+      "phase": "c0 save",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 2.98,
+      "avg_process_ms": 25.7,
+      "frames": 536,
+      "max_ms": 31.49,
+      "p95_ms": 4.17,
+      "phase": "c0 back to menu",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 4.13,
+      "avg_process_ms": 37.13,
+      "frames": 387,
+      "max_ms": 80.17,
+      "p95_ms": 4.38,
+      "phase": "c1 open studio",
+      "stalls_over_33ms": 1
+    },
+    {
+      "avg_ms": 4.11,
+      "avg_process_ms": 30.92,
+      "frames": 365,
+      "max_ms": 5.58,
+      "p95_ms": 4.54,
+      "phase": "c1 idle",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 4.48,
+      "avg_process_ms": 4.99,
+      "frames": 89,
+      "max_ms": 5.28,
+      "p95_ms": 5.11,
+      "phase": "c1 scroll roster",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 5.51,
+      "avg_process_ms": 8.35,
+      "frames": 119,
+      "max_ms": 12.38,
+      "p95_ms": 11.36,
+      "phase": "c1 switch 30 characters",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 6.4,
+      "avg_process_ms": 12.69,
+      "frames": 87,
+      "max_ms": 35.31,
+      "p95_ms": 9.94,
+      "phase": "c1 headwear equip x20",
+      "stalls_over_33ms": 1
+    },
+    {
+      "avg_ms": 8.16,
+      "avg_process_ms": 41.56,
+      "frames": 83,
+      "max_ms": 16.22,
+      "p95_ms": 15.15,
+      "phase": "c1 colour swatches x20",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 3.73,
+      "avg_process_ms": 11.58,
+      "frames": 1317,
+      "max_ms": 5.02,
+      "p95_ms": 4.16,
+      "phase": "c1 preview all anims",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 4.42,
+      "avg_process_ms": 34.54,
+      "frames": 170,
+      "max_ms": 8.56,
+      "p95_ms": 4.98,
+      "phase": "c1 character tab",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 4.46,
+      "avg_process_ms": 64.47,
+      "frames": 179,
+      "max_ms": 5.7,
+      "p95_ms": 5.12,
+      "phase": "c1 save",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 3.01,
+      "avg_process_ms": 22.32,
+      "frames": 530,
+      "max_ms": 31.43,
+      "p95_ms": 4.2,
+      "phase": "c1 back to menu",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 4.29,
+      "avg_process_ms": 56.55,
+      "frames": 373,
+      "max_ms": 82.08,
+      "p95_ms": 4.75,
+      "phase": "c2 open studio",
+      "stalls_over_33ms": 1
+    },
+    {
+      "avg_ms": 4.33,
+      "avg_process_ms": 22.85,
+      "frames": 346,
+      "max_ms": 6.34,
+      "p95_ms": 4.9,
+      "phase": "c2 idle",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 5.05,
+      "avg_process_ms": 17.59,
+      "frames": 89,
+      "max_ms": 6.23,
+      "p95_ms": 5.86,
+      "phase": "c2 scroll roster",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 5.72,
+      "avg_process_ms": 14.33,
+      "frames": 119,
+      "max_ms": 12.17,
+      "p95_ms": 11.4,
+      "phase": "c2 switch 30 characters",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 6.98,
+      "avg_process_ms": 15.88,
+      "frames": 87,
+      "max_ms": 36.87,
+      "p95_ms": 10.81,
+      "phase": "c2 headwear equip x20",
+      "stalls_over_33ms": 1
+    },
+    {
+      "avg_ms": 8.18,
+      "avg_process_ms": 34.51,
+      "frames": 83,
+      "max_ms": 15.64,
+      "p95_ms": 15.42,
+      "phase": "c2 colour swatches x20",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 3.75,
+      "avg_process_ms": 13.33,
+      "frames": 1311,
+      "max_ms": 5.11,
+      "p95_ms": 4.16,
+      "phase": "c2 preview all anims",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 4.44,
+      "avg_process_ms": 20.76,
+      "frames": 170,
+      "max_ms": 8.55,
+      "p95_ms": 4.99,
+      "phase": "c2 character tab",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 4.36,
+      "avg_process_ms": 83.23,
+      "frames": 183,
+      "max_ms": 4.78,
+      "p95_ms": 4.68,
+      "phase": "c2 save",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 2.98,
+      "avg_process_ms": 29.39,
+      "frames": 537,
+      "max_ms": 33.18,
+      "p95_ms": 4.19,
+      "phase": "c2 back to menu",
+      "stalls_over_33ms": 0
+    }
+  ],
+  "window": [
+    1920,
+    1080
+  ]
+}

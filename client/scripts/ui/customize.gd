@@ -40,6 +40,10 @@ var _rarity_plate: Label
 var _thumbs: Array[Dictionary] = []   ## {view: GolferView, patch: Dictionary}
 var _grids: Array[GridContainer] = []
 var _glow: Array[StyleBoxFlat] = []
+## Cards whose highlight follows the current look: {kind, node, ...}. Picking an option restyles
+## these in place instead of rebuilding the category (which re-created every card and golfer).
+var _cards: Array[Dictionary] = []
+var _thumbs_dirty := false
 var _swing_seq := 0
 var _t := 0.0
 
@@ -253,6 +257,9 @@ func _anim_row(label: String, items: Array) -> Control:
 
 func _process(delta: float) -> void:
 	_t += delta
+	if _thumbs_dirty:
+		_thumbs_dirty = false
+		_refresh_thumbs()
 	# Keep the move/emote buttons in sync with what the preview is actually doing.
 	var a := preview.anim
 	if a in ["aim", "watch"]:
@@ -312,15 +319,20 @@ func _refresh() -> void:
 		b.tooltip_text = "" if ok else "%s wears a signature look. Pick the Stickman to customise this." % d.name
 	_ball.ball_color = Color(current.ballColor)
 	_ball.trail_color = Color(current.trailColor)
+	# Thumbnails follow the look at most once per frame (slider drags fire many changes a frame).
+	_thumbs_dirty = true
+	var dirty := JSON.stringify(current) != JSON.stringify(saved)
+	_unsaved.visible = dirty
+	_save_btn.disabled = not dirty
+
+
+func _refresh_thumbs() -> void:
 	for t in _thumbs:
 		if is_instance_valid(t.view):
 			var a := current.duplicate(true)
 			for k in t.patch:
 				a[k] = t.patch[k]
 			(t.view as GolferView).set_look(Appearance.normalize(a), "")
-	var dirty := JSON.stringify(current) != JSON.stringify(saved)
-	_unsaved.visible = dirty
-	_save_btn.disabled = not dirty
 
 
 func _set_part(key: String, value: Variant) -> void:
@@ -344,6 +356,7 @@ func _show_category(c: String) -> void:
 	_thumbs.clear()
 	_grids.clear()
 	_glow.clear()
+	_cards.clear()
 	var head := Label.new()
 	head.theme_type_variation = "HeadingLabel"
 	head.text = c
@@ -418,6 +431,7 @@ func _show_category(c: String) -> void:
 			_options.add_child(test)
 		"Saved Looks":
 			_saved_looks()
+	_update_selection()
 	_scroll.scroll_vertical = 0
 	_reflow_grids.call_deferred()
 	if scroll_to:
@@ -442,27 +456,13 @@ func _look_for(id: String) -> Dictionary:
 func _character_card(id: String, look: Dictionary, frame: Rect2) -> Control:
 	var d := CharacterDefs.get_def(id)
 	var rar: Dictionary = UITheme.RARITY.get(str(d.rarity), UITheme.RARITY.common)
-	var selected := str(current.character) == id
-	var equipped := str(saved.character) == id
 	var card := Button.new()
 	card.custom_minimum_size = Vector2(CARD_MIN_W, CARD_H)
 	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	card.tooltip_text = "%s - %s" % [d.name, d.tagline]
-	var base := UITheme.box(Color(1, 1, 1, 0.05), UITheme.RADIUS, Color(1, 1, 1, 0.1), 0, 0, 2)
-	var hover := UITheme.box(Color(1, 1, 1, 0.1), UITheme.RADIUS, Color(1, 1, 1, 0.32), 0, 0, 2)
-	if selected:
-		base = UITheme.box(Color(UITheme.SUN, 0.1), UITheme.RADIUS, UITheme.SUN, 0, 0, 3)
-		base.shadow_color = Color(UITheme.SUN, 0.3)
-		base.shadow_size = 12
-		base.shadow_offset = Vector2.ZERO
-		hover = base
-		_glow.append(base)
 	var focus_box := UITheme.box(Color.TRANSPARENT, UITheme.RADIUS, Color(1, 1, 1, 0.5), 0, 0, 2)
 	focus_box.draw_center = false
-	for st in ["normal", "pressed", "hover_pressed"]:
-		card.add_theme_stylebox_override(st, base)
-	card.add_theme_stylebox_override("hover", hover)
 	card.add_theme_stylebox_override("focus", focus_box)
 
 	var vb := VBoxContainer.new()
@@ -482,7 +482,6 @@ func _character_card(id: String, look: Dictionary, frame: Rect2) -> Control:
 	view.pad = Vector2(8, 10)
 	vb.add_child(view)
 	view.set_look(look)
-	view.golfer.redraw_interval = 1.0 / 30.0
 	var name_l := Label.new()
 	name_l.text = str(d.name)
 	name_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -508,13 +507,14 @@ func _character_card(id: String, look: Dictionary, frame: Rect2) -> Control:
 	foot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vb.add_child(foot)
 	foot.add_child(_chip("%s %s" % [rar.icon, str(rar.name).to_upper()], rar.color, Color(0, 0, 0, 0.3)))
-	if equipped:
-		foot.add_child(_chip("EQUIPPED", UITheme.INK, UITheme.SUN))
-	elif selected:
-		foot.add_child(_chip("SELECTED", UITheme.INK, UITheme.PAPER))
+	var state := _chip("", UITheme.INK, UITheme.SUN)
+	foot.add_child(state)
+	_cards.append({"kind": "character", "node": card, "id": id, "state": state})
+	# Only the hovered card animates; every other card is a single static frame.
 	card.mouse_entered.connect(func() -> void:
-		if view.golfer.anim == "idle":
-			view.golfer.emote("wave"))
+		view.set_animated(true)
+		view.golfer.emote("wave"))
+	card.mouse_exited.connect(view.set_animated.bind(false))
 	card.pressed.connect(func() -> void:
 		Sfx.play("ui_select", -6.0)
 		if str(current.character) != id:
@@ -526,20 +526,71 @@ func _character_card(id: String, look: Dictionary, frame: Rect2) -> Control:
 			current = Appearance.normalize(current)
 			_refresh()
 			preview.emote("wave")
-			var keep := _scroll.scroll_vertical
-			_show_category(_category)
-			_scroll.set_deferred("scroll_vertical", keep))
+			_update_selection())
 	return card
 
 
-func _chip(text: String, fg: Color, bg: Color) -> Control:
-	var p := PanelContainer.new()
+## Restyles every option card to match `current` / `saved` without rebuilding anything.
+func _update_selection() -> void:
+	_glow.clear()
+	for c in _cards:
+		if not is_instance_valid(c.node):
+			continue
+		match str(c.kind):
+			"character":
+				_style_character_card(c.node, str(c.id), c.state)
+			"thumb":
+				var selected := true
+				for k in c.patch:
+					if current.get(k) != c.patch[k]:
+						selected = false
+				var btn: Button = c.node
+				if selected:
+					var sb := UITheme.box(Color(UITheme.SUN, 0.14), UITheme.RADIUS, UITheme.SUN, 0, 0, 3)
+					btn.add_theme_stylebox_override("normal", sb)
+					btn.add_theme_stylebox_override("hover", sb)
+				else:
+					btn.remove_theme_stylebox_override("normal")
+					btn.remove_theme_stylebox_override("hover")
+			"swatch":
+				var hex := str(c.hex)
+				var sel: bool = str(current[c.key]).to_lower() == hex
+				(c.node as Button).add_theme_stylebox_override("normal", UITheme.box(Color(hex), 12, UITheme.SUN if sel else Color(0, 0, 0, 0.5), 0, 0, 4 if sel else 2))
+
+
+func _style_character_card(card: Button, id: String, state: PanelContainer) -> void:
+	var selected := str(current.character) == id
+	var equipped := str(saved.character) == id
+	var base := UITheme.box(Color(1, 1, 1, 0.05), UITheme.RADIUS, Color(1, 1, 1, 0.1), 0, 0, 2)
+	var hover := UITheme.box(Color(1, 1, 1, 0.1), UITheme.RADIUS, Color(1, 1, 1, 0.32), 0, 0, 2)
+	if selected:
+		base = UITheme.box(Color(UITheme.SUN, 0.1), UITheme.RADIUS, UITheme.SUN, 0, 0, 3)
+		base.shadow_color = Color(UITheme.SUN, 0.3)
+		base.shadow_size = 12
+		base.shadow_offset = Vector2.ZERO
+		hover = base
+		_glow.append(base)
+	for st in ["normal", "pressed", "hover_pressed"]:
+		card.add_theme_stylebox_override(st, base)
+	card.add_theme_stylebox_override("hover", hover)
+	state.visible = equipped or selected
+	var l: Label = state.get_child(0)
+	l.text = "EQUIPPED" if equipped else "SELECTED"
+	state.add_theme_stylebox_override("panel", _chip_box(UITheme.SUN if equipped else UITheme.PAPER))
+
+
+func _chip_box(bg: Color) -> StyleBoxFlat:
 	var sb := UITheme.box(bg, 10)
 	sb.content_margin_left = 9
 	sb.content_margin_right = 9
 	sb.content_margin_top = 1
 	sb.content_margin_bottom = 2
-	p.add_theme_stylebox_override("panel", sb)
+	return sb
+
+
+func _chip(text: String, fg: Color, bg: Color) -> Control:
+	var p := PanelContainer.new()
+	p.add_theme_stylebox_override("panel", _chip_box(bg))
 	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var l := Label.new()
 	l.text = text
@@ -617,7 +668,6 @@ func _thumb_card(label: String, full_look: Dictionary, patch: Dictionary, on_pic
 	for k in patch:
 		look[k] = patch[k]
 	view.set_look(Appearance.normalize(look))
-	view.golfer.redraw_interval = 1.0 / 30.0
 	if not use_full:
 		_thumbs.append({"view": view, "patch": patch})
 	var name_l := Label.new()
@@ -627,22 +677,14 @@ func _thumb_card(label: String, full_look: Dictionary, patch: Dictionary, on_pic
 	name_l.add_theme_font_size_override("font_size", 18)
 	name_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vb.add_child(name_l)
-	var selected := false
 	if not patch.is_empty():
-		selected = true
-		for k in patch:
-			if current.get(k) != patch[k]:
-				selected = false
-	if selected:
-		var sb := UITheme.box(Color(UITheme.SUN, 0.14), UITheme.RADIUS, UITheme.SUN, 0, 0, 3)
-		card.add_theme_stylebox_override("normal", sb)
-		card.add_theme_stylebox_override("hover", sb)
+		_cards.append({"kind": "thumb", "node": card, "patch": patch})
+	card.mouse_entered.connect(view.set_animated.bind(true))
+	card.mouse_exited.connect(view.set_animated.bind(false))
 	card.pressed.connect(func() -> void:
 		Sfx.play("ui_select", -6.0)
 		on_pick.call()
-		var keep := _scroll.scroll_vertical
-		_show_category(_category)
-		_scroll.set_deferred("scroll_vertical", keep))
+		_update_selection())
 	return card
 
 
@@ -653,17 +695,14 @@ func _swatches(key: String) -> void:
 		b.custom_minimum_size = Vector2(56, 50)
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-		var sel: bool = str(current[key]).to_lower() == hex
-		b.add_theme_stylebox_override("normal", UITheme.box(Color(hex), 12, UITheme.SUN if sel else Color(0, 0, 0, 0.5), 0, 0, 4 if sel else 2))
+		_cards.append({"kind": "swatch", "node": b, "key": key, "hex": hex})
 		b.add_theme_stylebox_override("hover", UITheme.box(Color(hex).lightened(0.12), 12, UITheme.PAPER, 0, 0, 3))
 		b.add_theme_stylebox_override("pressed", UITheme.box(Color(hex), 12, UITheme.SUN, 0, 0, 4))
 		b.tooltip_text = hex
 		b.pressed.connect(func() -> void:
 			Sfx.play("ui_select", -8.0)
 			_set_part(key, hex)
-			var keep := _scroll.scroll_vertical
-			_show_category(_category)
-			_scroll.set_deferred("scroll_vertical", keep))
+			_update_selection())
 		g.add_child(b)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 12)
@@ -812,7 +851,7 @@ func _save() -> void:
 		saved = current.duplicate(true)
 		_status.text = "Saved on this PC. It will sync when you're online."
 	_refresh()
-	_show_category(_category)
+	_update_selection()
 
 
 func _back() -> void:
