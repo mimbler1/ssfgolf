@@ -7,11 +7,15 @@ export type MatchAssignment = {
   ranked: boolean;
   courseId: string;
   targetPoints: number;
+  /** Private rooms: every ball is available to everyone (host setting). Otherwise per-player unlocks by level. */
+  allAbilities: boolean;
   createdAt: string;
   players: Array<{
     playerId: string;
     displayName: string;
     trophies: number;
+    /** Player level (from lifetime XP); the game server derives each player's unlocked balls from it. */
+    level: number;
     slot: number;
     appearance: Appearance;
   }>;

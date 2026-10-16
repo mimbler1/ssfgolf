@@ -11,6 +11,7 @@ const SettingsPatch = z.object({
   maxPlayers: z.int().min(2).max(6).optional(),
   targetPoints: z.int().min(3).max(21).optional(),
   courseId: idSchema.optional(),
+  allAbilities: z.boolean().optional(),
 });
 
 const ReadyBody = z.object({ ready: z.boolean() });
@@ -22,6 +23,7 @@ function settingsPatch(body: z.output<typeof SettingsPatch>): Partial<RoomSettin
   if (body.maxPlayers !== undefined) out.maxPlayers = body.maxPlayers;
   if (body.targetPoints !== undefined) out.targetPoints = body.targetPoints;
   if (body.courseId !== undefined) out.courseId = body.courseId;
+  if (body.allAbilities !== undefined) out.allAbilities = body.allAbilities;
   return out;
 }
 

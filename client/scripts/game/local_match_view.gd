@@ -5,6 +5,10 @@ extends MatchView
 
 var sim: MatchSim
 var _acc: float = 0.0
+## Authoritative tick cost (perf probe): totals since the last reset_perf().
+var perf_tick_us := 0
+var perf_tick_max_us := 0
+var perf_ticks := 0
 var _prev_pos: Array[Vector2] = []
 var _prev_rot: Array[float] = []
 
@@ -17,7 +21,8 @@ func setup_stroke(p_course_id: String, from_hole: int, appearance: Dictionary, d
 	balance = GameData.balance.duplicate(true)
 	sim = MatchSim.new(balance, GameData.materials, course, "stroke", 0)
 	sim.clean_ball = clean
-	sim.add_player("local", display_name, appearance)
+	var sp := sim.add_player("local", display_name, appearance)
+	sim.set_allowed(sp, Unlocks.for_local(int(Backend.profile.get("level", 1)), Records.load_all()))
 	roster = [{"slot": 0, "playerId": "local", "name": display_name, "appearance": appearance, "trophies": 0}]
 	local_slot = 0
 	allowed_abilities = sim.players[0].allowed_abilities
@@ -78,11 +83,22 @@ func set_hole(index: int) -> void:
 func _process(delta: float) -> void:
 	if sim == null:
 		return
+	var pt := PerfStat.begin()
+	_step(delta)
+	PerfStat.end("localview.sim+events", pt)
+
+
+func _step(delta: float) -> void:
 	_acc += minf(delta, 0.25)
 	while _acc >= MatchSim.DT:
 		_acc -= MatchSim.DT
 		_snap_prev()
+		var t0 := Time.get_ticks_usec()
 		sim.tick()
+		var dt_us := Time.get_ticks_usec() - t0
+		perf_tick_us += dt_us
+		perf_ticks += 1
+		perf_tick_max_us = maxi(perf_tick_max_us, dt_us)
 		if not sim.last_impacts.is_empty():
 			impacts.emit(sim.last_impacts)
 		_flush_events()

@@ -205,6 +205,16 @@ func _update_target() -> void:
 	target_points = int(by.get(str(players.size()), _cfg_match.target_points))
 
 
+## Restricts a player's balls to `ids` (unlocks), always keeping the regular ball.
+func set_allowed(p: PlayerState, ids: PackedStringArray) -> void:
+	var out := PackedStringArray(["standard"])
+	for id in ids:
+		if id != "standard" and ability_allowed_in_mode(id) and not out.has(id):
+			out.append(id)
+	p.allowed_abilities = out
+	_reset_charges(p)
+
+
 func ability_allowed_in_mode(id: String) -> bool:
 	if not abilities.has(id):
 		return false
@@ -218,7 +228,7 @@ func _reset_charges(p: PlayerState) -> void:
 		return
 	var per: Dictionary = balance.get("stroke", {}).get("charges", {})
 	for id: String in abilities.keys():
-		if id == "standard" or not ability_allowed_in_mode(id):
+		if id == "standard" or not ability_allowed_in_mode(id) or not p.allowed_abilities.has(id):
 			continue
 		p.charges[id] = 0 if clean_ball else int(per.get(id, per.get("default", 2)))
 

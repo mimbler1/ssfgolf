@@ -86,8 +86,9 @@ func _ready() -> void:
 		var app := Appearance.normalize(_local_appearance())
 		var pname := str(Backend.profile.get("displayName", "You"))
 		var dbl := OS.get_cmdline_user_args().find("--dev-blitz")
-		if dbl != -1:
-			lv.setup_local_blitz(str(params.get("course", GameData.POOL_ID)), int(OS.get_cmdline_user_args()[dbl + 1]), app, pname)
+		if dbl != -1 or params.has("dev_blitz"):
+			var nb := int(params.dev_blitz) if params.has("dev_blitz") else int(OS.get_cmdline_user_args()[dbl + 1])
+			lv.setup_local_blitz(str(params.get("course", GameData.POOL_ID)), nb, app, pname)
 			var dpts := OS.get_cmdline_user_args().find("--dev-points")
 			if dpts != -1:
 				var vals := OS.get_cmdline_user_args()[dpts + 1].split(",")
@@ -254,11 +255,15 @@ func _process(delta: float) -> void:
 		return
 	var ph := view.phase_state()
 	_update_countdown(ph)
+	var t0 := PerfStat.begin()
 	for slot: int in balls:
 		_update_ball(slot, delta)
+	PerfStat.end("scene.update_balls", t0)
+	t0 = PerfStat.begin()
 	_update_camera(delta)
 	_update_bubbles()
 	_update_controls(delta)
+	PerfStat.end("scene.camera_controls", t0)
 	if not _queued_shot.is_empty():
 		if view.local_shot_block() == "":
 			view.shoot(_queued_shot.angle, _queued_shot.power, _queued_shot.ability, _queued_shot.spin)
@@ -266,7 +271,9 @@ func _process(delta: float) -> void:
 			_queued_shot = {}
 		elif _clock > float(_queued_shot.expires):
 			_queued_shot = {}
+	t0 = PerfStat.begin()
 	backdrop.follow(camera.get_screen_center_position(), camera.zoom.x)
+	PerfStat.end("scene.backdrop", t0)
 
 
 func _update_countdown(ph: Dictionary) -> void:

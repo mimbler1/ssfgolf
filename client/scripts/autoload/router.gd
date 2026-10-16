@@ -31,6 +31,9 @@ func _ready() -> void:
 func _dev_perf_hook() -> void:
 	var args := OS.get_cmdline_user_args()
 	var i := args.find("--perf-studio")
+	var gi := args.find("--perf-game")
+	if gi != -1 and gi + 1 < args.size():
+		i = gi
 	if i == -1 or i + 1 >= args.size():
 		return
 	if args.find("--profile") == -1:
@@ -39,6 +42,7 @@ func _dev_perf_hook() -> void:
 		return
 	var probe := PerfProbe.new()
 	probe.out_path = args[i + 1]
+	probe.mode = "game" if gi != -1 else "studio"
 	var c := args.find("--perf-cycles")
 	if c != -1 and c + 1 < args.size():
 		probe.cycles = int(args[c + 1])

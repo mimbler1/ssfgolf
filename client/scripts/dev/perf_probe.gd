@@ -1,7 +1,8 @@
 class_name PerfProbe
 extends Node
 ## Scripted Golfer Studio benchmark (docs/PERFORMANCE_REPORT.md).
-##   godot --path client -- --perf-studio out.json [--perf-cycles 3]
+##   godot --path client -- --profile perf --perf-studio out.json [--perf-cycles 3]
+##   godot --path client -- --profile perf --perf-game out.json      (6-player match stress)
 ##
 ## Drives the real studio through the directive's test sequence (scroll the roster, switch
 ## between 30 characters, equip/remove headwear, preview every animation, save, return to the
@@ -11,6 +12,8 @@ extends Node
 
 var out_path := ""
 var cycles := 3
+## "studio" (Golfer Studio sequence) or "game" (6-player match stress, see _run_game).
+var mode := "studio"
 var _frames: PackedFloat32Array = PackedFloat32Array()
 var _last_us := 0
 var _phase := ""
@@ -101,6 +104,9 @@ func _buttons(root: Node, pred: Callable) -> Array[Button]:
 
 
 func _run() -> void:
+	if mode == "game":
+		await _run_game()
+		return
 	await _wait(1.0)
 	_mem("menu start")
 	for c in cycles:
@@ -193,6 +199,87 @@ func _run() -> void:
 		_end()
 		_mem("c%d menu" % c)
 
+	_report["engine"] = Engine.get_version_info().string
+	_report["gpu"] = RenderingServer.get_video_adapter_name()
+	_report["cpu"] = OS.get_processor_name()
+	_report["window"] = [get_window().size.x, get_window().size.y]
+	var f := FileAccess.open(out_path, FileAccess.WRITE)
+	f.store_string(JSON.stringify(_report, "  "))
+	f.close()
+	print("[perf] report written: ", out_path)
+	get_tree().quit()
+
+
+# ---------------------------------------------------------------------------
+# Gameplay stress: a local 6-player Blitz match on several courses. Every ball is shot again as
+# soon as it may, with random abilities, spin and mid-flight activations, for 25 s per course.
+# Records frame time, the authoritative sim's tick cost, draw calls and memory.
+# ---------------------------------------------------------------------------
+
+func _run_game() -> void:
+	await _wait(1.0)
+	_mem("menu start")
+	_report["sim"] = []
+	for cid in ["golf_land", "gravity_lab", "spin_land"]:
+		while Router._busy:
+			await get_tree().process_frame
+		Router.goto(Router.GAME, {"mode": "practice", "course": cid, "hole": 0, "dev_blitz": 6})
+		var lv: LocalMatchView = null
+		while lv == null:
+			await get_tree().process_frame
+			var sc := get_tree().current_scene
+			if sc and sc.get("view") is LocalMatchView:
+				lv = sc.get("view")
+		while lv.sim.phase != MatchSim.Phase.PLAYING:
+			await get_tree().process_frame
+		lv.perf_tick_us = 0
+		lv.perf_tick_max_us = 0
+		lv.perf_ticks = 0
+		PerfStat.enabled = true
+		PerfStat.reset()
+		_begin("6p stress %s" % cid)
+		var rng := RandomNumberGenerator.new()
+		rng.seed = 11
+		var ids: Array[String] = []
+		for a: Dictionary in GameData.abilities:
+			if lv.sim.ability_allowed_in_mode(str(a.id)):
+				ids.append(str(a.id))
+		var shots := 0
+		var max_active := 0
+		var until := Time.get_ticks_msec() + 25000
+		while Time.get_ticks_msec() < until:
+			var active := 0
+			for p in lv.sim.players:
+				p.energy = 10.0
+				if p.ball.active and not p.ball.at_rest:
+					active += 1
+				if lv.sim.can_shoot(p.slot) == "":
+					var ab: String = ids[rng.randi() % ids.size()]
+					var to_cup := lv.sim.terrain.cup_pos.x - p.ball.pos.x
+					var ang := -rng.randf_range(0.3, 1.3) if to_cup >= 0.0 else -PI + rng.randf_range(0.3, 1.3)
+					if lv.sim.cmd_shoot(p.slot, ang, rng.randf_range(0.3, 1.0), ab, rng.randf_range(-1.0, 1.0)) == "":
+						shots += 1
+				elif p.ball.manual_available and rng.randf() < 0.02:
+					lv.sim.cmd_activate(p.slot)
+			max_active = maxi(max_active, active)
+			if lv.sim.phase == MatchSim.Phase.MATCH_OVER:
+				break
+			await get_tree().process_frame
+		_end()
+		var row := {"course": cid, "shots": shots, "max_balls_moving": max_active,
+			"sim_tick_avg_ms": snappedf(lv.perf_tick_us / 1000.0 / maxf(1, lv.perf_ticks), 0.001),
+			"sim_tick_max_ms": snappedf(lv.perf_tick_max_us / 1000.0, 0.001), "ticks": lv.perf_ticks}
+		_report.sim.append(row)
+		PerfStat.enabled = false
+		var nf := float(_report.phases[_report.phases.size() - 1].frames)
+		for r: Array in PerfStat.report():
+			print("[perf]   %-26s %7.3f ms/frame  (%d calls)" % [r[0], float(r[1]) / maxf(nf, 1.0), int(r[2])])
+		print("[perf] sim %s: %d shots, up to %d balls moving, tick avg %.3f ms, max %.3f ms over %d ticks" % [
+			cid, shots, max_active, row.sim_tick_avg_ms, row.sim_tick_max_ms, lv.perf_ticks])
+		_mem("in match %s" % cid)
+		Router.goto(Router.MAIN_MENU)
+		await _wait(1.5)
+		_mem("menu after %s" % cid)
 	_report["engine"] = Engine.get_version_info().string
 	_report["gpu"] = RenderingServer.get_video_adapter_name()
 	_report["cpu"] = OS.get_processor_name()

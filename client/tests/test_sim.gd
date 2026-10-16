@@ -5,6 +5,8 @@ extends SceneTree
 var balance: Dictionary
 var materials: Dictionary
 var failures := 0
+## Set at the end of every test section; a section that dies on a script error never sets it.
+var _section_ok := false
 var passes := 0
 
 
@@ -19,21 +21,31 @@ func _initialize() -> void:
 			if f.ends_with(".json"):
 				courses.append("res://data/courses/" + f)
 
-	test_rest_on_flat()
-	test_no_tunnel_max_power()
-	test_cup_capture()
-	test_cooldown_and_energy_validation()
-	test_grenade_pushes_other_ball()
-	test_sticky_wall()
-	test_ball_collision_momentum()
-	test_scoring_and_match_end()
-	test_disconnect_forfeit()
+	_run_section("test_rest_on_flat", func() -> void: test_rest_on_flat())
+	_run_section("test_no_tunnel_max_power", func() -> void: test_no_tunnel_max_power())
+	_run_section("test_cup_capture", func() -> void: test_cup_capture())
+	_run_section("test_cooldown_and_energy_validation", func() -> void: test_cooldown_and_energy_validation())
+	_run_section("test_grenade_pushes_other_ball", func() -> void: test_grenade_pushes_other_ball())
+	_run_section("test_sticky_wall", func() -> void: test_sticky_wall())
+	_run_section("test_ball_collision_momentum", func() -> void: test_ball_collision_momentum())
+	_run_section("test_scoring_and_match_end", func() -> void: test_scoring_and_match_end())
+	_run_section("test_disconnect_forfeit", func() -> void: test_disconnect_forfeit())
 	for path in courses:
 		test_course_holes_valid(path)
 		test_course_random_shots(path)
 
 	print("\n%d passed, %d failed" % [passes, failures])
 	quit(1 if failures > 0 else 0)
+
+
+## Runs one test section and fails it if it did not reach its end (GDScript errors only abort
+## the current function, which would otherwise look like a pass).
+func _run_section(name: String, f: Callable) -> void:
+	_section_ok = false
+	f.call()
+	if not _section_ok:
+		failures += 1
+		print("  FAIL section %s aborted (script error)" % name)
 
 
 func _json(path: String) -> Dictionary:
@@ -97,6 +109,7 @@ func test_rest_on_flat() -> void:
 	check(rested_at > 0, "ball comes to rest (tick %d, x=%.1f)" % [rested_at, b.pos.x])
 	check(absf(b.pos.y - (-b.radius)) < 2.0, "ball rests on surface (y=%.2f)" % b.pos.y)
 	check(b.pos.x > 300.0, "ball travelled forward")
+	_section_ok = true
 
 
 func test_no_tunnel_max_power() -> void:
@@ -113,6 +126,7 @@ func test_no_tunnel_max_power() -> void:
 		max_y = maxf(max_y, b.pos.y)
 	check(max_y <= 0.5, "never penetrated ground (max y=%.2f)" % max_y)
 	check(not sim.terrain.is_point_solid(b.pos), "not inside terrain")
+	_section_ok = true
 
 
 func test_cup_capture() -> void:
@@ -130,6 +144,7 @@ func test_cup_capture() -> void:
 		if holed:
 			break
 	check(holed, "ball rolled into cup")
+	_section_ok = true
 
 
 func test_cooldown_and_energy_validation() -> void:
@@ -145,6 +160,7 @@ func test_cooldown_and_energy_validation() -> void:
 	check(sim.cmd_shoot(0, -0.6, 0.3, "made_up") == "unknown_ability", "unknown ability rejected")
 	check(sim.cmd_shoot(0, NAN, 0.3, "standard") == "bad_input", "NaN rejected")
 	check(sim.cmd_activate(0) == "unavailable", "activate without ability rejected")
+	_section_ok = true
 
 
 func test_grenade_pushes_other_ball() -> void:
@@ -169,6 +185,7 @@ func test_grenade_pushes_other_ball() -> void:
 	var before := other.pos
 	_run(sim, 10)
 	check(other.pos.distance_to(before) > 1.0 or other.vel.length() > 50.0 or not exploded, "other ball displaced or unaffected only if far (moved %.1f)" % other.pos.distance_to(before))
+	_section_ok = true
 
 
 func test_sticky_wall() -> void:
@@ -189,6 +206,7 @@ func test_sticky_wall() -> void:
 	_run(sim, 60)
 	check(b.pos.distance_to(p) < 0.01, "stays glued")
 	check(sim.can_shoot(0) == "" or sim.can_shoot(0) == "cooldown", "can shoot from wall")
+	_section_ok = true
 
 
 func test_ball_collision_momentum() -> void:
@@ -202,6 +220,7 @@ func test_ball_collision_momentum() -> void:
 	check(sim.cmd_shoot(0, 0.0, 0.4, "standard") == "", "shot ok")
 	_run(sim, 60)
 	check(c.pos.x > 380.0, "struck ball moved forward (x=%.1f)" % c.pos.x)
+	_section_ok = true
 
 
 func test_scoring_and_match_end() -> void:
@@ -231,6 +250,7 @@ func test_scoring_and_match_end() -> void:
 	check(holes_done == 3, "three holes to reach 9 points (got %d)" % holes_done)
 	check(st[1].points == 6 and st[2].points == 3 and st[3].points == 0, "points 9/6/3/0")
 	check(sim.players[3].holes_played == 3, "unfinished player still counts holes played")
+	_section_ok = true
 
 
 func test_disconnect_forfeit() -> void:
@@ -249,6 +269,7 @@ func test_disconnect_forfeit() -> void:
 	check(sim.phase == MatchSim.Phase.MATCH_OVER, "match ends after forfeit")
 	var st := sim.standings()
 	check(st[0].playerId == "a" and st[1].disconnected, "connected player wins, disconnected last")
+	_section_ok = true
 
 
 func test_course_holes_valid(path: String) -> void:
@@ -263,6 +284,7 @@ func test_course_holes_valid(path: String) -> void:
 		check(hit.hit, "%s tee has ground" % hid)
 		check(not t.is_point_solid(t.cup_pos + Vector2(0, -20)), "%s cup mouth open" % hid)
 		check(t.cup_floor_y - t.cup_pos.y > 20.0, "%s cup has depth" % hid)
+	_section_ok = true
 
 
 func test_course_random_shots(path: String) -> void:
@@ -308,4 +330,5 @@ func test_course_random_shots(path: String) -> void:
 			sim.cmd_spin(0, rng.randi_range(-1, 1))
 			shots += 1
 		check(bad == 0, "%s: %d shots, never inside terrain (bad ticks %d)" % [course.holes[i].id, shots, bad])
+	_section_ok = true
 

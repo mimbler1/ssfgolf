@@ -171,6 +171,9 @@ func _begin_assignment(a: Dictionary) -> void:
 	for r: Dictionary in roster:
 		var p := sim.add_player(str(r.playerId), str(r.get("displayName", "Golfer")), Appearance.normalize(r.get("appearance", {})), int(r.get("trophies", 0)))
 		p.connected = false
+		# Unlocked balls: everything in rooms that allow it, otherwise by the player's level.
+		if not bool(a.get("allAbilities", false)):
+			sim.set_allowed(p, Unlocks.for_level(int(r.get("level", 1))))
 	state = State.WAITING
 	_wait_time = 0.0
 	_result_sent = false

@@ -66,10 +66,40 @@ There is one ability per shot, and a new shot clears every ability state (`reset
 
 ## Unlocks
 
-This is not implemented yet: online, every ability is currently allowed for everyone (the
-`allowed_abilities` hook exists per player). The planned matrix is in GAME_DESIGN.md
-(progression), and every ability has an achievable route that does not need courses beyond
-the six included.
+The data is `client/data/unlocks.json` and the code is `client/scripts/data/unlocks.gd`. A ball
+unlocks when **any** of its conditions is met. Every ball has a route inside the six included
+courses (tested), so none needs a course this game does not have.
+
+| Ball | Level | Or solo course completion | Or achievement |
+|---|---|---|---|
+| Regular, Nitro | 1 | — | — |
+| Sticky | 2 | Golf Land | |
+| Air Brakes | 3 | Golf Land | |
+| Grenade | 4 | Beach Land | |
+| Free Shot (stroke play) | 4 | — | first hole-in-one |
+| Heavy | 5 | Beach Land | |
+| Super | 6 | Sticky Zone | |
+| Mulligan | 7 | Sticky Zone | |
+| Ice | 8 | Snow Field | |
+| Shield | 9 | Snow Field | |
+| Anti-Grav | 10 | Gravity Lab | |
+| Magnet | 11 | Gravity Lab | |
+| Zig Zag | 12 | Spin Land | |
+| Laser | 13 | Spin Land | |
+
+Where each rule applies:
+
+- **Online matchmaking.** The backend puts each player's level in the match assignment, and the
+  game server allows only the balls unlocked by level (`MatchSim.set_allowed`). It rejects
+  anything else with `not_owned`. Local solo progress cannot be verified by the server, so it
+  does not count online.
+- **Private rooms.** The host setting `allAbilities` is on by default and gives every ball to
+  everyone.
+- **Stroke play.** Level, course completion and achievements all count.
+- **Practice.** Everything is available, so players can learn every ball.
+
+**Balance note.** Balls are side-grades with energy costs, not stat upgrades, so a high level
+gives more options rather than bigger numbers. Matchmaking pairs players by trophies.
 
 ## Known gaps
 

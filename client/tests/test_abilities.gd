@@ -7,6 +7,8 @@ extends SceneTree
 var balance: Dictionary
 var materials: Dictionary
 var failures := 0
+## Set at the end of every test section; a section that dies on a script error never sets it.
+var _section_ok := false
 var passes := 0
 var report: PackedStringArray = []
 
@@ -15,24 +17,35 @@ func _initialize() -> void:
 	balance = _json("res://data/balance.json")
 	materials = _json("res://data/materials.json").materials
 
-	test_a_standard_launch()
-	test_b_wall()
-	test_c_rolling_hill()
-	test_d_water()
-	test_e_sticky()
-	test_f_ball_collision()
-	test_g_activations()
-	test_h_repeatability()
-	test_spin()
-	test_surfaces()
-	test_gravity_field_and_conveyor()
-	test_modes_and_counting()
-	test_six_players()
-	test_launch_curve()
+	_run_section("test_a_standard_launch", func() -> void: test_a_standard_launch())
+	_run_section("test_b_wall", func() -> void: test_b_wall())
+	_run_section("test_c_rolling_hill", func() -> void: test_c_rolling_hill())
+	_run_section("test_d_water", func() -> void: test_d_water())
+	_run_section("test_e_sticky", func() -> void: test_e_sticky())
+	_run_section("test_f_ball_collision", func() -> void: test_f_ball_collision())
+	_run_section("test_g_activations", func() -> void: test_g_activations())
+	_run_section("test_h_repeatability", func() -> void: test_h_repeatability())
+	_run_section("test_spin", func() -> void: test_spin())
+	_run_section("test_surfaces", func() -> void: test_surfaces())
+	_run_section("test_gravity_field_and_conveyor", func() -> void: test_gravity_field_and_conveyor())
+	_run_section("test_modes_and_counting", func() -> void: test_modes_and_counting())
+	_run_section("test_six_players", func() -> void: test_six_players())
+	_run_section("test_launch_curve", func() -> void: test_launch_curve())
+	_run_section("test_unlocks", func() -> void: test_unlocks())
 
 	_write_report()
 	print("\n%d passed, %d failed" % [passes, failures])
 	quit(1 if failures > 0 else 0)
+
+
+## Runs one test section and fails it if it did not reach its end (GDScript errors only abort
+## the current function, which would otherwise look like a pass).
+func _run_section(name: String, f: Callable) -> void:
+	_section_ok = false
+	f.call()
+	if not _section_ok:
+		failures += 1
+		print("  FAIL section %s aborted (script error)" % name)
 
 
 func _json(path: String) -> Dictionary:
@@ -164,6 +177,7 @@ func test_a_standard_launch() -> void:
 	check(absf(results.sticky.end_dx - results.sticky.first_x) < 30.0, "sticky ball does not roll after landing")
 	check(_has_event(results.grenade, "explode"), "grenade explodes on impact")
 	report.append("")
+	_section_ok = true
 
 
 func test_b_wall() -> void:
@@ -191,6 +205,7 @@ func test_b_wall() -> void:
 	check(reb.heavy < reb.standard * 0.7, "heavy rebounds much less (%.0f vs %.0f)" % [reb.heavy, reb.standard])
 	check(reb.super > reb.standard, "super ball hits the wall harder")
 	report.append("")
+	_section_ok = true
 
 
 func test_c_rolling_hill() -> void:
@@ -221,6 +236,7 @@ func test_c_rolling_hill() -> void:
 	check(out.standard.v > 150.0, "ball accelerates down a 20 degree hill (%.0f px/s)" % out.standard.v)
 	check(out.heavy.x > out.standard.x, "heavy ball rolls further (less rolling drag)")
 	report.append("")
+	_section_ok = true
 
 
 func test_d_water() -> void:
@@ -250,6 +266,7 @@ func test_d_water() -> void:
 	report.append("| Regular | Hazard, respawn at last shot position (+1 stroke in stroke play) |")
 	report.append("| Ice | Freezes the surface, %s |" % ("rests on the ice" if ice_sim.players[0].ball.at_rest else "skims across"))
 	report.append("| Shield | Bounces off the water once, then the shield is gone |\n")
+	_section_ok = true
 
 
 func test_e_sticky() -> void:
@@ -272,6 +289,7 @@ func test_e_sticky() -> void:
 	var sim3 := _sim(_hole([{"material": "grass", "smooth": false, "points": [[-800, 0], [300, 0], [500, -40, {"m": "sticky"}], [900, -40], [1100, 0], [8200, 0], [8200, 400], [-800, 400]]}]))
 	var r3 := _fly(sim3, "standard", -PI * 0.25, 0.32)
 	check(r3.stuck, "a standard ball is caught by sticky terrain (terrain stickiness is separate from the ability)")
+	_section_ok = true
 
 
 func test_f_ball_collision() -> void:
@@ -314,6 +332,7 @@ func test_f_ball_collision() -> void:
 	var hits := gs.physics.explode(Vector2(880, -5), 175.0, 1150.0, 0, 0.4)
 	check(not hits.has(1), "shielded ball ignores a grenade blast")
 	report.append("")
+	_section_ok = true
 
 
 func test_g_activations() -> void:
@@ -360,6 +379,7 @@ func test_g_activations() -> void:
 		var r: Dictionary = row[1]
 		report.append("| %s | %s | %.0f | %s |" % [row[0], "%.0f" % r.first_x if r.first_x < INF else "-", r.get("end_dx", 0.0), row[2]])
 	report.append("")
+	_section_ok = true
 
 
 func test_h_repeatability() -> void:
@@ -370,6 +390,7 @@ func test_h_repeatability() -> void:
 		ends.append(r.end)
 	check(ends[0] == ends[1] and ends[1] == ends[2], "identical shots give identical results (%s)" % ends[0])
 	report.append("## Test H: repeatability\n\nThree identical shots (angle -0.9, power 0.73, spin +0.4) all end at %s: the simulation is deterministic.\n" % ends[0])
+	_section_ok = true
 
 
 func test_spin() -> void:
@@ -417,6 +438,7 @@ func test_spin() -> void:
 	sim.cmd_spin(0, 0)
 	check(b.ang_vel < w0 - 5.0, "holding backspin in flight winds back spin (%.0f -> %.0f rad/s)" % [w0, b.ang_vel])
 	report.append("")
+	_section_ok = true
 
 
 func test_surfaces() -> void:
@@ -434,6 +456,7 @@ func test_surfaces() -> void:
 	check(r.rough.end_dx < r.grass.end_dx, "rough holds more than grass")
 	check(r.bouncy.bounces > r.grass.bounces, "bouncy surfaces bounce more")
 	report.append("")
+	_section_ok = true
 
 
 func test_gravity_field_and_conveyor() -> void:
@@ -474,6 +497,7 @@ func test_gravity_field_and_conveyor() -> void:
 	for i in 120:
 		belt.tick()
 	check(bb.pos.x > 40.0, "a conveyor carries a ball resting on it (%.0f px)" % bb.pos.x)
+	_section_ok = true
 
 
 func test_modes_and_counting() -> void:
@@ -510,6 +534,7 @@ func test_modes_and_counting() -> void:
 	while clean.phase != MatchSim.Phase.PLAYING:
 		clean.tick()
 	check(clean.cmd_shoot(0, -0.8, 0.5, "nitro") == "no_charges", "clean ball challenge allows no abilities")
+	_section_ok = true
 
 
 func test_six_players() -> void:
@@ -545,6 +570,7 @@ func test_six_players() -> void:
 	for i in 5:
 		five.add_player("p%d" % i, "P%d" % i, {})
 	check(_ints(five.points_table()) == [4, 3, 2, 1, 0] and five.target_points == 12, "five-player points 4-3-2-1-0 to 12")
+	_section_ok = true
 
 
 func _ints(a: Array) -> Array:
@@ -567,6 +593,34 @@ func test_launch_curve() -> void:
 	check(increasing, "more power always carries further")
 	check(carries[2] / carries[4] > 0.38 and carries[2] / carries[4] < 0.6, "half power carries roughly half as far (%.2f)" % (carries[2] / carries[4]))
 	report.append("")
+	_section_ok = true
+
+
+func test_unlocks() -> void:
+	print("Unlocks")
+	var table: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/unlocks.json")).abilities
+	var main := ["golf_land", "beach_land", "sticky_zone", "snow_field", "gravity_lab", "spin_land"]
+	var all_ok := true
+	for a: Dictionary in balance.abilities:
+		var c: Dictionary = table.get(str(a.id), {})
+		var reachable := c.has("level") or (c.has("course") and str(c.course) in main) or c.has("achievement")
+		if c.has("course") and not str(c.course) in main:
+			reachable = false
+		if not reachable:
+			all_ok = false
+			print("    no route for ", a.id)
+	check(all_ok, "every ball has an achievable unlock route within the six courses")
+	check(Array(Unlocks.for_level(1)) == ["standard", "nitro"], "level 1 starts with Regular and Nitro")
+	check(Unlocks.for_level(13).size() == balance.abilities.size(), "level 13 unlocks every ball")
+	var local := Unlocks.for_local(1, {"courses": {"golf_land": {"completed": true}}, "totals": {"holes_in_one": 1}})
+	check(local.has("sticky") and local.has("air_brake") and local.has("free_shot") and not local.has("laser"),
+		"solo progress: completing Golf Land unlocks Sticky + Air Brakes, a hole-in-one unlocks Free Shot")
+	var sim := _sim(_flat(), "online", 2)
+	sim.phase = MatchSim.Phase.PLAYING
+	sim.set_allowed(sim.players[0], Unlocks.for_level(1))
+	check(sim.cmd_shoot(0, -0.8, 0.5, "laser") == "not_owned", "the server rejects a locked ball")
+	check(sim.cmd_shoot(1, -0.8, 0.5, "laser") == "", "another player with it unlocked may use it")
+	_section_ok = true
 
 
 func _write_report() -> void:

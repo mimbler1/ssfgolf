@@ -9,7 +9,7 @@ import type { MatchCoordinator } from '../matches/coordinator.ts';
 export const ROOM_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 export const ROOM_CODE_LENGTH = 6;
 
-export type RoomSettings = { maxPlayers: number; targetPoints: number; courseId: string };
+export type RoomSettings = { maxPlayers: number; targetPoints: number; courseId: string; allAbilities: boolean };
 
 export type RoomMember = { playerId: string; displayName: string; ready: boolean };
 
@@ -147,6 +147,7 @@ export class RoomService {
         maxPlayers: settings.maxPlayers ?? 4,
         targetPoints: settings.targetPoints ?? this.config.mm.targetPoints,
         courseId: settings.courseId ?? this.config.mm.courseId,
+        allAbilities: settings.allAbilities ?? true,
       },
       members: [{ playerId, displayName, ready: false }],
       matchId: null,
@@ -243,6 +244,7 @@ export class RoomService {
         ranked: false,
         courseId: room.settings.courseId,
         targetPoints: room.settings.targetPoints,
+        allAbilities: room.settings.allAbilities,
         playerIds: ordered,
         roomCode: room.code,
       });

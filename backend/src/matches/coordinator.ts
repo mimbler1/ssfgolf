@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import type { FastifyBaseLogger } from 'fastify';
 import type { Pool } from '../db.ts';
 import { notFound } from '../errors.ts';
+import { levelForXp } from '../profile/level.ts';
 import { getPlayers } from '../profile/repo.ts';
 import type { GameServer, MatchAssignment, ServerRegistry } from '../servers/registry.ts';
 
@@ -30,6 +31,8 @@ export type CreateMatchOptions = {
   targetPoints: number;
   playerIds: string[];
   roomCode?: string | null;
+  /** Private rooms only: every ball for everyone. */
+  allAbilities?: boolean;
 };
 
 /**
@@ -116,11 +119,19 @@ export class MatchCoordinator {
         ranked: match.ranked,
         courseId: match.courseId,
         targetPoints: match.targetPoints,
+        allAbilities: opts.allAbilities ?? false,
         createdAt: new Date(nowMs).toISOString(),
         players: match.playerIds.map((pid, slot) => {
           const p = players.get(pid);
           if (!p) throw new Error(`player ${pid} not found`);
-          return { playerId: pid, displayName: p.display_name, trophies: p.trophies, slot, appearance: p.appearance };
+          return {
+            playerId: pid,
+            displayName: p.display_name,
+            trophies: p.trophies,
+            level: levelForXp(Number(p.xp)),
+            slot,
+            appearance: p.appearance,
+          };
         }),
       };
       await this.pool.query(

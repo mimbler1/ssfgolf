@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "note": "Every ball has an achievable route inside the six included courses. A ball unlocks when ANY listed condition is met. Online the server uses the level route only (it cannot verify local solo progress); solo play also accepts course completion and achievements. See docs/POWERUP_SPEC.md, Unlocks.",
+  "abilities": {
+    "standard":  {"level": 1},
+    "nitro":     {"level": 1},
+    "sticky":    {"level": 2,  "course": "golf_land"},
+    "air_brake": {"level": 3,  "course": "golf_land"},
+    "grenade":   {"level": 4,  "course": "beach_land"},
+    "free_shot": {"level": 4,  "achievement": "hole_in_one"},
+    "heavy":     {"level": 5,  "course": "beach_land"},
+    "super":     {"level": 6,  "course": "sticky_zone"},
+    "mulligan":  {"level": 7,  "course": "sticky_zone"},
+    "ice":       {"level": 8,  "course": "snow_field"},
+    "shield":    {"level": 9,  "course": "snow_field"},
+    "anti_grav": {"level": 10, "course": "gravity_lab"},
+    "magnet":    {"level": 11, "course": "gravity_lab"},
+    "zig_zag":   {"level": 12, "course": "spin_land"},
+    "laser":     {"level": 13, "course": "spin_land"}
+  }
+}
