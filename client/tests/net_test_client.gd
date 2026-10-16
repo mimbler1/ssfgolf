@@ -13,6 +13,10 @@ var _quit_after := 240.0
 var _name := "Bot"
 var _leave_at := -1.0
 var _emote_at := -1.0
+## --abilities: pick random affordable balls and trigger them mid-flight (sync / collision soak).
+var _use_abilities := false
+var _activate_at := -1.0
+var _abilities_fired := 0
 
 
 func _ready() -> void:
@@ -22,6 +26,7 @@ func _ready() -> void:
 	var token := _arg(args, "--token", "dev:" + _name)
 	_quit_after = float(_arg(args, "--quit-after", "240"))
 	_leave_at = float(_arg(args, "--leave-after", "-1"))
+	_use_abilities = args.has("--abilities")
 	view = NetMatchView.new()
 	add_child(view)
 	view.welcomed.connect(func() -> void:
@@ -56,7 +61,7 @@ func _on_event(ev: Dictionary) -> void:
 				parts.append("s%d:+%d=%d" % [int(r.slot), int(r.gained), int(r.total)])
 			print("[%s] hole_end %s" % [_name, " ".join(parts)])
 		"match_end":
-			print("[%s] MATCH_END reason=%s standings=%s shots=%d events=%s rtt=%.1fms" % [_name, ev.reason, JSON.stringify(ev.standings), _shots, JSON.stringify(_events), view.rtt_ms])
+			print("[%s] MATCH_END reason=%s standings=%s shots=%d abilities=%d events=%s rtt=%.1fms" % [_name, ev.reason, JSON.stringify(ev.standings), _shots, _abilities_fired, JSON.stringify(_events), view.rtt_ms])
 			_finish(0)
 		"rejected":
 			print("[%s] command rejected: %s" % [_name, ev.error])
@@ -85,6 +90,10 @@ func _process(delta: float) -> void:
 		# Highest emote id: checks the server accepts the full catalogue, not just the first four.
 		view.emote(Emotes.count() - 1)
 		_emote_at = -1.0
+	if _activate_at > 0.0 and _t > _activate_at:
+		_activate_at = -1.0
+		if view.ball_state(view.local_slot).get("manual", false):
+			view.activate()
 	if view.terrain == null or _t < _next_think:
 		return
 	if view.local_shot_block() != "":
@@ -94,7 +103,19 @@ func _process(delta: float) -> void:
 	if s.is_empty() or not s.active:
 		return
 	var best := _search(s.pos)
-	view.shoot(best.x, best.y, "standard")
+	var ability := "standard"
+	if _use_abilities and randf() < 0.55:
+		var energy := float(view.player_state(view.local_slot).get("energy", 0.0))
+		var options: Array[String] = []
+		for a: Dictionary in GameData.abilities:
+			if view.allowed_abilities.has(a.id) and str(a.id) != "standard" and float(a.cost) <= energy:
+				options.append(str(a.id))
+		if not options.is_empty():
+			ability = options[randi() % options.size()]
+			_abilities_fired += 1
+			if str(GameData.ability(ability).get("activation", "none")) != "none":
+				_activate_at = _t + randf_range(0.25, 0.9)
+	view.shoot(best.x, best.y, ability, randf_range(-0.6, 0.6) if _use_abilities else 0.0)
 	_shots += 1
 
 

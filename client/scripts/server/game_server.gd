@@ -26,6 +26,7 @@ var join_secret := "dev-join-secret-change-me"
 var dev_mode := false
 var dev_players := 2
 var _dev_course := GameData.POOL_ID
+var _dev_target := 0
 
 var server_id := ""
 var assignment: Dictionary = {}
@@ -71,6 +72,7 @@ func _parse_args() -> void:
 	dev_mode = args.has("--insecure-dev")
 	dev_players = clampi(int(_arg(args, "--dev-players", "2")), 1, MatchSim.MAX_PLAYERS)
 	_dev_course = _arg(args, "--dev-course", GameData.POOL_ID)
+	_dev_target = int(_arg(args, "--dev-target", "0"))
 
 
 static func _arg(args: PackedStringArray, key: String, fallback: String) -> String:
@@ -240,7 +242,7 @@ func _broadcast_events() -> void:
 	for ev in sim.take_events():
 		ev["t"] = sim.time
 		for pid: int in _bound:
-			if _connected(pid):
+			if _connected(pid) and not _bound[pid].has("welcome_pending"):
 				Net.s_event.rpc_id(pid, ev)
 
 
@@ -249,7 +251,7 @@ func _broadcast_snapshot() -> void:
 		return
 	var data := SnapshotCodec.encode(sim, GameData.ability_index)
 	for pid: int in _bound:
-		if _connected(pid):
+		if _connected(pid) and not _bound[pid].has("welcome_pending"):
 			Net.s_snapshot.rpc_id(pid, data)
 
 
@@ -320,6 +322,22 @@ func on_hello(pid: int, token: String, protocol: int, version: String) -> void:
 		sim.set_connected(p.slot, true)
 	else:
 		p.connected = true
+	_log("Player %s joined as slot %d (peer %d)." % [player_id, p.slot, pid])
+	# Dev lobbies grow as players join: hold every welcome until the lobby is full, so each
+	# client receives the complete roster (backend matches list everyone up front).
+	if dev_mode and state == State.WAITING and sim.players.size() < dev_players:
+		_bound[pid]["welcome_pending"] = true
+		return
+	if dev_mode:
+		for other: int in _bound.keys():
+			if bool(_bound[other].get("welcome_pending", false)):
+				_bound[other].erase("welcome_pending")
+				_send_welcome(other)
+	_send_welcome(pid)
+
+
+func _send_welcome(pid: int) -> void:
+	var p := sim.players[int(_bound[pid].slot)]
 	var roster: Array[Dictionary] = []
 	for q in sim.players:
 		roster.append({"slot": q.slot, "playerId": q.player_id, "name": q.display_name, "appearance": q.appearance, "trophies": q.trophies})
@@ -329,7 +347,6 @@ func on_hello(pid: int, token: String, protocol: int, version: String) -> void:
 		"serverTime": sim.time, "holeIndex": sim.hole_index if state == State.RUNNING else -1,
 		"holeNumber": sim.hole_number, "phase": sim.phase,
 	})
-	_log("Player %s joined as slot %d (peer %d)." % [player_id, p.slot, pid])
 
 
 func _reject(pid: int, reason: String) -> void:
@@ -517,6 +534,9 @@ func _dev_join(name: String) -> String:
 	var id := "dev-" + name.to_lower().validate_filename()
 	if state == State.IDLE:
 		_begin_assignment({"matchId": "dev-%d" % Time.get_ticks_msec(), "courseId": _dev_course, "targetPoints": 9, "players": []})
+		if _dev_target > 0:
+			sim.target_override = _dev_target
+			sim.target_points = _dev_target
 	if sim.player_by_id(id) != null:
 		return id
 	if state != State.WAITING or sim.players.size() >= dev_players:
