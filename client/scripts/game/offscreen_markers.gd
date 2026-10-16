@@ -15,6 +15,9 @@ func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 
+var _cv := InkCanvas.new()
+
+
 func _process(delta: float) -> void:
 	_t += delta
 	queue_redraw()
@@ -38,12 +41,12 @@ func _draw() -> void:
 		var p: Vector2 = xf * (s.pos as Vector2)
 		if rect.grow(INSET * 0.6).has_point(p):
 			continue
-		var col: Color = UITheme.SLOT_COLORS[slot % UITheme.SLOT_COLORS.size()]
+		var col: Color = UITheme.slot_color(slot)
 		_marker(rect, p, col, "%dm" % roundi(my_pos.distance_to(s.pos) / 40.0), str(r.name).left(1).to_upper())
 	if view.terrain.has_cup:
 		var cp: Vector2 = xf * view.terrain.cup_pos
 		if not rect.grow(INSET * 0.6).has_point(cp):
-			_marker(rect, cp, Color("ff4d6d"), "%dm" % roundi(my_pos.distance_to(view.terrain.cup_pos) / 40.0), "", true)
+			_marker(rect, cp, Color("e8543a"), "%dm" % roundi(my_pos.distance_to(view.terrain.cup_pos) / 40.0), "", true)
 
 
 ## A badge clamped to the screen edge with an arrow toward the target.
@@ -58,19 +61,18 @@ func _marker(rect: Rect2, target: Vector2, col: Color, label: String, letter: St
 	var tip := at + dir * (r + 12.0)
 	var side := Vector2(-dir.y, dir.x)
 	var arrow := PackedVector2Array([tip, at + dir * (r - 2.0) + side * 9.0, at + dir * (r - 2.0) - side * 9.0])
-	draw_colored_polygon(Geometry2D.offset_polygon(arrow, 3.0)[0], UITheme.INK_LINE)
-	draw_colored_polygon(arrow, col)
-	draw_circle(at, r + 3.0, UITheme.INK_LINE)
-	draw_circle(at, r, Color(UITheme.INK, 0.92))
-	draw_arc(at, r - 2.0, 0, TAU, 24, col, 3.0)
-	var f := UITheme.heading_font()
+	_cv.shape(arrow, col, 2.6)
+	_cv.ellipse(at, Vector2(r, r), UITheme.PAPER)
+	_cv.ink_circle(at, Vector2(r - 2.5, r - 2.5), 3.0, col.darkened(0.1), letter.hash() % 97, 0.0, 0.2, 0.02)
+	_cv.ink_circle(at, Vector2(r, r), 2.4, UITheme.INK, 2.0)
 	if flag:
-		draw_line(at + Vector2(-5, 9), at + Vector2(-5, -10), UITheme.PAPER, 3.0)
-		draw_colored_polygon(PackedVector2Array([at + Vector2(-4, -10), at + Vector2(9, -5), at + Vector2(-4, 0)]), col)
-	else:
-		var w := f.get_string_size(letter, HORIZONTAL_ALIGNMENT_LEFT, -1, 20).x
-		draw_string(f, at + Vector2(-w * 0.5, 7), letter, HORIZONTAL_ALIGNMENT_LEFT, -1, 20, col)
+		InkIcons.draw(_cv, "flag", at, 26.0)
+	_cv.flush(get_canvas_item())
+	var f := UITheme.heading_font()
+	if not flag:
+		var w := f.get_string_size(letter, HORIZONTAL_ALIGNMENT_LEFT, -1, 22).x
+		draw_string(f, at + Vector2(-w * 0.5, 8), letter, HORIZONTAL_ALIGNMENT_LEFT, -1, 22, col.darkened(0.4))
 	var lw := f.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, 15).x
 	var lp := at - dir * (r + 14.0) + Vector2(-lw * 0.5, 5)
-	draw_string_outline(f, lp, label, HORIZONTAL_ALIGNMENT_LEFT, -1, 15, 5, UITheme.INK_LINE)
-	draw_string(f, lp, label, HORIZONTAL_ALIGNMENT_LEFT, -1, 15, UITheme.PAPER)
+	draw_string_outline(f, lp, label, HORIZONTAL_ALIGNMENT_LEFT, -1, 17, 6, UITheme.PAPER)
+	draw_string(f, lp, label, HORIZONTAL_ALIGNMENT_LEFT, -1, 17, UITheme.INK)

@@ -148,11 +148,11 @@ func _run() -> void:
 			stick[0].pressed.emit()
 			await _frames_wait(4)
 		var cat: Dictionary = s.get("_cat_buttons")
-		if not cat.Headwear.disabled:
-			cat.Headwear.pressed.emit()
+		if not cat.Hats.disabled:
+			cat.Hats.pressed.emit()
 			await _frames_wait(4)
 			for i in 20:
-				var thumbs := _buttons(s.get("_options"), func(b: Button) -> bool: return b.theme_type_variation == "GhostButton" and b.get_child_count() > 0)
+				var thumbs := _buttons(s.get("_options"), func(b: Button) -> bool: return not b.find_children("*", "InkThumb", true, false).is_empty())
 				if thumbs.is_empty():
 					break
 				thumbs[(i * 3) % thumbs.size()].pressed.emit()
@@ -160,8 +160,8 @@ func _run() -> void:
 		_end()
 
 		_begin("c%d colour swatches x20" % c)
-		if not cat.Body.disabled:
-			cat.Body.pressed.emit()
+		if not cat.Pants.disabled:
+			cat.Pants.pressed.emit()
 			await _frames_wait(4)
 			for i in 20:
 				var sw := _buttons(s.get("_options"), func(b: Button) -> bool: return b.tooltip_text.begins_with("#"))
@@ -179,7 +179,7 @@ func _run() -> void:
 		_end()
 
 		_begin("c%d character tab" % c)
-		cat.Character.pressed.emit()
+		cat.Outfits.pressed.emit()
 		await _wait(0.8)
 		_end()
 

@@ -1,11 +1,10 @@
 class_name AimView
 extends Node2D
-## The aim indicator around the local ball: a chunky pixel arrow (direction + power), the launch
-## spin, the classic power meter and the putting tag. Where the ball will go is drawn separately by
-## TrajectoryView (the dotted aim guide, or the Laser Ball's beam).
-##
-const PX := 2.0
-const INK := Color("141428")
+## The aim indicator around the local ball, drawn in ink: a bold hand-drawn arrow (direction +
+## power), the launch spin, the classic power meter and the putting tag. Where the ball will go
+## is drawn separately by TrajectoryView (the dotted aim guide, or the Laser Ball's beam).
+
+const INK := InkCanvas.INK
 
 var ball_pos := Vector2.ZERO
 var ball_radius := 9.0
@@ -19,16 +18,13 @@ var classic := false
 var color := Color.WHITE
 var blocked := false       ## e.g. cooldown: drawn dimmer
 var _t := 0.0
+var _cv := InkCanvas.new()
 
 
 func _process(delta: float) -> void:
 	_t += delta
 	if visible:
 		queue_redraw()
-
-
-func _block(p: Vector2, c: Color, s: float = PX) -> void:
-	draw_rect(Rect2((p / PX).floor() * PX - Vector2(s, s) * 0.5 + Vector2(PX, PX) * 0.5, Vector2(s, s)), c)
 
 
 func _draw() -> void:
@@ -38,57 +34,58 @@ func _draw() -> void:
 	var start := ball_pos + dir * (ball_radius + 10.0)
 	var length := 30.0 + 120.0 * power
 	var fill := _power_color(shot_power).lerp(color, 0.25)
-	# One solid arrow polygon with a thick ink outline (a solid shape, never dots, so it cannot be
-	# mistaken for a flight path).
-	var hw := 5.0
+	# One solid arrow with an ink rim: a shape, never dots, so it cannot be read as a flight path.
+	var w0 := 4.0
+	var w1 := lerpf(5.5, 8.0, power)
 	var head_w := 15.0
 	var head_l := 24.0
-	var tip := start + dir * (length + head_l)
 	var neck := start + dir * length
-	var arrow := PackedVector2Array([
-		start + nrm * hw, neck + nrm * hw, neck + nrm * head_w, tip,
-		neck - nrm * head_w, neck - nrm * hw, start - nrm * hw])
-	var outline := Geometry2D.offset_polygon(arrow, 3.5, Geometry2D.JOIN_MITER)
-	if not outline.is_empty():
-		draw_colored_polygon(outline[0], Color(INK, a))
-	draw_colored_polygon(arrow, Color(fill, a))
-	# Lit upper edge.
-	draw_colored_polygon(PackedVector2Array([start + nrm * -hw, neck + nrm * -hw, neck + nrm * -(hw - 2.0), start + nrm * -(hw - 2.0)]), Color(1, 1, 1, 0.45 * a))
-	_draw_label(tip + dir * 22.0, "%d%%" % roundi(shot_power * 100.0), Color(fill, a), 22)
-	if putting:
-		_draw_label(ball_pos + Vector2(0, -44), "PUTT", Color("9be36b"), 20)
-	var below := 40.0
+	var tip := neck + dir * head_l
+	var arrow := PackedVector2Array([start + nrm * w0, neck + nrm * w1, neck + nrm * head_w, tip, neck - nrm * head_w, neck - nrm * w1, start - nrm * w0])
+	_cv.fill(arrow, Color(fill, a))
+	_cv.stroke(PackedVector2Array([start - nrm * (w0 - 1.5), neck - nrm * (w1 - 1.5)]), 1.8, Color(1, 1, 1, 0.55 * a), 0.2, 0.2)
+	for k in 3:
+		var u := float(k + 1) / 4.0
+		var p := start + dir * length * u
+		var hw := lerpf(w0, w1, u) - 1.5
+		_cv.stroke(PackedVector2Array([p + nrm * hw, p - nrm * hw]), 1.4, Color(INK, 0.45 * a), 0.2, 0.2)
+	_cv.outline(arrow, 3.0, Color(INK, a), 3.0, 0.15)
+	if absf(spin) > 0.01:
+		_spin_glyph(ball_pos, spin > 0.0, absf(spin))
 	if classic:
-		_draw_meter(ball_pos + Vector2(0, 34))
-		below = 70.0
+		_meter(ball_pos + Vector2(0, 34))
+	_cv.flush(get_canvas_item())
+	_label(tip + dir * 22.0, "%d%%" % roundi(shot_power * 100.0), Color(fill, a), 24)
+	if putting:
+		_label(ball_pos + Vector2(0, -44), "PUTT", UITheme.GRASS, 22)
+	var below := 70.0 if classic else 40.0
 	if absf(spin) > 0.01:
 		var top := spin > 0.0
-		var txt := "%s %d%%" % ["TOPSPIN" if top else "BACKSPIN", roundi(absf(spin) * 100.0)]
-		_draw_label(ball_pos + Vector2(0, below), txt, Color("ffb347") if top else Color("6fd6ff"), 17)
-		_draw_spin_glyph(ball_pos, top, absf(spin))
+		_label(ball_pos + Vector2(0, below), "%s %d%%" % ["TOPSPIN" if top else "BACKSPIN", roundi(absf(spin) * 100.0)], Color("f28c38") if top else Color("3fa3e8"), 19)
 
 
-func _draw_spin_glyph(c: Vector2, top: bool, amount: float) -> void:
-	# A ring of blocks around the ball, rotating in the spin direction.
-	var r := ball_radius + 5.0
-	var n := 10
+## A curling ink arrow around the ball, turning the way the spin turns.
+func _spin_glyph(c: Vector2, top: bool, amount: float) -> void:
+	var r := ball_radius + 6.0
 	var dirn := 1.0 if top else -1.0
-	for i in n:
-		var t := float(i) / float(n)
-		if t > 0.35 + 0.6 * amount:
-			continue
-		var ang := _t * 6.0 * dirn + t * TAU * dirn
-		_block(c + Vector2.from_angle(ang) * r, Color(Color("ffb347") if top else Color("6fd6ff"), 1.0 - t * 0.8))
+	var span := (0.35 + 0.6 * amount) * TAU
+	var a0 := _t * 6.0 * dirn
+	var arc := InkCanvas.arc_pts(c, r, a0, a0 + span * dirn, 18)
+	var col := Color("f28c38") if top else Color("3fa3e8")
+	_cv.stroke(arc, 3.0, col, 0.4, 0.05)
+	var end := arc[arc.size() - 1]
+	var tdir := (arc[arc.size() - 1] - arc[arc.size() - 2]).normalized()
+	var tn := Vector2(-tdir.y, tdir.x)
+	_cv.shape(PackedVector2Array([end + tdir * 5.0, end - tdir * 2.0 + tn * 4.5, end - tdir * 2.0 - tn * 4.5]), col, 1.4)
 
 
-## Classic power meter: a horizontal segmented bar under the ball (clear of the golfer).
-func _draw_meter(c: Vector2) -> void:
+## Classic power meter: a hand-drawn segmented bar under the ball (clear of the golfer).
+func _meter(c: Vector2) -> void:
 	var w := 132.0
 	var h := 14.0
-	var x0 := c.x - w * 0.5
-	var y := c.y
-	draw_rect(Rect2(x0 - 3, y - 3, w + 6, h + 6), INK)
-	draw_rect(Rect2(x0, y, w, h), Color(1, 1, 1, 0.08))
+	var r := Rect2(Vector2(c.x - w * 0.5, c.y), Vector2(w, h))
+	var shape := InkStyleBox.outline_pts(r.grow(3.0), 8.0, 0.8, 1.0)
+	_cv.fill(shape, Color(InkCanvas.PAPER, 0.95))
 	var cells := 12
 	var gap := 2.0
 	var cw := (w - gap * (cells - 1)) / cells
@@ -96,23 +93,23 @@ func _draw_meter(c: Vector2) -> void:
 		var k := float(i + 1) / float(cells)
 		var lit := power >= k - 0.5 / cells
 		var col := _power_color(k * (ShotController.PUTT_POWER if putting else 1.0))
-		draw_rect(Rect2(x0 + i * (cw + gap), y, cw, h), col if lit else Color(col, 0.16))
+		_cv.fill(InkStyleBox.outline_pts(Rect2(r.position.x + i * (cw + gap), r.position.y, cw, h), 3.0, 0.4, float(i)), col if lit else Color(col, 0.18))
+	_cv.outline(shape, 2.4, INK, 1.0)
 	if meter:
-		var mx := x0 + w * power
-		draw_rect(Rect2(mx - 2, y - 6, 4, h + 12), Color.WHITE)
-		draw_rect(Rect2(mx - 3, y - 6, 1, h + 12), INK)
-		draw_rect(Rect2(mx + 2, y - 6, 1, h + 12), INK)
+		var mx := r.position.x + w * power
+		_cv.stroke(PackedVector2Array([Vector2(mx, r.position.y - 7), Vector2(mx, r.end.y + 7)]), 4.0, INK, 0.1, 0.1)
+		_cv.stroke(PackedVector2Array([Vector2(mx, r.position.y - 5), Vector2(mx, r.end.y + 5)]), 1.6, Color.WHITE, 0.1, 0.1)
 
 
-func _draw_label(p: Vector2, text: String, col: Color, size: int) -> void:
+func _label(p: Vector2, text: String, col: Color, size: int) -> void:
 	var f := UITheme.heading_font()
 	var w := f.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
-	var pos := (p + Vector2(-w * 0.5, size * 0.35)).floor()
-	draw_string_outline(f, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, 6, INK)
+	var pos := p + Vector2(-w * 0.5, size * 0.35)
+	draw_string_outline(f, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, 7, INK)
 	draw_string(f, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, col)
 
 
 static func _power_color(p: float) -> Color:
 	if p < 0.5:
-		return Color("f4f4f8").lerp(Color("ffd166"), p / 0.5)
-	return Color("ffd166").lerp(Color("ff5a3c"), (p - 0.5) / 0.5)
+		return Color("fbf6ec").lerp(Color("f2b630"), p / 0.5)
+	return Color("f2b630").lerp(Color("e8543a"), (p - 0.5) / 0.5)

@@ -1,30 +1,24 @@
 class_name TerrainView
 extends Node2D
-## Renders one hole: soil fill, material surface bands, outlines, cup, flag, hazards and decor.
-## Everything static is drawn once; only the flag, water and swaying decor animate.
+## Hand-drawn render of one hole (docs/INK_ART_SPEC.md §9): soil with depth strata and sketch
+## marks, material strips, an ink outline on the exact collision edge, the cup and flag, water
+## and decor. Everything static is built once into InkCanvas geometry; only the flag, water
+## surface and tree canopies move. Physics never reads anything drawn here.
 
-const MATERIAL_COLORS := {
-	"sand": [Color("f4d58d"), Color("d9b062")],
-	"ice": [Color("c9f2ff"), Color("8fd6f5")],
-	"sticky": [Color("b65cff"), Color("7b2cbf")],
-	"bouncy": [Color("ff4d6d"), Color("fff1f3")],
-	"rock": [Color("9aa5b8"), Color("6b7489")],
-	"wood": [Color("c08552"), Color("8d5b33")],
-	"rough": [Color("4fa83a"), Color("2f7a25")],
-}
+const SKIRT_LEN := 4000.0
+## Materials that get their strip on any edge orientation (walls and ceilings included).
+const ALWAYS_STRIP := ["sticky", "bouncy", "ice", "sand", "snow", "metal", "wood", "rock"]
 
 var terrain: SimTerrain
 var theme: Dictionary
 var hole: Dictionary
 var hole_number: int = 1
-var _water: _Water
-## Authored world art (textures, caps, decor sprites); null = procedural fallback.
-var art: WorldArt
+var pal: Dictionary = {}
 ## Visual-only ground that continues past the world's left/right edges so the camera never
-## shows a cut-off cliff. Each entry: {poly: PackedVector2Array, top: PackedVector2Array}.
+## shows a cut-off cliff. Each entry: {poly, top, src, edge_x | edge_y}.
 var skirts: Array[Dictionary] = []
-
-const SKIRT_LEN := 4000.0
+var _water: _Water
+var _rng := RandomNumberGenerator.new()
 
 
 func build(p_terrain: SimTerrain, p_hole: Dictionary, p_theme: Dictionary, p_hole_number: int) -> void:
@@ -32,209 +26,593 @@ func build(p_terrain: SimTerrain, p_hole: Dictionary, p_theme: Dictionary, p_hol
 	hole = p_hole
 	theme = p_theme
 	hole_number = p_hole_number
+	pal = InkThemes.get_palette(theme)
 	for c in get_children():
 		c.queue_free()
-	art = WorldArt.load_for(theme)
-	var forces := ForceOverlay.new()
-	forces.setup(terrain, GameData.materials, float(GameData.balance.physics.gravity))
-	if art:
-		_build_art()
-		add_child(forces)
-		return
-
+	_rng.seed = hash(str(hole.get("id", ""))) + 17
+	_build_skirts()
 	var decor_back := Node2D.new()
 	decor_back.name = "DecorBack"
 	add_child(decor_back)
-
-	var fill_mat := ShaderMaterial.new()
-	fill_mat.shader = load("res://assets/shaders/terrain_fill.gdshader")
-	fill_mat.set_shader_parameter("top_color", _c("ground_top", "#8a5a3c"))
-	fill_mat.set_shader_parameter("bottom_color", _c("ground_bottom", "#5b3a29"))
-	fill_mat.set_shader_parameter("strata_color", _c("ground_strata", "#7a4e34"))
-	var min_y := INF
-	for poly in terrain.polygons:
-		for v: Vector2 in poly.points:
-			min_y = minf(min_y, v.y)
-	fill_mat.set_shader_parameter("top_y", min_y)
-
 	var cup := _Cup.new()
-	cup.terrain = terrain
+	cup.view = self
 	add_child(cup)
-
-	for poly in terrain.polygons:
-		var p2d := Polygon2D.new()
-		p2d.polygon = poly.points
-		p2d.material = fill_mat
-		p2d.antialiased = true
-		add_child(p2d)
-	_build_skirts()
-	for sk in skirts:
-		var s2d := Polygon2D.new()
-		s2d.polygon = sk.poly
-		s2d.material = fill_mat
-		add_child(s2d)
-
-	var edges := _Edges.new()
-	edges.view = self
-	add_child(edges)
-
+	var ground := InkStatic.new()
+	ground.name = "Ground"
+	ground.canvas = _build_ground()
+	add_child(ground)
 	_water = _Water.new()
-	_water.terrain = terrain
-	_water.theme = theme
+	_water.view = self
 	add_child(_water)
-
+	_water.setup()
 	if terrain.has_cup:
 		var flag := _Flag.new()
 		flag.position = terrain.cup_pos
 		flag.number = hole_number
 		add_child(flag)
-
 	_build_decor(decor_back)
+	var forces := ForceOverlay.new()
+	forces.setup(terrain, GameData.materials, float(GameData.balance.physics.gravity))
 	add_child(forces)
 
 
-## Default contrast of the soil texture around its average colour (world.json soil "detail"
-## overrides it). 1.0 = the raw texture, which is too busy under gameplay.
-const SOIL_DETAIL := 0.35
-
-static var _mean_cache: Dictionary = {}
+func c(key: String) -> Color:
+	return InkThemes.col(pal, key)
 
 
-## Average opaque colour of a texture (cached), used to calm the soil pattern.
-static func _mean_color(t: Texture2D) -> Color:
-	if t == null:
-		return Color(0.5, 0.5, 0.5)
-	if _mean_cache.has(t.resource_path):
-		return _mean_cache[t.resource_path]
-	var img := t.get_image()
-	if img.is_compressed():
-		img.decompress()
-	var sum := Color(0, 0, 0, 0)
-	var n := 0
-	for y in range(0, img.get_height(), 2):
-		for x in range(0, img.get_width(), 2):
-			var c := img.get_pixel(x, y)
-			if c.a > 0.5:
-				sum += c
-				n += 1
-	var mean := Color(sum.r / n, sum.g / n, sum.b / n) if n > 0 else Color(0.5, 0.5, 0.5)
-	_mean_cache[t.resource_path] = mean
-	return mean
+# ---------------------------------------------------------------------------
+# Skirts (visual continuation past the world edges)
+# ---------------------------------------------------------------------------
 
-
-## Authored-art build: same geometry as the procedural path, dressed in world materials.
-func _build_art() -> void:
-	var decor_back := Node2D.new()
-	decor_back.name = "DecorBack"
-	add_child(decor_back)
-	var cup := _Cup.new()
-	cup.terrain = terrain
-	add_child(cup)
-	var sm := art.material("soil")
-	var soil := art.tex(str(sm.get("fill", "")))
-	var min_y := INF
+## Extends the terrain's outermost left/right edges outward as flat plateaus at the same height,
+## so the camera never sees past the end of the ground. The edge comes from the terrain itself
+## (not the hole bounds), so ground that stops short of or overruns the bounds still continues.
+func _build_skirts() -> void:
+	skirts.clear()
+	var bd := terrain.bounds
+	var min_x := INF
+	var max_x := -INF
 	for poly in terrain.polygons:
 		for v: Vector2 in poly.points:
-			min_y = minf(min_y, v.y)
-	var soil_mat := ShaderMaterial.new()
-	soil_mat.shader = load("res://assets/shaders/world_soil.gdshader")
-	soil_mat.set_shader_parameter("top_y", min_y + 60.0)
-	soil_mat.set_shader_parameter("depth_px", float(sm.get("depth_px", 700)))
-	soil_mat.set_shader_parameter("dark", float(sm.get("depth_dark", 0.5)))
-	soil_mat.set_shader_parameter("detail", float(sm.get("detail", SOIL_DETAIL)))
-	soil_mat.set_shader_parameter("mean_color", _mean_color(soil))
-	_build_skirts()
-	for poly in terrain.polygons:
-		var p := art.textured_polygon(poly.points, soil)
-		p.material = soil_mat
-		add_child(p)
-	for sk in skirts:
-		var p := art.textured_polygon(sk.poly, soil)
-		p.material = soil_mat
-		add_child(p)
-	var ink := _ArtInk.new()
-	ink.view = self
-	ink.width = art.scale * 1.5
-	add_child(ink)
-	var ed := _Edges.new()
-	ed.view = self
-	for poly in terrain.polygons:
-		for run in ed._runs(poly.points, poly.edge_mats, terrain):
-			if run.mat == "cup" or not (run.top or run.mat in ["sticky", "bouncy", "ice", "sand"]):
+			min_x = minf(min_x, v.x)
+			max_x = maxf(max_x, v.x)
+	for pi in terrain.polygons.size():
+		var pts: PackedVector2Array = terrain.polygons[pi].points
+		for side: float in [-1.0, 1.0]:
+			var edge_x: float = min_x if side < 0.0 else max_x
+			var top := INF
+			var bottom := -INF
+			for v in pts:
+				if absf(v.x - edge_x) < 0.5:
+					top = minf(top, v.y)
+					bottom = maxf(bottom, v.y)
+			if top == INF or bottom - top < 1.0:
 				continue
-			_add_cap(run.points, run.normals, str(run.mat))
-	ed.free()
+			var far := edge_x + side * SKIRT_LEN
+			var near := edge_x - side * 1.0
+			skirts.append({
+				"poly": PackedVector2Array([Vector2(near, top), Vector2(far, top), Vector2(far, bottom + 2000.0), Vector2(near, bottom + 2000.0)]),
+				"top": PackedVector2Array([Vector2(edge_x, top), Vector2(far, top)]) if side > 0.0 else PackedVector2Array([Vector2(far, top), Vector2(edge_x, top)]),
+				"edge_x": edge_x, "src": pi,
+			})
+		var bottom_pts := 0
+		for v in pts:
+			if absf(v.y - bd.end.y) < 0.5:
+				bottom_pts += 1
+		if bottom_pts >= 2:
+			var y0 := bd.end.y - 1.0
+			skirts.append({
+				"poly": PackedVector2Array([Vector2(bd.position.x - SKIRT_LEN, y0), Vector2(bd.end.x + SKIRT_LEN, y0),
+					Vector2(bd.end.x + SKIRT_LEN, y0 + 3000.0), Vector2(bd.position.x - SKIRT_LEN, y0 + 3000.0)]),
+				"top": PackedVector2Array(), "edge_y": bd.end.y, "src": pi,
+			})
+
+
+## True for polygon edges that sit exactly on a skirted world boundary (hidden seams).
+func is_seam(a: Vector2, b: Vector2) -> bool:
+	for sk in skirts:
+		if sk.has("edge_x"):
+			var x: float = sk.edge_x
+			if absf(a.x - x) < 0.5 and absf(b.x - x) < 0.5:
+				return true
+		elif absf(a.y - float(sk.edge_y)) < 0.5 and absf(b.y - float(sk.edge_y)) < 0.5:
+			return true
+	return false
+
+
+## Terrain polygons merged with their skirts (for fills, strata and marks; seam-free).
+func _visual_polygons() -> Array[PackedVector2Array]:
+	var out: Array[PackedVector2Array] = []
+	for pi in terrain.polygons.size():
+		var merged: PackedVector2Array = terrain.polygons[pi].points
+		for sk in skirts:
+			if int(sk.src) != pi:
+				continue
+			var res := Geometry2D.merge_polygons(merged, sk.poly)
+			var best := merged
+			var best_a := 0.0
+			for r in res:
+				var a := absf(_area(r))
+				if a > best_a and not _is_hole(r, merged):
+					best_a = a
+					best = r
+			merged = best
+		out.append(merged)
+	return out
+
+
+static func _area(p: PackedVector2Array) -> float:
+	var a := 0.0
+	for i in p.size():
+		var q := p[(i + 1) % p.size()]
+		a += p[i].x * q.y - q.x * p[i].y
+	return a * 0.5
+
+
+static func _is_hole(r: PackedVector2Array, ref: PackedVector2Array) -> bool:
+	return (_area(r) > 0.0) != (_area(ref) > 0.0)
+
+
+# ---------------------------------------------------------------------------
+# Ground
+# ---------------------------------------------------------------------------
+
+func _build_ground() -> InkCanvas:
+	var cv := InkCanvas.new()
+	var vis := _visual_polygons()
+	var top_c := c("soil_top")
+	var deep_c := c("soil_deep")
+	for vp in vis:
+		_soil_fill(cv, vp, top_c, deep_c, 0.0)
+		# Strata: inset contours, each a little darker, with a sketchy line on the boundary.
+		var depth := 0.0
+		for band: Array in [[38.0, 0.07], [120.0, 0.15], [260.0, 0.22]]:
+			depth = band[0]
+			for inset in Geometry2D.offset_polygon(vp, -depth, Geometry2D.JOIN_ROUND):
+				if _is_hole(inset, vp) or inset.size() < 3:
+					continue
+				_soil_fill(cv, inset, top_c.darkened(band[1]), deep_c.darkened(band[1]), depth)
+				_strata_line(cv, inset, c("soil_line"), float(band[1]))
+		_soil_marks(cv, vp)
+	# Material strips along the surface, then the ink outline exactly on the collision edge.
+	for pi in terrain.polygons.size():
+		var poly: Dictionary = terrain.polygons[pi]
+		for run in _runs(poly.points, poly.edge_mats):
+			if run.mat == "cup":
+				continue
+			if run.top or run.mat in ALWAYS_STRIP:
+				_strip(cv, run)
 	for sk in skirts:
 		var tp: PackedVector2Array = sk.top
 		if tp.size() >= 2:
-			_add_cap(tp, PackedVector2Array([Vector2.UP, Vector2.UP]), "grass")
-	_water = _Water.new()
-	_water.terrain = terrain
-	_water.theme = theme
-	_water.art = art
-	_water.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
-	_water.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	add_child(_water)
-	if terrain.has_cup:
-		var fd: Dictionary = art.data.get("flag", {})
-		if not fd.is_empty():
-			var flag := _ArtFlag.new()
-			flag.setup(art, fd)
-			flag.position = terrain.cup_pos
-			add_child(flag)
-	_build_art_decor(decor_back)
+			var dense := InkCanvas.resample(tp, 24.0)
+			var nrm := PackedVector2Array()
+			for i in dense.size():
+				nrm.append(Vector2.UP)
+			_strip(cv, {"points": dense, "normals": nrm, "mat": "grass", "top": true})
+	var ink := c("ink")
+	for pi in terrain.polygons.size():
+		var poly: Dictionary = terrain.polygons[pi]
+		for run in _runs(poly.points, poly.edge_mats):
+			for part in _split_seams(run.points):
+				cv.stroke(part, 3.6 if run.top else 2.7, ink, 0.0001, 0.0001, float(pi) + part[0].x * 0.01, 0.14, 0.25, 1.0)
+	for sk in skirts:
+		var tp: PackedVector2Array = sk.top
+		if tp.size() >= 2:
+			cv.stroke(InkCanvas.resample(tp, 30.0), 3.6, ink, 0.0001, 0.0001, 5.0, 0.14, 0.25, 1.0)
+	# Grass blades and flowers sit on top of the ink line.
+	for pi in terrain.polygons.size():
+		var poly: Dictionary = terrain.polygons[pi]
+		for run in _runs(poly.points, poly.edge_mats):
+			if run.top and run.mat in ["grass", "rough"]:
+				_tufts(cv, run)
+	for sk in skirts:
+		var tp: PackedVector2Array = sk.top
+		if tp.size() >= 2:
+			var dense := InkCanvas.resample(tp, 24.0)
+			var nrm := PackedVector2Array()
+			for i in dense.size():
+				nrm.append(Vector2.UP)
+			_tufts(cv, {"points": dense, "normals": nrm, "mat": "grass", "top": true})
+	return cv
 
 
-func _add_cap(points: PackedVector2Array, normals: PackedVector2Array, mat: String) -> void:
-	var m := art.material(mat)
-	var t := art.tex(str(m.get("cap", "")))
-	if t == null:
+## Soil fill: colour darkens with depth below the local surface.
+func _soil_fill(cv: InkCanvas, poly: PackedVector2Array, top_c: Color, deep_c: Color, offset: float) -> void:
+	var cols := PackedColorArray()
+	cols.resize(poly.size())
+	for i in poly.size():
+		var v := poly[i]
+		var surf := _surface_y(v.x, v.y)
+		var k := clampf((v.y - surf - offset) / 700.0, 0.0, 1.0)
+		cols[i] = top_c.lerp(deep_c, k)
+	cv.fill_colored(poly, cols)
+
+
+func _surface_y(x: float, below: float) -> float:
+	var hit := terrain.raycast(Vector2(clampf(x, terrain.bounds.position.x + 1.0, terrain.bounds.end.x - 1.0), terrain.bounds.position.y - 50.0), Vector2.DOWN, terrain.bounds.size.y + 2000.0)
+	return minf(float(hit.pos.y), below) if hit.hit else below
+
+
+func _strata_line(cv: InkCanvas, poly: PackedVector2Array, col: Color, k: float) -> void:
+	# Broken, hand-drawn dashes along the contour (not a continuous mechanical line).
+	var ring := poly.duplicate()
+	ring.append(poly[0])
+	var dense := InkCanvas.resample(ring, 9.0)
+	var line_c := Color(col.darkened(k), 0.55)
+	var i := 0
+	while i < dense.size() - 2:
+		var run_len := _rng.randi_range(5, 16)
+		var gap := _rng.randi_range(2, 6)
+		var seg := dense.slice(i, mini(i + run_len, dense.size()))
+		if seg.size() >= 2:
+			cv.stroke(seg, _rng.randf_range(1.4, 2.2), line_c, 0.3, 0.3, float(i), 0.2, 0.6, 0.2)
+		i += run_len + gap
+
+
+func _soil_marks(cv: InkCanvas, vp: PackedVector2Array) -> void:
+	var insets := Geometry2D.offset_polygon(vp, -30.0, Geometry2D.JOIN_ROUND)
+	var r := Rect2(vp[0], Vector2.ZERO)
+	for v in vp:
+		r = r.expand(v)
+	r = r.intersection(terrain.bounds.grow(900.0))
+	var mark := c("soil_mark")
+	var peb := c("pebble")
+	var line := c("soil_line")
+	var step := 44.0
+	var y := r.position.y
+	while y < r.end.y:
+		var x := r.position.x + _rng.randf_range(0, step)
+		while x < r.end.x:
+			var p := Vector2(x + _rng.randf_range(-14, 14), y + _rng.randf_range(-14, 14))
+			x += step
+			if _rng.randf() < 0.42:
+				continue
+			var inside := false
+			for ins in insets:
+				if not _is_hole(ins, vp) and Geometry2D.is_point_in_polygon(p, ins):
+					inside = true
+					break
+			if not inside:
+				continue
+			var depth := p.y - _surface_y(p.x, p.y)
+			if depth > 900.0:
+				continue
+			var roll := _rng.randf()
+			var fade := 1.0 - clampf(depth / 1100.0, 0.0, 0.6)
+			if roll < 0.44:
+				var a := _rng.randf_range(-0.5, 0.5)
+				var l := _rng.randf_range(7.0, 15.0)
+				var d := Vector2.from_angle(a)
+				var bend := Vector2(-d.y, d.x) * _rng.randf_range(-2.5, 2.5)
+				cv.stroke(InkCanvas.quad_bez(p - d * l * 0.5, p + bend, p + d * l * 0.5, 5), _rng.randf_range(1.3, 2.0), Color(mark, 0.7 * fade), 0.35, 0.35, x, 0.2, 0.0, 0.2)
+			elif roll < 0.7:
+				var rr := Vector2(_rng.randf_range(2.5, 5.0), _rng.randf_range(1.8, 3.6))
+				var rot := _rng.randf_range(-0.6, 0.6)
+				cv.ellipse(p, rr, Color(peb, 0.85 * fade), rot, 12)
+				cv.ink_circle(p, rr, 1.1, Color(mark, 0.75 * fade), x, rot, 0.15, 0.08)
+			elif roll < 0.85:
+				var a2 := _rng.randf_range(-0.4, 0.4)
+				var d2 := Vector2.from_angle(a2)
+				for k in 2:
+					var o := Vector2(-d2.y, d2.x) * (k * 3.2)
+					cv.stroke(PackedVector2Array([p - d2 * 4.5 + o, p + d2 * 4.5 + o]), 1.4, Color(mark, 0.6 * fade), 0.4, 0.4)
+			elif roll < 0.93 and depth > 60.0:
+				# Buried stone.
+				var n := 9
+				var stone := PackedVector2Array()
+				var sz := _rng.randf_range(7.0, 13.0)
+				for k in n:
+					var aa := TAU * k / n
+					stone.append(p + Vector2(cos(aa) * sz * _rng.randf_range(0.8, 1.15), sin(aa) * sz * 0.7 * _rng.randf_range(0.8, 1.15)))
+				stone = InkCanvas.spline(stone, 3, true)
+				cv.fill(stone, Color(peb.darkened(0.12), fade))
+				cv.outline(stone, 1.6, Color(line.darkened(0.2), 0.9 * fade), x)
+				cv.stroke(PackedVector2Array([p + Vector2(-sz * 0.4, -sz * 0.2), p + Vector2(-sz * 0.1, -sz * 0.35)]), 1.2, Color(1, 1, 1, 0.35 * fade), 0.3, 0.3)
+			elif depth < 140.0:
+				# Root squiggle near the top.
+				var sq := PackedVector2Array()
+				var dir := _rng.randf_range(-1.0, 1.0)
+				for k in 6:
+					sq.append(p + Vector2(k * 4.0 * dir, sin(k * 1.4) * 2.4 + k * 1.5))
+				cv.stroke(sq, 1.5, Color(mark.darkened(0.1), 0.65 * fade), 0.2, 0.5, x, 0.2, 0.0, 0.2)
+		y += step
+
+
+# ---------------------------------------------------------------------------
+# Runs and strips
+# ---------------------------------------------------------------------------
+
+## Splits a polygon outline into runs of equal (top-facing, material) with per-point normals.
+func _runs(pts: PackedVector2Array, mats: PackedInt32Array) -> Array[Dictionary]:
+	var n := pts.size()
+	var cls: Array[Dictionary] = []
+	for i in n:
+		var a := pts[i]
+		var b := pts[(i + 1) % n]
+		var d := b - a
+		var nrm := Vector2(d.y, -d.x).normalized()
+		var mname := terrain.material_names[mats[i]]
+		cls.append({"top": nrm.y < -0.42, "mat": mname, "n": nrm})
+	var start := 0
+	for i in n:
+		var prev: Dictionary = cls[(i - 1 + n) % n]
+		if prev.top != cls[i].top or prev.mat != cls[i].mat:
+			start = i
+			break
+	var runs: Array[Dictionary] = []
+	var cur: Dictionary = {}
+	for k in n:
+		var i := (start + k) % n
+		var cl: Dictionary = cls[i]
+		if cur.is_empty() or cur.top != cl.top or cur.mat != cl.mat:
+			if not cur.is_empty():
+				cur.points.append(pts[i])
+				cur.normals.append(cur.last_n)
+				runs.append(cur)
+			cur = {"top": cl.top, "mat": cl.mat, "points": PackedVector2Array(), "normals": PackedVector2Array(), "last_n": cl.n}
+		var prev_n: Vector2 = cls[(i - 1 + n) % n].n
+		var vn: Vector2 = cl.n if cur.points.is_empty() else (prev_n + cl.n).normalized()
+		cur.points.append(pts[i])
+		cur.normals.append(vn)
+		cur.last_n = cl.n
+	if not cur.is_empty():
+		cur.points.append(pts[start % n])
+		cur.normals.append(cur.last_n)
+		runs.append(cur)
+	return runs
+
+
+func _split_seams(line: PackedVector2Array) -> Array[PackedVector2Array]:
+	var parts: Array[PackedVector2Array] = []
+	var cur := PackedVector2Array()
+	for i in line.size():
+		if i > 0 and is_seam(line[i - 1], line[i]):
+			if cur.size() >= 2:
+				parts.append(cur)
+			cur = PackedVector2Array()
+		cur.append(line[i])
+	if cur.size() >= 2:
+		parts.append(cur)
+	return parts
+
+
+static func _off(pts: PackedVector2Array, nrm: PackedVector2Array, dist: float) -> PackedVector2Array:
+	var out := PackedVector2Array()
+	out.resize(pts.size())
+	for i in pts.size():
+		out[i] = pts[i] + nrm[i] * dist
+	return out
+
+
+## Calls cb(point, normal, tangent) every ~spacing along a run.
+func _walk(run: Dictionary, spacing: float, cb: Callable, jitter: float = 0.0) -> void:
+	var pts: PackedVector2Array = run.points
+	var nrm: PackedVector2Array = run.normals
+	var acc := spacing * _rng.randf()
+	for i in pts.size() - 1:
+		var a := pts[i]
+		var b := pts[i + 1]
+		var seg := a.distance_to(b)
+		if seg < 0.001:
+			continue
+		var d := 0.0
+		while acc + (seg - d) >= spacing:
+			d += spacing - acc
+			acc = 0.0
+			var t := d / seg
+			var n := nrm[i].lerp(nrm[i + 1], t).normalized()
+			cb.call(a.lerp(b, t), n, (b - a) / seg)
+			if jitter > 0.0:
+				acc = -_rng.randf_range(0.0, jitter)
+		acc += seg - d
+
+
+func _band(cv: InkCanvas, run: Dictionary, depth: float, width: float, col: Color) -> void:
+	cv.caps = false
+	cv.stroke(_off(run.points, run.normals, -depth - width * 0.5), width, col, 0.0001, 0.0001, 0.0, 0.0, 0.0, 1.0)
+	cv.caps = true
+
+
+func _strip(cv: InkCanvas, run: Dictionary) -> void:
+	var mat: String = run.mat
+	var pts: PackedVector2Array = InkCanvas.resample(run.points, 10.0)
+	if pts.size() < 2:
 		return
-	add_child(art.cap_line(points, normals, t, float(m.get("cap_base", 4))))
+	# Re-derive normals for the resampled line (outward = left of travel, as in _runs).
+	var nrm := PackedVector2Array()
+	for i in pts.size():
+		var d := (pts[mini(i + 1, pts.size() - 1)] - pts[maxi(i - 1, 0)]).normalized()
+		nrm.append(Vector2(d.y, -d.x))
+	var r := {"points": pts, "normals": nrm, "mat": mat, "top": run.top}
+	match mat:
+		"grass", "rough":
+			var g := c("grass")
+			var gd := c("grass_dark")
+			var gl := c("grass_light")
+			if mat == "rough":
+				g = g.darkened(0.16)
+				gl = gl.darkened(0.16)
+			_band(cv, r, 0.0, 17.0, gd)
+			# Jagged hanging fringe under the grass band.
+			_walk(r, 6.0, func(p: Vector2, n: Vector2, _t: Vector2) -> void:
+				var l := _rng.randf_range(3.0, 8.0)
+				var a := p - n * 16.0
+				cv.stroke(PackedVector2Array([a, a - n * l + _t * _rng.randf_range(-1.5, 1.5)]), _rng.randf_range(2.6, 4.2), gd, 0.05, 0.9, p.x), 1.5)
+			_band(cv, r, 0.0, 12.0, g)
+			_band(cv, r, 0.4, 2.8, gl)
+			# Highlight ticks along the lip.
+			_walk(r, 26.0, func(p: Vector2, n: Vector2, t: Vector2) -> void:
+				cv.stroke(PackedVector2Array([p - n * 6.0, p - n * 6.0 + t * _rng.randf_range(5.0, 9.0)]), 1.6, Color(gl, 0.8), 0.4, 0.4), 18.0)
+		"sand":
+			_band(cv, r, 0.0, 15.0, c("sand_dark"))
+			_band(cv, r, 0.0, 11.0, c("sand"))
+			_walk(r, 7.0, func(p: Vector2, n: Vector2, _t: Vector2) -> void:
+				cv.dot(p - n * _rng.randf_range(3.0, 12.0) + _t * _rng.randf_range(-3, 3), _rng.randf_range(0.6, 1.3), c("sand_dark")), 2.0)
+			_walk(r, 34.0, func(p: Vector2, n: Vector2, t: Vector2) -> void:
+				var q := p - n * 6.5
+				cv.stroke(InkCanvas.quad_bez(q - t * 5.0, q - n * 1.6, q + t * 5.0, 4), 1.3, c("sand_dark"), 0.3, 0.3), 14.0)
+		"snow":
+			_band(cv, r, 0.0, 19.0, c("snow_shadow"))
+			_band(cv, r, 0.0, 15.0, c("snow"))
+			_walk(r, 30.0, func(p: Vector2, n: Vector2, t: Vector2) -> void:
+				var q := p - n * _rng.randf_range(8.0, 13.0)
+				cv.stroke(PackedVector2Array([q, q + t * _rng.randf_range(6.0, 12.0)]), 1.5, Color(c("snow_shadow"), 0.9), 0.4, 0.4), 20.0)
+		"ice":
+			_band(cv, r, 0.0, 14.0, c("ice_dark"))
+			_band(cv, r, 0.0, 11.0, c("ice"))
+			_band(cv, r, 1.2, 2.2, c("ice_light"))
+			_walk(r, 40.0, func(p: Vector2, n: Vector2, t: Vector2) -> void:
+				var q := p - n * 7.0
+				cv.stroke(PackedVector2Array([q - t * 6.0, q + t * 6.0]), 1.8, Color(1, 1, 1, 0.9), 0.4, 0.4)
+				cv.stroke(PackedVector2Array([q + t * 9.0 - n * 1.0, q + t * 12.0 + n * -6.0]), 1.0, Color(c("ink"), 0.35), 0.2, 0.4), 25.0)
+		"sticky":
+			_band(cv, r, 0.0, 15.0, c("sticky_dark"))
+			_band(cv, r, 0.0, 11.0, c("sticky"))
+			_band(cv, r, 1.0, 2.4, c("sticky").lightened(0.35))
+			# Goo drips always hang downward, so ceilings drip into the air.
+			_walk(r, 20.0, func(p: Vector2, n: Vector2, _t: Vector2) -> void:
+				var base := p - n * 13.0
+				var l := _rng.randf_range(4.0, 15.0)
+				var tip := base + Vector2(0, l)
+				if Geometry2D.is_point_in_polygon(tip + Vector2(0, 4), _poly_for(p)) and n.y > 0.3:
+					return
+				cv.stroke(PackedVector2Array([base, tip]), _rng.randf_range(3.0, 5.0), c("sticky_dark"), 0.05, 0.3)
+				cv.dot(tip, _rng.randf_range(2.0, 3.0), c("sticky_dark"))
+				cv.dot(tip + Vector2(-0.6, -0.6), 0.8, Color(1, 1, 1, 0.6)), 14.0)
+		"bouncy":
+			_band(cv, r, 0.0, 14.0, c("bouncy").darkened(0.3))
+			var prev := [pts[0]]
+			var on := [false]
+			_walk(r, 13.0, func(p: Vector2, n: Vector2, _t: Vector2) -> void:
+				var col: Color = c("bouncy") if on[0] else c("bouncy_light")
+				var a: Vector2 = prev[0]
+				cv.quad(a - n * 1.5, p - n * 1.5, p - n * 11.0, a - n * 11.0, col)
+				prev[0] = p
+				on[0] = not on[0])
+			cv.stroke(_off(pts, nrm, -12.0), 1.6, c("ink"), 0.0001, 0.0001)
+		"rock":
+			_band(cv, r, 0.0, 14.0, c("rock_dark"))
+			_band(cv, r, 0.0, 11.0, c("rock"))
+			_walk(r, 6.5, func(p: Vector2, n: Vector2, t: Vector2) -> void:
+				var q := p - n * _rng.randf_range(3.0, 10.0)
+				cv.stroke(PackedVector2Array([q, q + (t * 0.7 - n * 0.7) * _rng.randf_range(3.0, 6.0)]), 1.1, Color(c("rock_dark"), 0.9), 0.3, 0.3), 3.0)
+		"wood":
+			_band(cv, r, 0.0, 14.0, c("wood_dark"))
+			_band(cv, r, 0.0, 11.0, c("wood"))
+			cv.stroke(_off(pts, nrm, -5.5), 1.0, Color(c("wood_dark"), 0.8), 0.0001, 0.0001, 3.0, 0.3, 0.8, 0.5)
+			_walk(r, 62.0, func(p: Vector2, n: Vector2, _t: Vector2) -> void:
+				cv.stroke(PackedVector2Array([p - n * 1.0, p - n * 11.0]), 1.4, c("wood_dark"), 0.1, 0.1)
+				cv.dot(p - n * 6.0 + _t * 8.0, 1.0, c("wood_dark")))
+		"metal":
+			_band(cv, r, 0.0, 14.0, c("metal_dark"))
+			_band(cv, r, 0.0, 11.0, c("metal"))
+			_band(cv, r, 1.4, 1.8, Color(1, 1, 1, 0.75))
+			_walk(r, 28.0, func(p: Vector2, n: Vector2, _t: Vector2) -> void:
+				cv.dot(p - n * 7.5, 1.4, c("metal_dark"))
+				cv.dot(p - n * 7.5 + Vector2(-0.4, -0.4), 0.5, Color(1, 1, 1, 0.8)))
+		_:
+			pass
 
 
-func _build_art_decor(parent: Node2D) -> void:
+func _poly_for(p: Vector2) -> PackedVector2Array:
+	for poly in terrain.polygons:
+		var pts: PackedVector2Array = poly.points
+		if Geometry2D.is_point_in_polygon(p + Vector2(0, -2), pts) or Geometry2D.is_point_in_polygon(p + Vector2(0, 2), pts):
+			return pts
+	return terrain.polygons[0].points if terrain.polygons.size() > 0 else PackedVector2Array()
+
+
+## Grass blade clumps and the odd flower above the surface (decoration only).
+func _tufts(cv: InkCanvas, run: Dictionary) -> void:
+	var pts: PackedVector2Array = InkCanvas.resample(run.points, 10.0)
+	if pts.size() < 2:
+		return
+	var nrm := PackedVector2Array()
+	for i in pts.size():
+		var d := (pts[mini(i + 1, pts.size() - 1)] - pts[maxi(i - 1, 0)]).normalized()
+		nrm.append(Vector2(d.y, -d.x))
+	var r := {"points": pts, "normals": nrm}
+	var rough: bool = run.mat == "rough"
+	var gd := c("grass_dark")
+	var g := c("grass")
+	var flowers: Array = pal.flowers
+	var cup_l := terrain.cup_left - 30.0
+	var cup_r := terrain.cup_right + 30.0
+	_walk(r, 34.0 if not rough else 18.0, func(p: Vector2, n: Vector2, t: Vector2) -> void:
+		if terrain.has_cup and p.x > cup_l and p.x < cup_r:
+			return
+		if _rng.randf() < 0.3:
+			return
+		var blades := _rng.randi_range(2, 4)
+		for k in blades:
+			var off := float(k - blades * 0.5) * 2.6
+			var h := _rng.randf_range(5.0, 10.0) * (1.6 if rough else 1.0)
+			var lean := _rng.randf_range(-0.45, 0.45)
+			var base := p + t * off - n * 1.5
+			var tip := base + n * h + t * lean * h
+			cv.stroke(InkCanvas.quad_bez(base, base + n * h * 0.6, tip, 4), _rng.randf_range(1.7, 2.4), gd if k % 2 == 0 else g.darkened(0.1), 0.05, 0.85, p.x + k)
+		if _rng.randf() < 0.16 and not rough:
+			var stem_top := p + n * _rng.randf_range(9.0, 15.0) + t * _rng.randf_range(-3, 3)
+			cv.stroke(PackedVector2Array([p - n * 1.0, stem_top]), 1.4, gd, 0.05, 0.2)
+			var fc := Color(str(flowers[_rng.randi() % flowers.size()]))
+			for q in 5:
+				cv.dot(stem_top + Vector2.from_angle(TAU * q / 5.0) * 2.4, 1.9, fc)
+			cv.dot(stem_top, 1.3, Color("f2b630") if fc != Color("f7d24a") else Color("e8543a")), 22.0)
+
+
+# ---------------------------------------------------------------------------
+# Decor
+# ---------------------------------------------------------------------------
+
+## Decor never floats in the air: ground decor stands on the lowest walkable point under its
+## footprint, "water" decor bobs at the waterline under x, "ceiling" decor hangs from the
+## surface above. Anything without a surface to sit on is skipped.
+func _build_decor(parent: Node2D) -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash(hole.get("id", ""))
 	for d: Dictionary in hole.get("decor", []):
-		var variants := art.decor_variants(str(d.get("type", "")))
-		if variants.is_empty():
+		var type := str(d.get("type", ""))
+		var node := InkDecor.make(type, pal, rng.randi())
+		if node == null:
 			continue
 		var pos := Vector2(float(d.get("x", 0)), float(d.get("y", 0)))
-		var t := art.tex(str(variants[rng.randi() % variants.size()]))
-		if t == null:
-			continue
-		var flip := rng.randf() < 0.5
-		# world.json "decor_anchor": ground (default) | water (bobs in the water under x) | ceiling
-		# (hangs from the surface above). Decor is never drawn floating in the air: anything that
-		# finds no surface to sit on is skipped.
-		var anchor := str((art.data.get("decor_anchor", {}) as Dictionary).get(str(d.get("type", "")), "ground"))
-		if anchor == "water":
-			for z in terrain.zones:
-				var zr: Rect2 = z["rect"]
-				if z["type"] == "water" and pos.x >= zr.position.x and pos.x <= zr.end.x:
-					# Sink the lower part below the waterline (the water is drawn in front of decor).
-					parent.add_child(art.ground_sprite(t, Vector2(pos.x, zr.position.y + t.get_height() * art.scale * 0.4), flip))
-					break
-			continue
-		if anchor == "ceiling":
-			var up := terrain.raycast(pos + Vector2(0, 40), Vector2.UP, 400.0)
-			if up.hit and up.normal.y > 0.5:
-				var sp := art.ground_sprite(t, up.pos, flip)
-				sp.offset = Vector2(-t.get_width() * 0.5, 0)
-				parent.add_child(sp)
-			continue
-		var base := _decor_ground(pos, t.get_width() * art.scale)
-		if base.x == INF:
-			continue
-		parent.add_child(art.ground_sprite(t, base + Vector2(0, art.scale * 3.0), flip))
+		var sc := float(d.get("scale", 1.0))
+		node.scale = Vector2(sc, sc)
+		if rng.randf() < 0.5 and InkDecor.can_flip(type):
+			node.scale.x = -sc
+		match InkDecor.anchor(type):
+			"water":
+				var placed := false
+				for z in terrain.zones:
+					var zr: Rect2 = z["rect"]
+					if z["type"] == "water" and pos.x >= zr.position.x and pos.x <= zr.end.x:
+						node.position = Vector2(pos.x, zr.position.y + 4.0)
+						placed = true
+						break
+				if not placed:
+					node.free()
+					continue
+			"ceiling":
+				var up := terrain.raycast(pos + Vector2(0, 40), Vector2.UP, 400.0)
+				if not (up.hit and up.normal.y > 0.5):
+					node.free()
+					continue
+				node.position = up.pos + Vector2(0, -3)
+			"free":
+				node.position = pos
+			_:
+				var base := _decor_ground(pos, InkDecor.footprint(type) * sc)
+				if base.x == INF:
+					node.free()
+					continue
+				node.position = base + Vector2(0, 5)
+		parent.add_child(node)
 
 
-## Where a ground decor sprite `width` px wide stands near `pos`: the lowest walkable surface point
-## under its footprint (so it never overhangs a slope; the part below the surface hides behind the
-## soil, which is drawn in front of decor). Searches down from just above the authored height so a
-## sprite under an overhang lands on the floor, not on the overhang's roof. Returns
-## Vector2(INF, INF) when there is no walkable surface (the sprite is then not drawn).
+## Where a ground decor `width` wide stands near `pos`: the lowest walkable surface point under
+## its footprint (so it never overhangs a slope; the part below hides behind the soil). Searches
+## down from just above the authored height so decor under an overhang lands on the floor.
 func _decor_ground(pos: Vector2, width: float) -> Vector2:
 	var centre := _walkable_below(pos)
 	if centre.x == INF:
@@ -255,476 +633,91 @@ func _walkable_below(pos: Vector2) -> Vector2:
 	return Vector2(INF, INF)
 
 
-## Finds the terrain's outermost left/right edges and extends them outward as flat plateaus at the
-## same height, so the camera never sees past the end of the ground. The outer edge is taken from
-## the terrain itself (not the hole bounds), so ground that stops short of or overruns the bounds
-## is still continued without a gap.
-func _build_skirts() -> void:
-	skirts.clear()
-	var bd := terrain.bounds
-	var min_x := INF
-	var max_x := -INF
-	for poly in terrain.polygons:
-		for v: Vector2 in poly.points:
-			min_x = minf(min_x, v.x)
-			max_x = maxf(max_x, v.x)
-	for poly in terrain.polygons:
-		var pts: PackedVector2Array = poly.points
-		for side: float in [-1.0, 1.0]:
-			var edge_x: float = min_x if side < 0.0 else max_x
-			var top := INF
-			var bottom := -INF
-			for v in pts:
-				if absf(v.x - edge_x) < 0.5:
-					top = minf(top, v.y)
-					bottom = maxf(bottom, v.y)
-			if top == INF or bottom - top < 1.0:
-				continue
-			var far := edge_x + side * SKIRT_LEN
-			# Overlap the real polygon by 1px so no hairline seam shows.
-			var near := edge_x - side * 1.0
-			skirts.append({
-				"poly": PackedVector2Array([Vector2(near, top), Vector2(far, top), Vector2(far, bottom + 2000.0), Vector2(near, bottom + 2000.0)]),
-				"top": PackedVector2Array([Vector2(edge_x, top), Vector2(far, top)]) if side > 0.0 else PackedVector2Array([Vector2(far, top), Vector2(edge_x, top)]),
-				"edge_x": edge_x,
-			})
-		# Bedrock under the world's bottom edge.
-		var bottom_pts := 0
-		for v in pts:
-			if absf(v.y - bd.end.y) < 0.5:
-				bottom_pts += 1
-		if bottom_pts >= 2:
-			var y0 := bd.end.y - 1.0
-			skirts.append({
-				"poly": PackedVector2Array([Vector2(bd.position.x - SKIRT_LEN, y0), Vector2(bd.end.x + SKIRT_LEN, y0),
-					Vector2(bd.end.x + SKIRT_LEN, y0 + 3000.0), Vector2(bd.position.x - SKIRT_LEN, y0 + 3000.0)]),
-				"top": PackedVector2Array(), "edge_y": bd.end.y,
-			})
-
-
-## True for polygon edges that sit exactly on a skirted world boundary (hidden seams).
-func is_seam(a: Vector2, b: Vector2) -> bool:
-	for sk in skirts:
-		if sk.has("edge_x"):
-			var x: float = sk.edge_x
-			if absf(a.x - x) < 0.5 and absf(b.x - x) < 0.5:
-				return true
-		elif absf(a.y - float(sk.edge_y)) < 0.5 and absf(b.y - float(sk.edge_y)) < 0.5:
-			return true
-	return false
-
-
-func _c(key: String, fallback: String) -> Color:
-	return Color(theme.get(key, fallback))
-
-
-func _build_decor(parent: Node2D) -> void:
-	var rng := RandomNumberGenerator.new()
-	rng.seed = hash(hole.get("id", ""))
-	for d: Dictionary in hole.get("decor", []):
-		var pos := Vector2(float(d.get("x", 0)), float(d.get("y", 0)))
-		var hit := terrain.raycast(pos + Vector2(0, -400), Vector2.DOWN, 1400.0)
-		if hit.hit:
-			pos = hit.pos
-		var sc := float(d.get("scale", 1.0))
-		var node: Node2D
-		match str(d.get("type", "")):
-			"tree":
-				var t := _Tree.new()
-				t.leaf = _c("grass", "#6ccf4a").darkened(0.08)
-				t.leaf_dark = _c("grass_dark", "#3d9a2f")
-				t.leaf_light = _c("grass_light", "#9be36b")
-				t.trunk = Color("7a4e34")
-				t.line = _c("outline", "#2a3a2a")
-				t.seed_value = rng.randi()
-				node = t
-			"bush":
-				var b := _Bush.new()
-				b.col = _c("grass_dark", "#3d9a2f").lightened(0.05)
-				b.light = _c("grass", "#6ccf4a")
-				b.line = _c("outline", "#2a3a2a")
-				b.seed_value = rng.randi()
-				node = b
-			"flowers":
-				var f := _Flowers.new()
-				f.stem = _c("grass_dark", "#3d9a2f")
-				f.seed_value = rng.randi()
-				node = f
-			"rock":
-				var r := _Rock.new()
-				r.seed_value = rng.randi()
-				node = r
-			_:
-				continue
-		node.position = pos + Vector2(0, 4)
-		node.scale = Vector2(sc, sc)
-		parent.add_child(node)
-
-
-# ---------------------------------------------------------------------------
-# Static edge bands
-# ---------------------------------------------------------------------------
-
-class _Edges extends Node2D:
-	var view: TerrainView
-
-	func _draw() -> void:
-		var t := view.terrain
-		var outline := view._c("outline", "#2a3a2a")
-		var soil_light := view._c("ground_top", "#8a5a3c").lightened(0.12)
-		var wall := view._c("ground_strata", "#7a4e34").darkened(0.15)
-		var rng := RandomNumberGenerator.new()
-		rng.seed = 1234
-		for poly in t.polygons:
-			var pts: PackedVector2Array = poly.points
-			var mats: PackedInt32Array = poly.edge_mats
-			var n := pts.size()
-			var runs := _runs(pts, mats, t)
-			# Topsoil and wall bands first.
-			for run in runs:
-				var rp: PackedVector2Array = run.points
-				var rn: PackedVector2Array = run.normals
-				if run.top and run.mat != "cup":
-					draw_polyline(_offset(rp, rn, -16.0), soil_light, 26.0, true)
-				elif not run.top and run.mat not in ["cup", "sticky", "bouncy", "ice", "sand"]:
-					for part in _split_seams(_offset(rp, rn, -5.0), rp):
-						draw_polyline(part, wall, 9.0, true)
-			for run in runs:
-				# Gameplay-relevant materials are always drawn, even on walls and ceilings.
-				if run.mat != "cup" and (run.top or run.mat in ["sticky", "bouncy", "ice", "sand"]):
-					_surface(run, rng)
-			# Outline, broken at hidden seams where the ground continues past the world edge.
-			var line := PackedVector2Array()
-			for i in n + 1:
-				var a := pts[i % n]
-				if i > 0 and view.is_seam(pts[i - 1], a):
-					if line.size() >= 2:
-						draw_polyline(line, outline, 3.5, true)
-					line = PackedVector2Array()
-				line.append(a)
-			if line.size() >= 2:
-				draw_polyline(line, outline, 3.5, true)
-		for sk in view.skirts:
-			var tp: PackedVector2Array = sk.top
-			if tp.size() < 2:
-				continue
-			var tn := PackedVector2Array([Vector2.UP, Vector2.UP])
-			draw_polyline(_offset(tp, tn, -16.0), soil_light, 26.0, true)
-			_surface({"points": tp, "normals": tn, "mat": "grass", "top": true}, rng)
-			draw_polyline(tp, outline, 3.5, true)
-
-	func _runs(pts: PackedVector2Array, mats: PackedInt32Array, t: SimTerrain) -> Array[Dictionary]:
-		var n := pts.size()
-		var cls: Array[Dictionary] = []
-		for i in n:
-			var a := pts[i]
-			var b := pts[(i + 1) % n]
-			var d := b - a
-			var nrm := Vector2(d.y, -d.x).normalized()
-			var mname := t.material_names[mats[i]]
-			cls.append({"top": nrm.y < -0.42, "mat": mname, "n": nrm})
-		# Find a boundary to start from so runs don't split at index 0.
-		var start := 0
-		for i in n:
-			var prev: Dictionary = cls[(i - 1 + n) % n]
-			if prev.top != cls[i].top or prev.mat != cls[i].mat:
-				start = i
-				break
-		var runs: Array[Dictionary] = []
-		var cur: Dictionary = {}
-		for k in n:
-			var i := (start + k) % n
-			var c: Dictionary = cls[i]
-			if cur.is_empty() or cur.top != c.top or cur.mat != c.mat:
-				if not cur.is_empty():
-					cur.points.append(pts[i])
-					cur.normals.append(cur.last_n)
-					runs.append(cur)
-				cur = {"top": c.top, "mat": c.mat, "points": PackedVector2Array(), "normals": PackedVector2Array(), "last_n": c.n}
-			var prev_n: Vector2 = cls[(i - 1 + n) % n].n
-			var vn: Vector2 = c.n if cur.points.is_empty() else (prev_n + c.n).normalized()
-			cur.points.append(pts[i])
-			cur.normals.append(vn)
-			cur.last_n = c.n
-		if not cur.is_empty():
-			cur.points.append(pts[(start) % n])
-			cur.normals.append(cur.last_n)
-			runs.append(cur)
-		return runs
-
-	## Splits `line` (parallel to `src`) wherever the source segment is a hidden world-edge seam.
-	func _split_seams(line: PackedVector2Array, src: PackedVector2Array) -> Array[PackedVector2Array]:
-		var parts: Array[PackedVector2Array] = []
-		var cur := PackedVector2Array()
-		for i in line.size():
-			if i > 0 and view.is_seam(src[i - 1], src[i]):
-				if cur.size() >= 2:
-					parts.append(cur)
-				cur = PackedVector2Array()
-			cur.append(line[i])
-		if cur.size() >= 2:
-			parts.append(cur)
-		return parts
-
-	func _offset(pts: PackedVector2Array, nrm: PackedVector2Array, dist: float) -> PackedVector2Array:
-		var out := PackedVector2Array()
-		out.resize(pts.size())
-		for i in pts.size():
-			out[i] = pts[i] + nrm[i] * dist
-		return out
-
-	func _surface(run: Dictionary, rng: RandomNumberGenerator) -> void:
-		var rp: PackedVector2Array = run.points
-		var rn: PackedVector2Array = run.normals
-		var mat: String = run.mat
-		match mat:
-			"grass", "rough":
-				var grass := view._c("grass", "#6ccf4a")
-				var dark := view._c("grass_dark", "#3d9a2f")
-				var light := view._c("grass_light", "#9be36b")
-				if mat == "rough":
-					grass = grass.darkened(0.15)
-					light = light.darkened(0.15)
-				_scallops(rp, rn, -13.0, 16.0, 6.5, dark)
-				draw_polyline(_offset(rp, rn, -8.0), dark, 15.0, true)
-				draw_polyline(_offset(rp, rn, -5.5), grass, 10.0, true)
-				draw_polyline(_offset(rp, rn, -2.5), light, 3.0, true)
-				_tufts(rp, rn, rng, dark, grass)
-			"sand":
-				var cols: Array = MATERIAL_COLORS.sand
-				draw_polyline(_offset(rp, rn, -9.0), cols[1], 16.0, true)
-				draw_polyline(_offset(rp, rn, -6.0), cols[0], 11.0, true)
-				_speckles(rp, rn, rng, cols[1], 2.0)
-			"ice":
-				var cols2: Array = MATERIAL_COLORS.ice
-				draw_polyline(_offset(rp, rn, -8.0), cols2[1], 15.0, true)
-				draw_polyline(_offset(rp, rn, -5.0), cols2[0], 9.0, true)
-				draw_polyline(_offset(rp, rn, -2.0), Color.WHITE, 2.5, true)
-				_glints(rp, rn, rng)
-			"snow":
-				# Soft, matte, pillowy (contrast with glossy ice): thick white band, blue shadow scallops.
-				_scallops(rp, rn, -14.0, 22.0, 9.0, Color("c9d6ea"))
-				draw_polyline(_offset(rp, rn, -9.0), Color("dfe8f5"), 18.0, true)
-				draw_polyline(_offset(rp, rn, -6.0), Color("f7fbff"), 12.0, true)
-				_speckles(rp, rn, rng, Color("c3d3ec"), 1.6)
-			"sticky":
-				var cols3: Array = MATERIAL_COLORS.sticky
-				_drips(rp, rn, rng, cols3[1])
-				draw_polyline(_offset(rp, rn, -7.0), cols3[1], 14.0, true)
-				draw_polyline(_offset(rp, rn, -5.0), cols3[0], 9.0, true)
-				draw_polyline(_offset(rp, rn, -2.5), cols3[0].lightened(0.35), 2.5, true)
-			"bouncy":
-				var cols4: Array = MATERIAL_COLORS.bouncy
-				draw_polyline(_offset(rp, rn, -7.0), cols4[0].darkened(0.3), 14.0, true)
-				_stripes(rp, rn, cols4[0], cols4[1])
-			"rock", "wood":
-				var cols5: Array = MATERIAL_COLORS[mat]
-				draw_polyline(_offset(rp, rn, -6.0), cols5[1], 12.0, true)
-				draw_polyline(_offset(rp, rn, -4.0), cols5[0], 7.0, true)
-			_:
-				pass
-
-	func _walk(pts: PackedVector2Array, spacing: float, cb: Callable) -> void:
-		var acc := 0.0
-		for i in pts.size() - 1:
-			var a := pts[i]
-			var b := pts[i + 1]
-			var len := a.distance_to(b)
-			var d := 0.0
-			while acc + (len - d) >= spacing:
-				d += spacing - acc
-				acc = 0.0
-				cb.call(a.lerp(b, d / len), i)
-			acc += len - d
-
-	func _scallops(pts: PackedVector2Array, nrm: PackedVector2Array, off: float, spacing: float, r: float, col: Color) -> void:
-		_walk(pts, spacing, func(p: Vector2, i: int) -> void:
-			draw_circle(p + nrm[i] * off, r, col, true, -1.0, true))
-
-	func _tufts(pts: PackedVector2Array, nrm: PackedVector2Array, rng: RandomNumberGenerator, dark: Color, grass: Color) -> void:
-		_walk(pts, 34.0, func(p: Vector2, i: int) -> void:
-			if rng.randf() < 0.45:
-				return
-			var n := nrm[i]
-			var tng := Vector2(-n.y, n.x)
-			var base := p + n * -1.0
-			for k in 3:
-				var off := float(k - 1) * 3.5
-				var h := rng.randf_range(6.0, 11.0) * (1.25 if k == 1 else 1.0)
-				var lean := float(k - 1) * 0.35 + rng.randf_range(-0.15, 0.15)
-				var tip := base + tng * (off + lean * h) + n * h
-				draw_colored_polygon(PackedVector2Array([base + tng * (off - 2.2), tip, base + tng * (off + 2.2)]), dark if k != 1 else grass))
-
-	func _speckles(pts: PackedVector2Array, nrm: PackedVector2Array, rng: RandomNumberGenerator, col: Color, r: float) -> void:
-		_walk(pts, 9.0, func(p: Vector2, i: int) -> void:
-			draw_circle(p + nrm[i] * rng.randf_range(-12.0, -3.0) + Vector2(rng.randf_range(-3, 3), 0), r * rng.randf_range(0.5, 1.0), col, true, -1.0, true))
-
-	func _glints(pts: PackedVector2Array, nrm: PackedVector2Array, rng: RandomNumberGenerator) -> void:
-		_walk(pts, 60.0, func(p: Vector2, i: int) -> void:
-			var c := p + nrm[i] * -6.0
-			draw_line(c + Vector2(-5, 0), c + Vector2(5, 0), Color(1, 1, 1, 0.8), 1.6, true)
-			draw_line(c + Vector2(0, -4), c + Vector2(0, 4), Color(1, 1, 1, 0.8), 1.6, true))
-
-	func _drips(pts: PackedVector2Array, nrm: PackedVector2Array, rng: RandomNumberGenerator, col: Color) -> void:
-		_walk(pts, 22.0, func(p: Vector2, i: int) -> void:
-			var len := rng.randf_range(4.0, 16.0)
-			var a := p + nrm[i] * -8.0
-			var b := a + nrm[i] * -len
-			draw_line(a, b, col, 6.0, true)
-			draw_circle(b, 4.0, col, true, -1.0, true))
-
-	func _stripes(pts: PackedVector2Array, nrm: PackedVector2Array, a: Color, b: Color) -> void:
-		var toggle := [false]
-		var prev := [pts[0]]
-		_walk(pts, 14.0, func(p: Vector2, i: int) -> void:
-			var c: Color = a if toggle[0] else b
-			draw_line(prev[0] + nrm[i] * -5.5, p + nrm[i] * -5.5, c, 9.0, false)
-			prev[0] = p
-			toggle[0] = not toggle[0])
-
-
 # ---------------------------------------------------------------------------
 # Cup & flag
 # ---------------------------------------------------------------------------
 
 class _Cup extends Node2D:
-	var terrain: SimTerrain
+	var view: TerrainView
 
 	func _draw() -> void:
-		if not terrain.has_cup:
+		var t := view.terrain
+		if not t.has_cup:
 			return
-		var l := terrain.cup_left
-		var r := terrain.cup_right
-		var top := terrain.cup_pos.y - 6.0
-		var bottom := terrain.cup_floor_y
-		draw_rect(Rect2(l, top, r - l, bottom - top), Color("15161f"))
-		draw_rect(Rect2(l, top, r - l, (bottom - top) * 0.45), Color("23253a"))
-		draw_rect(Rect2(l, top + 4, 3.5, bottom - top - 4), Color("f4f4f8"))
-		draw_rect(Rect2(r - 3.5, top + 4, 3.5, bottom - top - 4), Color("d0d4e4"))
+		var cv := InkCanvas.new()
+		var l := t.cup_left
+		var r := t.cup_right
+		var top := t.cup_pos.y - 8.0
+		var bottom := t.cup_floor_y
+		cv.fill(PackedVector2Array([Vector2(l - 1, top), Vector2(r + 1, top), Vector2(r + 1, bottom + 2), Vector2(l - 1, bottom + 2)]), Color("221a16"))
+		cv.fill(PackedVector2Array([Vector2(l, bottom - 5), Vector2(r, bottom - 5), Vector2(r, bottom + 2), Vector2(l, bottom + 2)]), Color("3a2c24"))
+		# White cup liner on both walls.
+		cv.stroke(PackedVector2Array([Vector2(l + 2.0, top + 9.0), Vector2(l + 2.0, bottom - 1.0)]), 3.0, Color("f2eee6"), 0.05, 0.05)
+		cv.stroke(PackedVector2Array([Vector2(r - 2.0, top + 9.0), Vector2(r - 2.0, bottom - 1.0)]), 3.0, Color("d9d3c8"), 0.05, 0.05)
+		cv.flush(get_canvas_item())
 
 
 class _Flag extends Node2D:
 	var number := 1
 	var _t := 0.0
+	var _cv := InkCanvas.new()
 
 	func _process(delta: float) -> void:
 		_t += delta
 		queue_redraw()
 
 	func _draw() -> void:
-		var h := 128.0
-		var top := Vector2(0, -h)
-		draw_line(Vector2(0, 26), top, Color("2b2d42"), 5.0, true)
-		draw_line(Vector2(0, 26), top, Color("f4f4f8"), 2.5, true)
-		var pts := PackedVector2Array()
-		var pts2 := PackedVector2Array()
-		var w := 58.0
+		var h := 132.0
+		var top := Vector2(1.0, -h)
+		var pole := PackedVector2Array([Vector2(0, 24), Vector2(0.6, -h * 0.5), top])
+		_cv.stroke(pole, 5.6, InkCanvas.INK, 0.0001, 0.0001, 1.0, 0.0)
+		_cv.stroke(pole, 2.6, Color("f6f2ea"), 0.0001, 0.0001, 2.0, 0.0)
+		var w := 60.0
 		var hh := 38.0
-		for i in 13:
-			var u := float(i) / 12.0
-			var wave := sin(_t * 5.0 - u * 4.5) * 4.0 * u
-			pts.append(top + Vector2(u * w, wave + u * hh * 0.5 * 0.0))
-		for i in 13:
-			var u := 1.0 - float(i) / 12.0
-			var wave := sin(_t * 5.0 - u * 4.5) * 4.0 * u
-			pts2.append(top + Vector2(u * w * 0.98, hh - u * hh * 0.05 + wave))
-		var poly := pts + pts2
-		var outline := poly.duplicate()
-		outline.append(poly[0])
-		draw_colored_polygon(poly, Color("ff4d6d"))
-		draw_polyline(outline, Color("2b2d42"), 3.0, true)
+		var upper := PackedVector2Array()
+		var lower := PackedVector2Array()
+		for i in 11:
+			var u := float(i) / 10.0
+			var wave := sin(_t * 4.6 - u * 4.2) * 4.5 * u + sin(_t * 7.3 - u * 6.0) * 1.2 * u
+			upper.append(top + Vector2(u * w, wave + u * 3.0))
+			lower.append(top + Vector2(u * w * 0.97, hh - u * hh * 0.42 + wave))
+		lower.reverse()
+		var cloth := upper + lower
+		_cv.fill(cloth, Color("e8543a"))
+		# A darker fold where the cloth turns.
+		var fold := PackedVector2Array()
+		for i in range(4, 8):
+			fold.append(upper[i].lerp(lower[10 - i], 0.5) + Vector2(0, -3))
+		_cv.stroke(fold, 1.4, Color(0, 0, 0, 0.25), 0.4, 0.4)
+		_cv.outline(cloth, 2.8, InkCanvas.INK, 4.0)
+		_cv.ink_circle(top + Vector2(0, -2.0), Vector2(3.6, 3.6), 2.2, InkCanvas.INK, 2.0)
+		_cv.flush(get_canvas_item())
 		var font := UITheme.heading_font()
-		var mid := top + Vector2(w * 0.42, hh * 0.5 + sin(_t * 5.0 - 2.0) * 2.0)
-		draw_string_outline(font, mid + Vector2(-9, 9), str(number), HORIZONTAL_ALIGNMENT_CENTER, 18, 26, 6, Color("2b2d42"))
-		draw_string(font, mid + Vector2(-9, 9), str(number), HORIZONTAL_ALIGNMENT_CENTER, 18, 26, Color.WHITE)
-		draw_circle(top, 4.0, Color("ffd166"), true, -1.0, true)
+		var mid := top + Vector2(w * 0.4, hh * 0.52 + sin(_t * 4.6 - 1.8) * 2.0)
+		draw_string_outline(font, mid + Vector2(-12, 11), str(number), HORIZONTAL_ALIGNMENT_CENTER, 24, 30, 6, InkCanvas.INK)
+		draw_string(font, mid + Vector2(-12, 11), str(number), HORIZONTAL_ALIGNMENT_CENTER, 24, 30, Color("fbf6ec"))
 
 
 # ---------------------------------------------------------------------------
-# Hazard zones (water / lava)
+# Hazard zones (water / lava / acid)
 # ---------------------------------------------------------------------------
 
-## Crisp ink outline round terrain polygons (art mode), broken at hidden world-edge seams.
-class _ArtInk extends Node2D:
-	var view: TerrainView
-	var width := 3.0
-
-	func _draw() -> void:
-		var ink := Color(view.art.data.get("ink", "#20141e"))
-		for poly in view.terrain.polygons:
-			var pts: PackedVector2Array = poly.points
-			var n := pts.size()
-			var line := PackedVector2Array()
-			for i in n + 1:
-				var a := pts[i % n]
-				if i > 0 and view.is_seam(pts[i - 1], a):
-					if line.size() >= 2:
-						draw_polyline(line, ink, width, false)
-					line = PackedVector2Array()
-				line.append(a)
-			if line.size() >= 2:
-				draw_polyline(line, ink, width, false)
-
-
-## Sprite flag flipbook planted in the cup.
-class _ArtFlag extends Sprite2D:
-	var _frames := 1
-	var _fps := 10.0
-	var _t := 0.0
-
-	func setup(art: WorldArt, d: Dictionary) -> void:
-		texture = art.tex(str(d.sheet))
-		_frames = int(d.frames)
-		_fps = float(d.get("fps", 10))
-		hframes = _frames
-		centered = false
-		var pv: Array = d.pivot
-		offset = Vector2(-float(pv[0]), -float(pv[1]))
-		scale = Vector2(art.scale, art.scale)
-		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-
-	func _process(delta: float) -> void:
-		_t += delta
-		frame = int(_t * _fps) % _frames
-
-
+## Water bodies are clipped to open air once; each frame only the wavy ink surface line, ripple
+## ticks and glints are redrawn.
 class _Water extends Node2D:
-	var terrain: SimTerrain
-	var theme: Dictionary
-	var art: WorldArt
-	var _bodies: Dictionary = {}   ## zone key -> [Polygon2D] (art mode)
+	var view: TerrainView
+	var _bodies: Array[Dictionary] = []   ## {kind, parts: Array[PackedVector2Array], spans: Array[Vector2], rect}
+	var _static: InkStatic
 	var _t := 0.0
+	var _cv := InkCanvas.new()
 
-	func _process(delta: float) -> void:
-		if terrain.zones.is_empty():
-			set_process(false)
-			return
-		_t += delta
-		queue_redraw()
-
-	func _draw() -> void:
+	func setup() -> void:
+		var terrain := view.terrain
+		var body_cv := InkCanvas.new()
 		for z in terrain.zones:
 			var rect: Rect2 = z.rect
 			var kind: String = z.type
-			var top_col := Color(theme.get("water_top", "#4fc3f7"))
-			var bot_col := Color(theme.get("water_bottom", "#1e6fb8"))
-			if kind == "lava":
-				top_col = Color("ffb347")
-				bot_col = Color("d62828")
-			elif kind == "acid":
-				top_col = Color("b8f35a")
-				bot_col = Color("3f8f2a")
-			var surf := PackedVector2Array()
-			var cols := PackedColorArray()
-			var steps := maxi(4, int(rect.size.x / 14.0))
-			for i in steps + 1:
-				var x := rect.position.x + rect.size.x * float(i) / float(steps)
-				var y := rect.position.y + sin(x * 0.035 + _t * 2.2) * 2.5 + sin(x * 0.011 - _t * 1.3) * 1.5
-				surf.append(Vector2(x, y))
-			var poly := surf.duplicate()
-			poly.append(rect.end)
-			poly.append(Vector2(rect.position.x, rect.end.y))
-			# Only draw water in open air: subtract every solid terrain polygon.
+			var poly := PackedVector2Array([rect.position, Vector2(rect.end.x, rect.position.y), rect.end, Vector2(rect.position.x, rect.end.y)])
 			var parts: Array[PackedVector2Array] = [poly]
 			for tp in terrain.polygons:
 				var next: Array[PackedVector2Array] = []
@@ -733,174 +726,70 @@ class _Water extends Node2D:
 						if not Geometry2D.is_polygon_clockwise(clipped):
 							next.append(clipped)
 				parts = next
-			if art:
-				_draw_art_zone(kind, parts, surf, rect)
-				continue
+			var cols := _colors(kind)
 			for part in parts:
-				cols = PackedColorArray()
+				var pc := PackedColorArray()
 				for v in part:
 					var k := clampf((v.y - rect.position.y) / maxf(rect.size.y, 1.0), 0.0, 1.0)
-					var c := top_col.lerp(bot_col, k)
-					c.a = 0.9
-					cols.append(c)
-				draw_polygon(part, cols)
-			draw_polyline(surf, Color(1, 1, 1, 0.75) if kind == "water" else top_col.lightened(0.4), 3.0, true)
-			# Shimmer dashes.
-			for i in int(rect.size.x / 70.0):
-				var x := rect.position.x + fposmod(float(i) * 70.0 + _t * 18.0, rect.size.x)
-				var y := rect.position.y + 10.0 + fmod(float(i) * 23.0, maxf(rect.size.y - 20.0, 1.0))
-				draw_line(Vector2(x, y), Vector2(x + 16, y), Color(1, 1, 1, 0.25), 2.0, true)
+					pc.append(Color(cols[0].lerp(cols[1], k), 0.95))
+				body_cv.fill_colored(part, pc)
+			# Open-air spans along the water line (where the surface stroke is drawn).
+			var spans: Array[Vector2] = []
+			var x := rect.position.x
+			var start := INF
+			while x <= rect.end.x:
+				var open := not terrain.is_point_solid(Vector2(x, rect.position.y + 3.0))
+				if open and start == INF:
+					start = x
+				elif not open and start != INF:
+					spans.append(Vector2(start, x - 4.0))
+					start = INF
+				x += 4.0
+			if start != INF:
+				spans.append(Vector2(start, rect.end.x))
+			_bodies.append({"kind": kind, "parts": parts, "spans": spans, "rect": rect})
+		if not _bodies.is_empty():
+			_static = InkStatic.new()
+			_static.canvas = body_cv
+			_static.show_behind_parent = true
+			add_child(_static)
+		set_process(not _bodies.is_empty())
 
-
-	## Authored water/lava: tiled material texture drifting slowly, a crisp foam line, sparkles.
-	func _draw_art_zone(kind: String, parts: Array[PackedVector2Array], surf: PackedVector2Array, rect: Rect2) -> void:
-		var m := art.material(kind)
-		var t := art.tex(str(m.get("fill", "")))
-		var span := Vector2(t.get_width(), t.get_height()) * art.scale if t else Vector2.ONE
-		var drift := Vector2(_t * 6.0, sin(_t * 0.7) * 3.0)
-		# Water body: textured Polygon2D children behind this node (crisp, repeating, drifting).
-		var key := "%s:%s" % [kind, rect]
-		if not _bodies.has(key):
-			_bodies[key] = []
-		var pool: Array = _bodies[key]
-		while pool.size() < parts.size():
-			var p2 := art.textured_polygon(PackedVector2Array(), t)
-			p2.show_behind_parent = true
-			p2.color = Color(1, 1, 1, float(m.get("alpha", 0.92)))
-			add_child(p2)
-			pool.append(p2)
-		for i in pool.size():
-			var p2: Polygon2D = pool[i]
-			p2.visible = i < parts.size()
-			if p2.visible:
-				p2.polygon = parts[i]
-				p2.texture_offset = drift
-		var foam := Color(m.get("foam", "#e8fbff"))
-		var deep := Color(m.get("edge", "#1b4f8c"))
-		var s := art.scale
-		var top := PackedVector2Array()
-		for v in surf:
-			top.append(Vector2(roundf(v.x / s) * s, roundf(v.y / s) * s))
-		draw_polyline(top, deep, s * 3.0, false)
-		draw_polyline(top, foam, s, false)
-		# Sparkles: 2x2 art-pixel glints that blink along the surface band.
-		for i in int(rect.size.x / 46.0):
-			var ph := fposmod(_t * 1.7 + float(i) * 0.61, 2.0)
-			if ph > 0.5:
-				continue
-			var x := rect.position.x + fposmod(float(i) * 46.0 + _t * 9.0, rect.size.x)
-			var y := rect.position.y + s * (4.0 + float(i % 4) * 3.0)
-			draw_rect(Rect2(Vector2(roundf(x / s) * s, roundf(y / s) * s), Vector2(s, s)), foam)
-
-
-# ---------------------------------------------------------------------------
-# Decor
-# ---------------------------------------------------------------------------
-
-class _Tree extends Node2D:
-	var leaf := Color.GREEN
-	var leaf_dark := Color.DARK_GREEN
-	var leaf_light := Color.LIGHT_GREEN
-	var trunk := Color.BROWN
-	var line := Color.BLACK
-	var seed_value := 0
-	var _canopy: Node2D
-	var _t := 0.0
-
-	func _ready() -> void:
-		_canopy = _Canopy.new()
-		_canopy.tree = self
-		_canopy.position = Vector2(0, -78)
-		add_child(_canopy)
-		_t = float(seed_value % 100)
+	func _colors(kind: String) -> Array[Color]:
+		match kind:
+			"lava":
+				return [Color("ffb347"), Color("d62828")]
+			"acid":
+				return [Color("b8f35a"), Color("3f8f2a")]
+		return [view.c("water"), view.c("water_deep")]
 
 	func _process(delta: float) -> void:
 		_t += delta
-		_canopy.rotation = sin(_t * 1.1) * 0.025 + sin(_t * 2.3) * 0.01
+		queue_redraw()
 
 	func _draw() -> void:
-		var pts := PackedVector2Array([Vector2(-9, 2), Vector2(-5, -40), Vector2(-14, -70), Vector2(-3, -66), Vector2(0, -84),
-			Vector2(4, -66), Vector2(15, -74), Vector2(6, -40), Vector2(10, 2)])
-		draw_colored_polygon(pts, trunk)
-		var o := pts.duplicate()
-		o.append(pts[0])
-		draw_polyline(o, line, 3.0, true)
-		draw_line(Vector2(1, -8), Vector2(2, -34), trunk.darkened(0.25), 2.5, true)
-
-	class _Canopy extends Node2D:
-		var tree: _Tree
-
-		func _draw() -> void:
-			var rng := RandomNumberGenerator.new()
-			rng.seed = tree.seed_value
-			var blobs: Array[Vector3] = []
-			for i in 7:
-				var a := TAU * float(i) / 7.0 + rng.randf_range(-0.2, 0.2)
-				blobs.append(Vector3(cos(a) * 34.0, sin(a) * 22.0 - 18.0, rng.randf_range(26, 34)))
-			blobs.append(Vector3(0, -24, 36))
-			for b in blobs:
-				draw_circle(Vector2(b.x, b.y), b.z + 3.0, tree.line, true, -1.0, true)
-			for b in blobs:
-				draw_circle(Vector2(b.x, b.y), b.z, tree.leaf_dark, true, -1.0, true)
-			for b in blobs:
-				draw_circle(Vector2(b.x - 4, b.y - 6), b.z * 0.82, tree.leaf, true, -1.0, true)
-			for b in blobs:
-				if b.y < -20:
-					draw_circle(Vector2(b.x - 8, b.y - 12), b.z * 0.38, tree.leaf_light, true, -1.0, true)
-
-
-class _Bush extends Node2D:
-	var col := Color.GREEN
-	var light := Color.LIGHT_GREEN
-	var line := Color.BLACK
-	var seed_value := 0
-
-	func _draw() -> void:
-		var blobs := [Vector3(-22, -14, 18), Vector3(0, -22, 24), Vector3(22, -14, 18), Vector3(-10, -8, 14), Vector3(12, -8, 14)]
-		for b: Vector3 in blobs:
-			draw_circle(Vector2(b.x, b.y), b.z + 3.0, line, true, -1.0, true)
-		for b: Vector3 in blobs:
-			draw_circle(Vector2(b.x, b.y), b.z, col, true, -1.0, true)
-		for b: Vector3 in blobs:
-			draw_circle(Vector2(b.x - 3, b.y - 5), b.z * 0.55, light, true, -1.0, true)
-		var rng := RandomNumberGenerator.new()
-		rng.seed = seed_value
-		for i in 4:
-			draw_circle(Vector2(rng.randf_range(-24, 24), rng.randf_range(-30, -10)), 3.0, Color("ff8fab"), true, -1.0, true)
-
-
-class _Flowers extends Node2D:
-	var stem := Color.DARK_GREEN
-	var seed_value := 0
-
-	func _draw() -> void:
-		var rng := RandomNumberGenerator.new()
-		rng.seed = seed_value
-		var palette := [Color("ff8fab"), Color("ffd166"), Color("ffffff"), Color("c77dff"), Color("ff6b6b")]
-		for i in 7:
-			var x := rng.randf_range(-40, 40)
-			var h := rng.randf_range(14, 28)
-			var top := Vector2(x + rng.randf_range(-4, 4), -h)
-			draw_line(Vector2(x, 2), top, stem, 2.2, true)
-			var c: Color = palette[rng.randi() % palette.size()]
-			for k in 5:
-				var a := TAU * float(k) / 5.0
-				draw_circle(top + Vector2(cos(a), sin(a)) * 4.0, 3.4, c, true, -1.0, true)
-			draw_circle(top, 2.6, Color("ffb703") if c != Color("ffd166") else Color("fb8500"), true, -1.0, true)
-
-
-class _Rock extends Node2D:
-	var seed_value := 0
-
-	func _draw() -> void:
-		var rng := RandomNumberGenerator.new()
-		rng.seed = seed_value
-		var pts := PackedVector2Array()
-		for i in 9:
-			var a := PI + PI * float(i) / 8.0
-			pts.append(Vector2(cos(a) * rng.randf_range(20, 28), sin(a) * rng.randf_range(14, 22) + 4))
-		draw_colored_polygon(pts, Color("9aa5b8"))
-		var o := pts.duplicate()
-		o.append(pts[0])
-		draw_polyline(o, Color("2b2d42"), 3.0, true)
-		draw_line(pts[2] + Vector2(3, 4), pts[4] + Vector2(0, 6), Color("c7cfdc"), 3.0, true)
+		var line_c := view.c("water_line")
+		for b in _bodies:
+			var rect: Rect2 = b.rect
+			var kind: String = b.kind
+			var lc := line_c if kind == "water" else Color(_colors(kind)[1], 1.0).darkened(0.4)
+			for sp: Vector2 in b.spans:
+				if sp.y - sp.x < 6.0:
+					continue
+				var surf := PackedVector2Array()
+				var steps := maxi(3, int((sp.y - sp.x) / 12.0))
+				for i in steps + 1:
+					var x := lerpf(sp.x, sp.y, float(i) / steps)
+					surf.append(Vector2(x, rect.position.y + sin(x * 0.034 + _t * 2.1) * 2.2 + sin(x * 0.011 - _t * 1.2) * 1.4))
+				_cv.stroke(surf, 3.0, lc, 0.0001, 0.0001, 3.0, 0.12)
+				_cv.stroke(InkCanvas.offset_line(surf, -2.6), 1.6, Color(1, 1, 1, 0.75), 0.0001, 0.0001)
+				# Ripple ticks drifting under the surface.
+				var n := int((sp.y - sp.x) / 64.0)
+				for i in n:
+					var x := sp.x + fposmod(float(i) * 64.0 + _t * 14.0, sp.y - sp.x)
+					var y := rect.position.y + 14.0 + fmod(float(i) * 29.0, maxf(rect.size.y * 0.6, 1.0))
+					if view.terrain.is_point_solid(Vector2(x, y)) or view.terrain.is_point_solid(Vector2(x + 14, y)):
+						continue
+					var a := 0.5 * (0.6 + 0.4 * sin(_t * 2.0 + i))
+					_cv.stroke(InkCanvas.quad_bez(Vector2(x, y), Vector2(x + 7, y - 2.5), Vector2(x + 14, y), 4), 1.6, Color(1, 1, 1, a), 0.3, 0.3)
+		_cv.flush(get_canvas_item())

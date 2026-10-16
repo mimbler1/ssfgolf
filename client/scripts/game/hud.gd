@@ -64,7 +64,8 @@ func _build() -> void:
 	banner.add_child(_timer_pill)
 
 	# Menu button (bottom-right; the top edge belongs to the player panels).
-	var menu := GameButton.make("☰", "GhostButton", Vector2(64, 64))
+	var menu := _MenuButton.new()
+	menu.custom_minimum_size = Vector2(62, 62)
 	UITheme.pin(menu, 1, 1, Vector2(-24, -24), -1, -1)
 	menu.tooltip_text = "Menu (Esc)"
 	menu.pressed.connect(func() -> void: menu_pressed.emit())
@@ -78,8 +79,7 @@ func _build() -> void:
 	bottom.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(bottom)
 	_energy = _EnergyBar.new()
-	_energy.custom_minimum_size = Vector2(560, 52)
-	_energy.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_energy.custom_minimum_size = Vector2(560, 42)
 	_energy.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_energy.segments = int(_emax)
 	bottom.add_child(_energy)
@@ -119,9 +119,9 @@ func _build() -> void:
 ## Compact "how to play" card in the bottom-left; keys follow the player's remapped bindings.
 func _build_controls_card() -> Control:
 	var panel := PanelContainer.new()
-	var sb := UITheme.box(Color(UITheme.INK, 0.72), UITheme.RADIUS_SMALL)
+	var sb := InkStyleBox.make(Color(UITheme.PAPER, 0.92), 2.4, 12.0, 0.0, 4.0)
 	sb.content_margin_left = 14; sb.content_margin_right = 16
-	sb.content_margin_top = 10; sb.content_margin_bottom = 12
+	sb.content_margin_top = 8; sb.content_margin_bottom = 10
 	panel.add_theme_stylebox_override("panel", sb)
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var grid := GridContainer.new()
@@ -161,7 +161,7 @@ func _build_controls_card() -> Control:
 		var tl := Label.new()
 		tl.text = str(row[1])
 		tl.add_theme_font_size_override("font_size", 19)
-		tl.add_theme_color_override("font_color", UITheme.PAPER)
+		tl.add_theme_color_override("font_color", UITheme.INK)
 		grid.add_child(tl)
 	return panel
 
@@ -175,8 +175,7 @@ static func _short_key(action: String) -> String:
 func _add_card(a: Dictionary, index: int) -> void:
 	var id := str(a.id)
 	var panel := PanelContainer.new()
-	panel.custom_minimum_size = Vector2(124, 160)
-	panel.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	panel.custom_minimum_size = Vector2(112, 140)
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	panel.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	panel.tooltip_text = "%s — %s energy\n%s" % [a.name, int(a.cost), a.desc]
@@ -197,7 +196,7 @@ func _add_card(a: Dictionary, index: int) -> void:
 	vb.add_child(key)
 	var icon := AbilityIcon.new()
 	icon.ability = id
-	icon.custom_minimum_size = Vector2(96, 96) if UIArt.ability_icon(id) else Vector2(80, 62)
+	icon.custom_minimum_size = Vector2(84, 66)
 	icon.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	vb.add_child(icon)
 	var name_l := Label.new()
@@ -213,7 +212,7 @@ func _add_card(a: Dictionary, index: int) -> void:
 	cost.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	vb.add_child(cost)
 	_card_box.add_child(panel)
-	_cards[id] = {"panel": panel, "icon": icon, "cost": cost, "def": a, "color": Color(a.color)}
+	_cards[id] = {"panel": panel, "icon": icon, "cost": cost, "def": a, "color": Color(a.color), "name": name_l}
 
 
 func _process(_delta: float) -> void:
@@ -255,16 +254,11 @@ func _process(_delta: float) -> void:
 		if c.get("key", "") == key:
 			continue
 		c["key"] = key
-		# Pixel-art card frame (gold rim when selected); arcade box only if the art is missing.
-		var sb: StyleBox = UIArt.nine("hud/ability_card_selected.png" if sel else "hud/ability_card.png", [12, 12, 12, 12], 2)
-		if sb:
-			sb.content_margin_top = 8; sb.content_margin_bottom = 12; sb.content_margin_left = 12; sb.content_margin_right = 12
-			(c.panel as Control).self_modulate = Color.WHITE if affordable or sel else Color(0.7, 0.7, 0.78)
-		else:
-			var fb := UITheme.arcade_box(Color(UITheme.INK, 0.94) if not sel else Color(col.darkened(0.45), 0.97),
-				col if sel else UITheme.INK_LINE, UITheme.SLANT * 0.6, 4 if sel else 3)
-			fb.content_margin_top = 6; fb.content_margin_bottom = 10; fb.content_margin_left = 10; fb.content_margin_right = 10
-			sb = fb
+		# Paper card: selected cards lift and take the ball's colour; unaffordable ones fade.
+		var sb := InkStyleBox.make(col.lerp(UITheme.PAPER, 0.55) if sel else (UITheme.PAPER if affordable else UITheme.PAPER_DEEP), 3.8 if sel else 2.6, 12.0, 4.0, 4.0 if sel else 2.0)
+		sb.lip_color = col.darkened(0.15) if sel else UITheme.PAPER_DEEP.darkened(0.08)
+		sb.content_margin_top = 4; sb.content_margin_bottom = 10; sb.content_margin_left = 8; sb.content_margin_right = 8
+		(c.name as Label).add_theme_color_override("font_color", UITheme.INK if affordable else UITheme.MUTED)
 		c.panel.add_theme_stylebox_override("panel", sb)
 		c.icon.dimmed = not affordable
 		c.cost.energy = energy
@@ -334,66 +328,35 @@ class _EnergyBar extends Control:
 				value = v
 				queue_redraw()
 	var segments: int = 10
+	var _cv := InkCanvas.new()
 
 	func _draw() -> void:
-		var r := Rect2(Vector2.ZERO, size)
-		var empty := UIArt.tex("hud/energy_cell_empty.png")
-		var full_t := UIArt.tex("hud/energy_cell_full.png")
-		if empty and full_t:
-			_draw_cells(empty, full_t)
-			return
-		draw_style_box(UITheme.arcade_box(Color(UITheme.INK, 0.94)), r)
-		var pad := 7.0
-		var inner := Rect2(r.position + Vector2(pad + 4, pad), r.size - Vector2(pad * 2 + 8, pad * 2 + 4))
-		var gap := 5.0
+		var cv := _cv
+		var track := Rect2(Vector2(36, 4), size - Vector2(72, 8))
+		var shape := InkStyleBox.outline_pts(track, track.size.y * 0.5, 1.2, 3.0)
+		cv.fill(shape, Color(UITheme.PAPER, 0.95))
+		var pad := 6.0
+		var inner := track.grow(-pad)
+		var gap := 4.0
 		var w := (inner.size.x - gap * (segments - 1)) / segments
-		var sl := inner.size.y * 0.35   # parallelogram cells, slanted like the panels
 		for i in segments:
-			var x := inner.position.x + i * (w + gap)
-			var y0 := inner.position.y
-			var y1 := inner.end.y
-			var cell := PackedVector2Array([Vector2(x + sl, y0), Vector2(x + w + sl, y0), Vector2(x + w - sl, y1), Vector2(x - sl, y1)])
-			draw_colored_polygon(cell, Color(1, 1, 1, 0.07))
-			var fill := clampf(value - i, 0.0, 1.0)
-			if fill > 0.0:
-				var fw := w * fill
-				var fc := PackedVector2Array([Vector2(x + sl, y0), Vector2(x + fw + sl, y0), Vector2(x + fw - sl, y1), Vector2(x - sl, y1)])
-				var full := fill >= 1.0
-				draw_colored_polygon(fc, Color("b65cff") if full else Color("6a2bb0"))
-				if full:
-					var hl := PackedVector2Array([Vector2(x + sl, y0), Vector2(x + w + sl, y0), Vector2(x + w + sl * 0.6, y0 + 5), Vector2(x + sl * 0.6, y0 + 5)])
-					draw_colored_polygon(hl, Color("e9c8ff"))
-		var f := UITheme.heading_font()
+			var cell := Rect2(Vector2(inner.position.x + i * (w + gap), inner.position.y), Vector2(w, inner.size.y))
+			var f := clampf(value - i, 0.0, 1.0)
+			var oval := InkStyleBox.outline_pts(cell, cell.size.y * 0.45, 0.6, float(i))
+			cv.fill(oval, Color(UITheme.ENERGY, 0.1))
+			if f > 0.0:
+				var part := Rect2(cell.position, Vector2(cell.size.x * f, cell.size.y))
+				var fill_shape := InkStyleBox.outline_pts(part, minf(part.size.x, part.size.y) * 0.45, 0.6, float(i) + 0.5)
+				cv.fill(fill_shape, UITheme.ENERGY if f >= 1.0 else UITheme.ENERGY.lerp(UITheme.PAPER, 0.4))
+				if f >= 1.0:
+					cv.stroke(PackedVector2Array([cell.position + Vector2(5, 5), cell.position + Vector2(cell.size.x - 5, 4.5)]), 2.0, Color(1, 1, 1, 0.55), 0.2, 0.2)
+		cv.outline(shape, 2.8, InkCanvas.INK, 2.0)
+		InkIcons.draw(cv, "energy", Vector2(size.x - 18, size.y * 0.5), 34.0)
+		cv.flush(get_canvas_item())
+		var f2 := UITheme.heading_font()
 		var txt := "%d" % int(floor(value + 0.0001))
-		draw_string_outline(f, Vector2(-34, size.y * 0.5 + 9), txt, HORIZONTAL_ALIGNMENT_RIGHT, 28, 26, 6, UITheme.INK_LINE)
-		draw_string(f, Vector2(-34, size.y * 0.5 + 9), txt, HORIZONTAL_ALIGNMENT_RIGHT, 28, 26, Color("e0b3ff"))
-		# Lightning glyph.
-		var bolt := PackedVector2Array([Vector2(size.x + 14, 4), Vector2(size.x + 6, 18), Vector2(size.x + 13, 18), Vector2(size.x + 8, 31), Vector2(size.x + 22, 13), Vector2(size.x + 15, 13), Vector2(size.x + 20, 4)])
-		draw_colored_polygon(bolt, Color("e0b3ff"))
-		draw_polyline(bolt + PackedVector2Array([bolt[0]]), UITheme.INK_LINE, 2.0, true)
-
-	## Pixel-art cells at 2x: a charging cell fills from the bottom.
-	func _draw_cells(empty: Texture2D, full_t: Texture2D) -> void:
-		var k := 2.0
-		var cs := empty.get_size() * k
-		var gap := 6.0
-		var total := segments * cs.x + (segments - 1) * gap
-		var x0 := floorf((size.x - total) * 0.5)
-		var y0 := floorf((size.y - cs.y) * 0.5)
-		for i in segments:
-			var at := Vector2(x0 + i * (cs.x + gap), y0)
-			draw_texture_rect(empty, Rect2(at, cs), false)
-			var fill := clampf(value - i, 0.0, 1.0)
-			if fill > 0.0:
-				var src_h := roundf(empty.get_size().y * fill)
-				var src := Rect2(0, empty.get_size().y - src_h, empty.get_size().x, src_h)
-				var dst := Rect2(at + Vector2(0, cs.y - src_h * k), Vector2(cs.x, src_h * k))
-				draw_texture_rect_region(full_t, dst, src, Color.WHITE if fill >= 1.0 else Color(0.75, 0.75, 0.85))
-		var f := UITheme.heading_font()
-		var txt := "%d" % int(floor(value + 0.0001))
-		var tp := Vector2(x0 - 44, size.y * 0.5 + 10)
-		draw_string_outline(f, tp, txt, HORIZONTAL_ALIGNMENT_RIGHT, 34, 28, 6, UITheme.INK_LINE)
-		draw_string(f, tp, txt, HORIZONTAL_ALIGNMENT_RIGHT, 34, 28, Color("8fe9ff"))
+		draw_string_outline(f2, Vector2(0, size.y * 0.5 + 12), txt, HORIZONTAL_ALIGNMENT_CENTER, 32, 32, 7, InkCanvas.INK)
+		draw_string(f2, Vector2(0, size.y * 0.5 + 12), txt, HORIZONTAL_ALIGNMENT_CENTER, 32, 32, UITheme.PAPER)
 
 
 class _CostPips extends Control:
@@ -403,22 +366,33 @@ class _CostPips extends Control:
 			if not is_equal_approx(v, energy):
 				energy = v
 				queue_redraw()
+	var _cv := InkCanvas.new()
 
 	func _draw() -> void:
 		if cost == 0:
-			var f := UITheme.body_bold_font()
-			draw_string(f, Vector2(0, 12), "FREE", HORIZONTAL_ALIGNMENT_CENTER, size.x, 14, UITheme.MUTED)
+			draw_string(UITheme.body_bold_font(), Vector2(0, 14), "FREE", HORIZONTAL_ALIGNMENT_CENTER, size.x, 15, UITheme.MUTED)
 			return
-		# Square pixel pips in the energy-cell cyan (one per energy point / charge).
-		var w := 8.0
-		var gap := 4.0
-		var total := cost * (w + gap) - gap
-		var x0 := floorf((size.x - total) * 0.5)
-		var y := floorf(size.y * 0.5 - w * 0.5)
+		var r := 5.0
+		var total := cost * (r * 2 + 3) - 3
+		var x0 := (size.x - total) * 0.5 + r
 		for i in cost:
-			var x := x0 + i * (w + gap)
+			var c := Vector2(x0 + i * (r * 2 + 3), size.y * 0.5)
 			var lit := energy >= float(i + 1)
-			draw_rect(Rect2(x - 2, y - 2, w + 4, w + 4), UITheme.INK_LINE)
-			draw_rect(Rect2(x, y, w, w), Color("39c6ff") if lit else Color(1, 1, 1, 0.14))
-			if lit:
-				draw_rect(Rect2(x, y, w, 2), Color("b8f1ff"))
+			_cv.ellipse(c, Vector2(r, r), UITheme.ENERGY if lit else Color(UITheme.PAPER_DEEP))
+			_cv.ink_circle(c, Vector2(r, r), 1.6, InkCanvas.INK, float(i))
+		_cv.flush(get_canvas_item())
+
+
+class _MenuButton extends Button:
+	var _cv := InkCanvas.new()
+
+	func _ready() -> void:
+		focus_mode = Control.FOCUS_NONE
+		mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		theme_type_variation = "GhostButton"
+		mouse_entered.connect(queue_redraw)
+		mouse_exited.connect(queue_redraw)
+
+	func _draw() -> void:
+		InkIcons.draw(_cv, "menu", size * 0.5, size.x * 0.75)
+		_cv.flush(get_canvas_item())

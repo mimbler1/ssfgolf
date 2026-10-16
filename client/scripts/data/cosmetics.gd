@@ -71,4 +71,4 @@ static func packs() -> Array:
 
 
 static func rarity_color(r: String) -> Color:
-	return {"common": Color("d9e2f2"), "rare": Color("4cc9f0"), "epic": Color("c77dff"), "legendary": Color("ffd166")}.get(r, UITheme.MUTED)
+	return {"common": Color("8d8577"), "rare": Color("2f86d6"), "epic": Color("8a4fd8"), "legendary": Color("e0a00f")}.get(r, UITheme.MUTED)

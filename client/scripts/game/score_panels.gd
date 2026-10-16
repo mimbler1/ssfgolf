@@ -1,6 +1,7 @@
 class_name ScorePanels
 extends Control
-## SSF2-inspired player panels along the top of the screen (docs/HUD_SPEC.md).
+## Hand-drawn player panels along the top of the screen (docs/HUD_SPEC.md, INK_ART_SPEC.md §10):
+## paper plates with an ink rim, the golfer's ink portrait and a hand-lettered score.
 ##
 ## One panel per player: big character portrait, big score number, name, player colour, a
 ## placement badge and the hole status. The score is the match points in Blitz, strokes relative
@@ -40,7 +41,7 @@ func setup(p_view: MatchView) -> void:
 		p.is_local = p.slot == view.local_slot
 		p.player_name = str(r.name)
 		p.appearance = r.appearance
-		p.color = UITheme.SLOT_COLORS[p.slot % UITheme.SLOT_COLORS.size()]
+		p.color = UITheme.slot_color(p.slot)
 		add_child(p)
 		_panels.append(p)
 	resized.connect(layout)
@@ -181,15 +182,16 @@ class _Panel extends Control:
 	func _ready() -> void:
 		_portrait = Portrait.new()
 		_portrait.framed = true
+		_portrait.ring = color
 		add_child(_portrait)
 		_portrait.set_look(appearance)
-		_score = _label(UITheme.heading_font(), 48, UITheme.PAPER, 10)
-		_caption = _label(UITheme.body_bold_font(), 13, UITheme.MUTED, 4)
-		_name = _label(UITheme.body_bold_font(), 18, UITheme.PAPER, 6)
+		_score = _label(UITheme.heading_font(), 48, UITheme.INK, 0)
+		_caption = _label(UITheme.body_font(), 13, UITheme.MUTED, 0)
+		_name = _label(UITheme.body_bold_font(), 18, color.darkened(0.45), 0)
 		_name.clip_text = true
 		_name.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		_name.text = player_name + ("  (YOU)" if is_local and player_name.to_lower() != "you" else "")
-		_status = _label(UITheme.heading_font(), 15, color, 5)
+		_status = _label(UITheme.heading_font(), 15, color.darkened(0.35), 0)
 		resized.connect(_arrange)
 
 	func _label(font: Font, fs: int, col: Color, outline: int) -> Label:
@@ -199,7 +201,7 @@ class _Panel extends Control:
 		ls.font_size = fs
 		ls.font_color = col
 		ls.outline_size = outline
-		ls.outline_color = UITheme.INK_LINE
+		ls.outline_color = UITheme.PAPER
 		l.label_settings = ls
 		l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(l)
@@ -269,35 +271,31 @@ class _Panel extends Control:
 			_flash = v
 			queue_redraw(), 1.0, 0.0, 0.6)
 
+	var _cv := InkCanvas.new()
+
 	func _draw() -> void:
 		var r := Rect2(Vector2.ZERO, size)
-		var sl := size.y * 0.22
-		var s := -1.0 if mirror else 1.0
-		# Slanted panel: ink rim, dark body, player-colour edge and bottom bar.
-		var body := PackedVector2Array([Vector2(sl if s > 0 else 0, 0), Vector2(size.x - (0 if s > 0 else sl), 0),
-			Vector2(size.x - (sl if s > 0 else 0), size.y), Vector2(0 if s > 0 else sl, size.y)])
-		var rim := Geometry2D.offset_polygon(body, 3.0, Geometry2D.JOIN_MITER)
-		if not rim.is_empty():
-			draw_colored_polygon(rim[0], UITheme.INK_LINE)
-		draw_colored_polygon(body, Color(UITheme.INK, 0.93).lerp(color, 0.25 * _flash))
-		var bar_h := 6.0
-		draw_colored_polygon(PackedVector2Array([body[3] + Vector2(0, -bar_h), body[2] + Vector2(0, -bar_h), body[2], body[3]]), color)
-		# Local player: a brighter frame.
+		var shape := InkStyleBox.outline_pts(r, 16.0, 1.4, float(slot) * 7.0 + 3.0)
+		var shadow := PackedVector2Array()
+		for v in shape:
+			shadow.append(v + Vector2(3, 5))
+		_cv.fill(shadow, Color(0.11, 0.09, 0.08, 0.22))
+		_cv.fill(shape, InkCanvas.PAPER.lerp(color, 0.28 * _flash))
+		# Player-colour lip along the bottom.
+		var lip := Geometry2D.intersect_polygons(shape, InkStyleBox.outline_pts(Rect2(Vector2(-4, size.y - 9.0), Vector2(size.x + 8, 14)), 4.0, 0.0, 1.0))
+		for part in lip:
+			_cv.fill(part, color)
+		_cv.outline(shape, 3.6 if is_local else 2.6, InkCanvas.INK, float(slot) + 1.0)
 		if is_local:
-			draw_polyline(body + PackedVector2Array([body[0]]), Color(color, 0.95), 3.0)
-		# Portrait well.
-		var pr: float = _spec[2] if not _spec.is_empty() else 64.0
-		var pw := Rect2(_portrait.position - Vector2(3, 3), Vector2(pr, pr) + Vector2(6, 6)) if _portrait else Rect2()
-		draw_rect(pw, Color(color.darkened(0.55), 0.95))
-		draw_rect(Rect2(pw.position, Vector2(pw.size.x, 3)), Color(color, 0.7))
-		# Placement badge in the outer top corner.
+			_cv.outline(InkStyleBox.outline_pts(r.grow(-5.0), 12.0, 1.0, 9.0), 2.0, Color(color.darkened(0.15), 0.8), 4.0)
 		if _place > 0:
-			var txt: String = ["", "1ST", "2ND", "3RD", "4TH", "5TH", "6TH"][clampi(_place, 0, 6)]
-			var bc: Color = [UITheme.MUTED, Color("ffd166"), Color("d9e2f2"), Color("f4a261"), Color("aab3e0"), Color("aab3e0"), Color("aab3e0")][clampi(_place, 0, 6)]
+			var bc: Color = [UITheme.PAPER_DEEP, Color("f2b630"), Color("cfd6df"), Color("d99a62"), UITheme.PAPER_DEEP, UITheme.PAPER_DEEP, UITheme.PAPER_DEEP][clampi(_place, 0, 6)]
+			var bpos := Vector2(size.x - 18.0 if not mirror else 18.0, 2.0)
+			_cv.ellipse(bpos, Vector2(17, 17), bc)
+			_cv.ink_circle(bpos, Vector2(17, 17), 2.4, InkCanvas.INK, float(_place))
+		_cv.flush(get_canvas_item())
+		if _place > 0:
+			var txt: String = ["", "1st", "2nd", "3rd", "4th", "5th", "6th"][clampi(_place, 0, 6)]
 			var f := UITheme.heading_font()
-			var fs := 16
-			var w := f.get_string_size(txt, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x + 12.0
-			var bx := size.x - w - 6.0 if s > 0 else 6.0
-			draw_rect(Rect2(bx - 2, -10, w + 4, 24), UITheme.INK_LINE)
-			draw_rect(Rect2(bx, -8, w, 20), bc)
-			draw_string(f, Vector2(bx + 6, 8), txt, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, UITheme.INK)
+			var bpos2 := Vector2(size.x - 18.0 if not mirror else 18.0, 2.0)
+			draw_string(f, bpos2 + Vector2(-17, 7), txt, HORIZONTAL_ALIGNMENT_CENTER, 34, 17, InkCanvas.INK)

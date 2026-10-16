@@ -24,8 +24,49 @@ func _ready() -> void:
 	_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_rect.modulate.a = 0.0
 	_layer.add_child(_rect)
+	if OS.get_cmdline_user_args().has("--offscreen"):
+		# Automated captures (tools/shot.sh, tools/perf.sh): keep the window off every monitor
+		# and never take focus, so art reviews don't interrupt whoever is using the PC.
+		get_window().set_flag(Window.FLAG_NO_FOCUS, true)
+		get_window().position = Vector2i(-20000, -20000)
 	_dev_screenshot_hook()
 	_dev_perf_hook()
+	_dev_perf_log_hook()
+
+
+## Developer tool: `-- --perf-log SECONDS [--perf-warmup S]` records frame times after a
+## warm-up and prints mean / p95 / p99 / worst frame (ms) and the peak draw-call count, then
+## quits unless a screenshot is also pending (tools/perf.sh).
+func _dev_perf_log_hook() -> void:
+	var args := OS.get_cmdline_user_args()
+	var i := args.find("--perf-log")
+	if i == -1 or i + 1 >= args.size():
+		return
+	var secs := float(args[i + 1])
+	var warm := 2.0
+	var j := args.find("--perf-warmup")
+	if j != -1 and j + 1 < args.size():
+		warm = float(args[j + 1])
+	await get_tree().create_timer(warm, true, false, true).timeout
+	var times: PackedFloat32Array = []
+	var draws := 0
+	var start := Time.get_ticks_usec()
+	var last := start
+	while Time.get_ticks_usec() - start < int(secs * 1e6):
+		await get_tree().process_frame
+		var now := Time.get_ticks_usec()
+		times.append(float(now - last) / 1000.0)
+		last = now
+		draws = maxi(draws, int(RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME)))
+	times.sort()
+	var sum := 0.0
+	for t in times:
+		sum += t
+	var n := times.size()
+	print("perf: frames=%d mean=%.2fms p95=%.2fms p99=%.2fms worst=%.2fms fps=%.1f draws=%d" % [
+		n, sum / n, times[int(n * 0.95)], times[int(n * 0.99)], times[n - 1], 1000.0 * n / sum, draws])
+	if not args.has("--screenshot"):
+		get_tree().quit()
 
 
 ## Developer tool: `-- --profile perf --perf-studio out.json [--perf-cycles 3]` runs the studio benchmark.

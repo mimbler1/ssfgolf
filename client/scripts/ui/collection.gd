@@ -1,5 +1,5 @@
 extends Node
-## Collection: every cosmetic in the catalog (sprite characters, ball colours, trail colours),
+## Collection: every cosmetic in the catalog (themed golfer outfits, ball colours, trail colours),
 ## what you own, and card packs (API.md §1.7). Pack rolls happen on the server; this screen only
 ## shows the results. Cosmetics never change gameplay.
 
@@ -19,7 +19,7 @@ var _scroll: ScrollContainer
 
 
 func _ready() -> void:
-	RenderingServer.set_default_clear_color(Color("1b2040"))
+	RenderingServer.set_default_clear_color(Color("f1ebe0"))
 	var bg := MenuBackdrop.new()
 	add_child(bg)
 	bg.setup(GameData.theme_for("golf_land"), LocalStore.appearance(), false)
@@ -47,7 +47,7 @@ func _ready() -> void:
 
 func _build() -> void:
 	var dim := ColorRect.new()
-	dim.color = Color(0.06, 0.07, 0.16, 0.6)
+	dim.color = Color(0.97, 0.94, 0.88, 0.3)
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ui.add_child(dim)
@@ -173,7 +173,7 @@ func _fill() -> void:
 			continue
 		if q != "" and not str(it.name).to_lower().contains(q):
 			continue
-		if str(it.kind) == "character" and not CharacterDefs.ids().has(str(it.value)):
+		if str(it.kind) == "character" and not InkLook.has_outfit(str(it.value)):
 			continue
 		_grid.add_child(_card(it, have))
 		shown += 1
@@ -191,8 +191,10 @@ func _card(it: Dictionary, have: bool) -> Control:
 	var col := Cosmetics.rarity_color(str(it.rarity))
 	var card := PanelContainer.new()
 	card.custom_minimum_size = Vector2(190, 236)
-	var sb := UITheme.box(Color(UITheme.INK, 0.94), UITheme.RADIUS, col if have else Color(col, 0.35), 0, 0, 3)
-	sb.content_margin_left = 8; sb.content_margin_right = 8; sb.content_margin_top = 8; sb.content_margin_bottom = 8
+	var sb := InkStyleBox.make(UITheme.PAPER if have else UITheme.PAPER_DEEP, 3.4 if have else 2.4, 14.0, 4.0, 3.0)
+	sb.ink = UITheme.INK if have else Color(UITheme.INK, 0.55)
+	sb.lip_color = col if have else Color(col, 0.35)
+	sb.content_margin_left = 8; sb.content_margin_right = 8; sb.content_margin_top = 8; sb.content_margin_bottom = 12
 	card.add_theme_stylebox_override("panel", sb)
 	var vb := VBoxContainer.new()
 	vb.add_theme_constant_override("separation", 4)
@@ -244,10 +246,25 @@ func _show_reveal(data: Dictionary) -> void:
 	if _overlay:
 		_overlay.queue_free()
 	var shade := ColorRect.new()
-	shade.color = Color(0.03, 0.03, 0.08, 0.85)
+	shade.color = Color(0.12, 0.1, 0.08, 0.55)
 	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	ui.add_child(shade)
 	_overlay = shade
+	var reduced0 := bool(Settings.get_value("gameplay", "reduced_motion"))
+	if not reduced0:
+		# 1-4: the pack floats in, waits for a click (or opens itself), shakes and bursts.
+		var best := "common"
+		for it: Dictionary in data.items:
+			if ["common", "rare", "epic", "legendary"].find(str(it.rarity)) > ["common", "rare", "epic", "legendary"].find(best):
+				best = str(it.rarity)
+		var stage := PackStage.new()
+		stage.rarity = best
+		stage.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		shade.add_child(stage)
+		await stage.opened
+		if not is_instance_valid(shade):
+			return
+		stage.queue_free()
 	var vb := VBoxContainer.new()
 	vb.add_theme_constant_override("separation", 24)
 	vb.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -299,46 +316,163 @@ func _show_reveal(data: Dictionary) -> void:
 
 # ---------------------------------------------------------------------------
 
-## Draws a collectible: framed portrait (golfer), sprite ball tinted (ball), streak + ball (trail).
+## Draws a collectible in ink: the outfit on the stick figure (golfer), the ball (ball), a
+## trail streak behind a ball (trail).
 class ItemArt extends Control:
 	var item: Dictionary = {}
 	var locked := false
-	var _portrait: Portrait
+	var _thumb: InkThumb
+	var _cv := InkCanvas.new()
 
 	func _ready() -> void:
-		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
 		if str(item.get("kind", "")) == "character":
-			_portrait = Portrait.new()
-			_portrait.framed = true
-			_portrait.size = Vector2(128, 128)
-			add_child(_portrait)
-			_portrait.position = ((size - _portrait.size) * 0.5).floor()
-			_portrait.set_look({"character": str(item.value)})
-			resized.connect(func() -> void: _portrait.position = ((size - _portrait.size) * 0.5).floor())
+			_thumb = InkThumb.new()
+			_thumb.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			add_child(_thumb)
+			_thumb.set_look(Appearance.for_outfit({}, str(item.value)), "", "stand")
 		if locked:
-			modulate = Color(0.45, 0.45, 0.55)
+			modulate = Color(1, 1, 1, 0.45)
+		resized.connect(queue_redraw)
 
 	func _draw() -> void:
 		var kind := str(item.get("kind", ""))
 		var col := Color(str(item.get("value", "#ffffff"))) if kind != "character" else Color.WHITE
 		var c := size * 0.5
-		var strip := UIArt.tex("ball/ball_tint_spin.png")
 		if kind == "trail":
+			var line := PackedVector2Array()
 			for i in 14:
-				var k := float(i) / 14.0
-				var p := c + Vector2(-70 + i * 9.0, 22 - sin(k * 2.6) * 30.0)
-				draw_rect(Rect2((p - Vector2(5, 5) * (1.0 - k * 0.5)).floor(), (Vector2(10, 10) * (1.0 - k * 0.5)).floor()), Color(col, 0.25 + k * 0.7))
-			if strip:
-				var fw := strip.get_width() / 8
-				draw_texture_rect_region(strip, Rect2(c + Vector2(56, -34) - Vector2(18, 18), Vector2(36, 36)), Rect2(0, 0, fw, strip.get_height()), Color.WHITE)
-		elif kind == "ball" and strip:
-			var fw2 := strip.get_width() / 8
-			draw_texture_rect_region(strip, Rect2((c - Vector2(36, 36)).floor(), Vector2(72, 72)), Rect2(0, 0, fw2, strip.get_height()), col)
+				var k := float(i) / 13.0
+				line.append(c + Vector2(-72 + i * 9.5, 24 - sin(k * 2.6) * 30.0))
+			_cv.stroke(line, 18.0, Color(col, 0.75), 0.95, 0.05, 1.0, 0.0, 0.0, 0.0)
+			_cv.stroke(InkCanvas.offset_line(line, 7.0), 1.6, Color(InkCanvas.INK, 0.45), 0.9, 0.1)
+			_ball(c + Vector2(62, -36), 17.0, Color.WHITE)
+		elif kind == "ball":
+			_ball(c, 34.0, col)
+		_cv.flush(get_canvas_item())
 		if locked:
 			var f := UITheme.heading_font()
-			draw_string_outline(f, c + Vector2(-9, 60), "?", HORIZONTAL_ALIGNMENT_LEFT, -1, 30, 6, UITheme.INK_LINE)
-			draw_string(f, c + Vector2(-9, 60), "?", HORIZONTAL_ALIGNMENT_LEFT, -1, 30, UITheme.PAPER)
+			draw_string_outline(f, c + Vector2(-10, 62), "?", HORIZONTAL_ALIGNMENT_LEFT, -1, 34, 8, UITheme.PAPER)
+			draw_string(f, c + Vector2(-10, 62), "?", HORIZONTAL_ALIGNMENT_LEFT, -1, 34, UITheme.INK)
+
+	func _ball(p: Vector2, r: float, col: Color) -> void:
+		_cv.ellipse(p, Vector2(r, r), col)
+		_cv.crescent(p, r * 0.97, Vector2(-r * 0.26, -r * 0.24), col.darkened(0.16))
+		for k in 3:
+			var a := 0.6 + TAU * k / 3.0
+			_cv.stroke(InkCanvas.arc_pts(p + Vector2(cos(a), sin(a)) * r * 0.52, r * 0.16, a + 1.2, a + 2.6, 4), maxf(1.2, r * 0.08), col.darkened(0.32), 0.2, 0.2)
+		_cv.ink_circle(p, Vector2(r, r), maxf(2.2, r * 0.1), InkCanvas.INK, r)
+
+
+## The pack before it opens: a hand-drawn foil pack floating on the table. Click it (or wait) and
+## it shakes, tears and bursts into ink sparks; then `opened` fires and the cards are revealed.
+class PackStage extends Control:
+	signal opened
+	var rarity := "common"
+	var _t := 0.0
+	var _phase := 0           ## 0 float, 1 shake, 2 burst
+	var _phase_t := 0.0
+	var _sparks: Array[Dictionary] = []
+	var _cv := InkCanvas.new()
+
+	func _ready() -> void:
+		mouse_filter = Control.MOUSE_FILTER_STOP
+		mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		var hint := UITheme.styled_label("Click the pack to open it", 34, UITheme.PAPER, 9)
+		hint.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
+		hint.position.y -= 150
+		add_child(hint)
+		Sfx.play("pop", -10.0)
+
+	func _gui_input(event: InputEvent) -> void:
+		if event is InputEventMouseButton and event.pressed and _phase == 0:
+			_start_shake()
+			accept_event()
+
+	func _start_shake() -> void:
+		_phase = 1
+		_phase_t = 0.0
+		Sfx.play("swing", -8.0)
+
+	func _process(delta: float) -> void:
+		_t += delta
+		_phase_t += delta
+		if _phase == 0 and (_t > 2.6 and OS.get_cmdline_user_args().has("--dev-reveal")):
+			_start_shake()
+		if _phase == 1 and _phase_t > 0.45:
+			_phase = 2
+			_phase_t = 0.0
+			Sfx.play("fanfare" if rarity in ["epic", "legendary"] else "pop", -4.0)
+			var col := Cosmetics.rarity_color(rarity)
+			for i in 34:
+				var a := randf() * TAU
+				_sparks.append({"p": size * 0.5, "v": Vector2.from_angle(a) * randf_range(250, 760), "c": [col, UITheme.SUN, UITheme.PAPER, InkCanvas.INK][i % 4],
+					"r": randf_range(5, 12), "kind": i % 3})
+		if _phase == 2:
+			for sp in _sparks:
+				sp.v = (sp.v as Vector2) * (1.0 - 2.2 * delta) + Vector2(0, 420 * delta)
+				sp.p = (sp.p as Vector2) + (sp.v as Vector2) * delta
+			if _phase_t > 0.55:
+				_phase = 3
+				opened.emit()
+		queue_redraw()
+
+	func _draw() -> void:
+		var c := size * 0.5
+		var col := Cosmetics.rarity_color(rarity)
+		if _phase <= 1:
+			var bob := sin(_t * 2.0) * 10.0
+			var shake := Vector2(sin(_phase_t * 70.0) * 9.0 * _phase_t * 2.0, 0) if _phase == 1 else Vector2.ZERO
+			var rot := sin(_t * 1.3) * 0.05 + (sin(_phase_t * 55.0) * 0.08 if _phase == 1 else 0.0)
+			_cv.xf = Transform2D(rot, c + Vector2(0, bob - 40) + shake)
+			_pack(col)
+			_cv.xf = Transform2D.IDENTITY
+		else:
+			var flash := clampf(1.0 - _phase_t * 3.0, 0.0, 1.0)
+			if flash > 0.0:
+				for i in 14:
+					var a := TAU * i / 14.0
+					_cv.stroke(PackedVector2Array([c + Vector2.from_angle(a) * 60.0, c + Vector2.from_angle(a) * (60.0 + 260.0 * (1.0 - flash))]), 8.0 * flash + 1.0, Color(col, flash), 0.1, 0.8)
+			for sp in _sparks:
+				var p: Vector2 = sp.p
+				var r: float = sp.r
+				match int(sp.kind):
+					0:
+						InkIcons._spark(_cv, p, r, sp.c)
+					1:
+						_cv.stroke(PackedVector2Array([p, p - (sp.v as Vector2) * 0.03]), 3.0, sp.c, 0.1, 0.8)
+					_:
+						_cv.ellipse(p, Vector2(r * 0.5, r * 0.5), sp.c)
+						_cv.ink_circle(p, Vector2(r * 0.5, r * 0.5), 1.4, InkCanvas.INK, r)
+		_cv.flush(get_canvas_item())
+
+	func _pack(col: Color) -> void:
+		var w := 140.0
+		var h := 200.0
+		var body := PackedVector2Array([Vector2(-w * 0.5, -h * 0.42), Vector2(-w * 0.42, -h * 0.5), Vector2(w * 0.42, -h * 0.5), Vector2(w * 0.5, -h * 0.42),
+			Vector2(w * 0.5, h * 0.44), Vector2(w * 0.4, h * 0.5), Vector2(-w * 0.4, h * 0.5), Vector2(-w * 0.5, h * 0.44)])
+		_cv.fill(body, UITheme.CORAL.lerp(col, 0.35))
+		# Crimped foil edges top and bottom.
+		for top: float in [-1.0, 1.0]:
+			var y := h * 0.42 * top
+			for i in 8:
+				var x := -w * 0.45 + i * w * 0.9 / 7.0
+				_cv.stroke(PackedVector2Array([Vector2(x, y), Vector2(x, y + 10.0 * top)]), 2.0, Color(InkCanvas.INK, 0.5), 0.1, 0.1)
+		# Sticker label with a golf ball and a swirl.
+		var label := InkStyleBox.outline_pts(Rect2(Vector2(-w * 0.36, -h * 0.22), Vector2(w * 0.72, h * 0.46)), 14.0, 1.2, 4.0)
+		_cv.fill(label, UITheme.PAPER)
+		_cv.outline(label, 2.4, InkCanvas.INK, 2.0)
+		_cv.ellipse(Vector2(0, -6), Vector2(24, 24), Color.WHITE)
+		_cv.crescent(Vector2(0, -6), 23.0, Vector2(-6, -6), Color("e3ddd2"))
+		_cv.ink_circle(Vector2(0, -6), Vector2(24, 24), 2.6, InkCanvas.INK, 3.0)
+		var swirl := PackedVector2Array()
+		for k in 26:
+			swirl.append(Vector2(0, -6) + Vector2.from_angle(k * 0.45) * (34.0 + k * 0.7))
+		_cv.stroke(swirl, 3.0, col, 0.2, 0.7)
+		var glow := 0.5 + 0.5 * sin(_t * 3.0)
+		InkIcons._spark(_cv, Vector2(w * 0.3, -h * 0.34), 9.0 + glow * 3.0, UITheme.SUN)
+		InkIcons._spark(_cv, Vector2(-w * 0.3, h * 0.33), 7.0 + glow * 2.0, UITheme.PAPER)
+		_cv.outline(body, 3.4, InkCanvas.INK, 1.0)
 
 
 ## One card in a pack reveal: shows its back, then flips to the item.
@@ -349,10 +483,10 @@ class RevealCard extends Control:
 	var _shown := false
 	var _art: ItemArt
 	var _glow := 0.0
+	var _cv := InkCanvas.new()
 
 	func _ready() -> void:
 		pivot_offset = custom_minimum_size * 0.5
-		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 
 	func reveal(animate: bool) -> void:
 		if not animate:
@@ -371,24 +505,40 @@ class RevealCard extends Control:
 		_shown = true
 		_art = ItemArt.new()
 		_art.item = item
-		_art.position = Vector2(20, 40)
-		_art.size = Vector2(size.x - 40, 160)
+		_art.position = Vector2(20, 44)
+		_art.size = Vector2(size.x - 40, 170)
 		add_child(_art)
 		queue_redraw()
 
 	func _draw() -> void:
 		var r := Rect2(Vector2.ZERO, size)
 		var col := Cosmetics.rarity_color(str(item.get("rarity", "common")))
+		var shape := InkStyleBox.outline_pts(r, 18.0, 1.6, size.x + float(str(item.get("name", "")).length()))
 		if not _shown:
-			draw_style_box(UITheme.box(Color("2b2148"), UITheme.RADIUS, UITheme.SUN, 0, 0, 4), r)
-			var f0 := UITheme.heading_font()
-			draw_string(f0, Vector2(0, size.y * 0.5 + 24), "?", HORIZONTAL_ALIGNMENT_CENTER, size.x, 72, Color(UITheme.SUN, 0.8))
+			_cv.fill(shape, Color("3b6fb8"))
+			var inner := InkStyleBox.outline_pts(r.grow(-12.0), 12.0, 1.0, 3.0)
+			_cv.outline(inner, 2.4, Color(UITheme.PAPER, 0.8), 2.0)
+			var swirl := PackedVector2Array()
+			for k in 40:
+				swirl.append(r.get_center() + Vector2.from_angle(k * 0.42) * (6.0 + k * 1.9))
+			_cv.stroke(swirl, 4.0, Color(UITheme.PAPER, 0.85), 0.2, 0.6)
+			_cv.outline(shape, 3.4, InkCanvas.INK, 1.0)
+			_cv.flush(get_canvas_item())
 			return
 		if _glow > 0.0:
-			draw_style_box(UITheme.box(Color(col, 0.0), UITheme.RADIUS + 10, Color(col, _glow * 0.6), 0, 0, int(10 * _glow)), r.grow(10))
-		draw_style_box(UITheme.box(Color(UITheme.INK, 0.97), UITheme.RADIUS, col, 0, 0, 4), r)
+			for i in 16:
+				var a := TAU * i / 16.0 + _glow
+				var c := r.get_center()
+				_cv.stroke(PackedVector2Array([c + Vector2.from_angle(a) * size.y * 0.55, c + Vector2.from_angle(a) * size.y * (0.55 + 0.25 * _glow)]), 5.0 * _glow + 1.0, Color(col, _glow), 0.1, 0.7)
+		_cv.fill(shape, UITheme.PAPER)
+		var band := Geometry2D.intersect_polygons(shape, PackedVector2Array([Vector2(-4, -4), Vector2(size.x + 4, -4), Vector2(size.x + 4, 40), Vector2(-4, 40)]))
+		for part in band:
+			_cv.fill(part, col.lerp(UITheme.PAPER, 0.35))
+		_cv.outline(shape, 3.6, InkCanvas.INK, 2.0)
+		_cv.outline(InkStyleBox.outline_pts(r.grow(-7.0), 13.0, 1.0, 5.0), 2.2, col, 3.0)
+		_cv.flush(get_canvas_item())
 		var f := UITheme.heading_font()
-		draw_string(f, Vector2(0, 30), str(item.get("rarity", "")).to_upper(), HORIZONTAL_ALIGNMENT_CENTER, size.x, 20, col)
-		draw_string(f, Vector2(0, size.y - 56), str(item.get("name", "")), HORIZONTAL_ALIGNMENT_CENTER, size.x, 20, UITheme.PAPER)
+		draw_string(f, Vector2(0, 31), str(item.get("rarity", "")).to_upper(), HORIZONTAL_ALIGNMENT_CENTER, size.x, 21, InkCanvas.INK)
+		draw_string(f, Vector2(0, size.y - 52), str(item.get("name", "")), HORIZONTAL_ALIGNMENT_CENTER, size.x, 22, InkCanvas.INK)
 		var tag := "NEW!" if is_new else "+%d coins" % refund
-		draw_string(f, Vector2(0, size.y - 22), tag, HORIZONTAL_ALIGNMENT_CENTER, size.x, 22, Color("80ed99") if is_new else UITheme.SUN)
+		draw_string(f, Vector2(0, size.y - 20), tag, HORIZONTAL_ALIGNMENT_CENTER, size.x, 22, UITheme.GRASS_DARK if is_new else UITheme.TROPHY.darkened(0.25))

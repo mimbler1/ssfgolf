@@ -14,7 +14,7 @@ func _ready() -> void:
 	theme = UITheme.get_theme()
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var dim := ColorRect.new()
-	dim.color = Color(0.03, 0.04, 0.1, 0.6)
+	dim.color = Color(0.12, 0.1, 0.08, 0.5)
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(dim)
 	var center := CenterContainer.new()
@@ -108,6 +108,7 @@ func _show_tab(name: String) -> void:
 			_toggle("Dotted aim guide (predicted flight path)", "gameplay", "aim_dots")
 			_slider("Screen shake", "gameplay", "screen_shake", 0.0, 1.0)
 			_toggle("Reduced motion (no shake, flyovers or score pops)", "gameplay", "reduced_motion")
+			_toggle("Show other players' custom drawings", "gameplay", "show_others_drawings")
 		"Controls":
 			_note("Click a binding, then press a key or mouse button. Esc cancels. Left-click is always aim/shoot.")
 			for action: String in Settings.ACTIONS:

@@ -8,7 +8,7 @@ const AIM_DEADZONE := 14.0
 const GOLFER_SCALE := 1.3
 const EMOTE_COOLDOWN := 1.5   ## Mirrors the server's cooldown so spam never looks like lost input.
 const PLACE_TEXT := ["1ST!", "2ND!", "3RD!", "4TH", "5TH", "6TH"]
-const PLACE_COLORS := [Color("ffd166"), Color("d9e2f2"), Color("f4a261"), Color("aab3e0"), Color("aab3e0"), Color("aab3e0")]
+const PLACE_COLORS := [Color("c98a0b"), Color("7d8794"), Color("b06a32"), Color("7a6c5f"), Color("7a6c5f"), Color("7a6c5f")]
 
 var view: MatchView
 var params: Dictionary
@@ -76,7 +76,7 @@ func _ready() -> void:
 	var dcs := OS.get_cmdline_user_args().find("--dev-controls")
 	if dcs != -1 and dcs + 1 < OS.get_cmdline_user_args().size():
 		Settings.values.gameplay.control_style = OS.get_cmdline_user_args()[dcs + 1]  # dev only, not saved
-	RenderingServer.set_default_clear_color(Color("1b2040"))
+	RenderingServer.set_default_clear_color(Color("f1ebe0"))
 	_build_layers()
 	if str(params.get("mode", "practice")) == "online":
 		var nv := NetMatchView.new()
@@ -185,6 +185,8 @@ func _on_welcomed() -> void:
 		var app: Dictionary = r.appearance
 		var g := Golfer.new()
 		g.set_appearance(app)
+		# Custom clothing drawings are unmoderated: opponents' only show when the viewer opts in.
+		g.show_drawings = slot == view.local_slot or bool(Settings.get_value("gameplay", "show_others_drawings"))
 		g.scale = Vector2(GOLFER_SCALE, GOLFER_SCALE)
 		g.visible = false
 		golfer_layer.add_child(g)
@@ -195,7 +197,7 @@ func _on_welcomed() -> void:
 		bv.radius = float(GameData.balance.physics.ball_radius)
 		bv.ball_color = Color(app.get("ballColor", "#ffffff"))
 		bv.trail_color = Color(app.get("trailColor", "#ffd166"))
-		bv.slot_color = UITheme.SLOT_COLORS[slot % UITheme.SLOT_COLORS.size()]
+		bv.slot_color = UITheme.slot_color(slot)
 		bv.display_name = str(r.name)
 		bv.is_local = slot == view.local_slot
 		ball_layer.add_child(bv)
@@ -465,7 +467,7 @@ func _cycle_spectate(step: int) -> void:
 	var i := candidates.find(_spectate_slot)
 	_spectate_slot = candidates[posmod(i + step, candidates.size())]
 	hud.toast("Watching %s  (%s / %s to switch)" % [_name(_spectate_slot), Settings.binding_label("aim_left").split(" / ")[0], Settings.binding_label("aim_right").split(" / ")[0]],
-		UITheme.SLOT_COLORS[_spectate_slot % UITheme.SLOT_COLORS.size()])
+		UITheme.slot_color(_spectate_slot))
 
 
 func _pick_spectate() -> int:
@@ -828,7 +830,7 @@ func _on_event(ev: Dictionary) -> void:
 			Sfx.play("whoosh")
 		"go":
 			if view.mode == "online":
-				hud.announce("GO!", Color("80ed99"), 170, 0.35)
+				hud.announce("GO!", UITheme.GRASS, 170, 0.35)
 				Sfx.play("countdown_go")
 		"shot":
 			var power := float(ev.get("power", 0.5))
@@ -886,7 +888,7 @@ func _on_event(ev: Dictionary) -> void:
 			var d := (me.get("pos", Vector2.ZERO) as Vector2).distance_to(ev.pos)
 			_shake = maxf(_shake, clampf(1.0 - d / 900.0, 0.15, 0.9))
 			if is_me and (ev.hits as Array).size() > 1:
-				hud.toast("Boom! Hit %d" % ((ev.hits as Array).size() - 1), Color("80ed99"))
+				hud.toast("Boom! Hit %d" % ((ev.hits as Array).size() - 1), UITheme.GRASS)
 		"stick":
 			fx.goo(ev.pos)
 			Sfx.play("squish")
@@ -934,15 +936,15 @@ func _on_event(ev: Dictionary) -> void:
 					var strokes := int(ev.get("strokes", ev.get("shots", 0)))
 					hud.announce(_score_name(strokes, par), UITheme.SUN if strokes <= par else UITheme.PAPER, 110, 1.0)
 					if bool(ev.get("swish", false)):
-						hud.toast("SWISH! Straight in without a bounce", Color("80ed99"))
+						hud.toast("SWISH! Straight in without a bounce", UITheme.GRASS)
 				else:
 					var shots := int(ev.get("shots", 0))
 					hud.announce("HOLED IN %d!" % shots if shots > 1 else "HOLE IN ONE!", UITheme.SUN, 110, 1.0)
 					if bool(ev.get("swish", false)):
-						hud.toast("SWISH!", Color("80ed99"))
+						hud.toast("SWISH!", UITheme.GRASS)
 				Sfx.play("fanfare")
 			else:
-				hud.toast("%s finished %s" % [_name(slot), _ordinal(place)], UITheme.SLOT_COLORS[slot % UITheme.SLOT_COLORS.size()])
+				hud.toast("%s finished %s" % [_name(slot), _ordinal(place)], UITheme.slot_color(slot))
 		"hole_timer":
 			hud.toast("%d seconds to finish!" % int(ev.remaining), UITheme.CORAL)
 			Sfx.play("alert")
@@ -1022,10 +1024,10 @@ func _show_scorecard(ev: Dictionary) -> void:
 			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			l.add_theme_font_override("font", UITheme.heading_font() if r != 1 else UITheme.body_bold_font())
 			l.add_theme_font_size_override("font_size", 22)
-			var col := UITheme.PAPER
+			var col := UITheme.INK
 			if r == 2 and c > 0 and c <= card.size():
 				var d := int(card[c - 1].strokes) - int(card[c - 1].par)
-				col = Color("80ed99") if d < 0 else (UITheme.PAPER if d == 0 else UITheme.CORAL)
+				col = UITheme.GRASS_DARK if d < 0 else (UITheme.INK if d == 0 else UITheme.CORAL_DARK)
 			l.add_theme_color_override("font_color", col if r != 0 else UITheme.MUTED)
 			grid.add_child(l)
 	var notes: PackedStringArray = []
@@ -1040,7 +1042,7 @@ func _show_scorecard(ev: Dictionary) -> void:
 	if clean:
 		notes.append("Clean Ball")
 	if not notes.is_empty():
-		vb.add_child(UITheme.styled_label("  ·  ".join(notes), 26, Color("80ed99"), 7))
+		vb.add_child(UITheme.styled_label("  ·  ".join(notes), 26, UITheme.GRASS, 7))
 	var buttons := HBoxContainer.new()
 	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
 	buttons.add_theme_constant_override("separation", 14)
@@ -1147,7 +1149,7 @@ func _show_emote(slot: int, id: int) -> void:
 		_bubbles[slot].node.queue_free()
 	var bubble := _SpeechBubble.new()
 	bubble.text = str(e.bubble)
-	bubble.accent = UITheme.SLOT_COLORS[slot % UITheme.SLOT_COLORS.size()]
+	bubble.accent = UITheme.slot_color(slot)
 	world.add_child(bubble)
 	_bubbles[slot] = {"node": bubble, "until": _clock + maxf(2.2, float(e.duration) + 0.4)}
 	Sfx.play("pop", -6.0, 1.0 + id * 0.02)
@@ -1177,7 +1179,7 @@ func _update_bubbles() -> void:
 func _overlay_panel(min_size: Vector2) -> PanelContainer:
 	_hide_overlay()
 	var dim := ColorRect.new()
-	dim.color = Color(0.03, 0.04, 0.1, 0.55)
+	dim.color = Color(0.12, 0.1, 0.08, 0.5)
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	dim.theme = UITheme.get_theme()
 	overlay_layer.add_child(dim)
@@ -1325,7 +1327,7 @@ func _players_panel() -> Control:
 		var n := Label.new()
 		n.text = str(r.name)
 		n.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		n.add_theme_color_override("font_color", UITheme.SLOT_COLORS[slot % UITheme.SLOT_COLORS.size()])
+		n.add_theme_color_override("font_color", UITheme.slot_color(slot).darkened(0.4))
 		row.add_child(n)
 		var mute := GameButton.make("Unmute" if _muted.has(slot) else "Mute", "GhostButton", Vector2(110, 44))
 		mute.add_theme_font_size_override("font_size", 18)
@@ -1447,12 +1449,9 @@ func _results_card(title: String, rows: Array[Dictionary], subtitle: String) -> 
 		place.add_theme_font_size_override("font_size", 28)
 		place.add_theme_color_override("font_color", PLACE_COLORS[clampi(p - 1, 0, PLACE_COLORS.size() - 1)] if p > 0 else UITheme.MUTED)
 		hb.add_child(place)
-		var chip := ColorRect.new()
-		chip.custom_minimum_size = Vector2(8, 56)
-		chip.color = UITheme.SLOT_COLORS[int(r.slot) % UITheme.SLOT_COLORS.size()]
-		hb.add_child(chip)
 		var por := Portrait.new()
 		por.framed = true
+		por.ring = UITheme.slot_color(int(r.slot))
 		por.custom_minimum_size = Vector2(64, 64)
 		hb.add_child(por)
 		por.set_look(_appearance_of(int(r.slot)))
@@ -1465,14 +1464,13 @@ func _results_card(title: String, rows: Array[Dictionary], subtitle: String) -> 
 			var g := Label.new()
 			g.text = "+%d" % int(r.gained)
 			g.add_theme_font_override("font", UITheme.heading_font())
-			g.add_theme_color_override("font_color", Color("80ed99") if int(r.gained) > 0 else UITheme.MUTED)
+			g.add_theme_color_override("font_color", UITheme.GRASS_DARK if int(r.gained) > 0 else UITheme.MUTED)
 			hb.add_child(g)
 		var pts := Label.new()
 		pts.text = "%d pts" % int(r.points)
 		pts.custom_minimum_size = Vector2(90, 0)
 		pts.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		pts.add_theme_font_override("font", UITheme.heading_font())
-		pts.add_theme_color_override("font_color", UITheme.SUN)
 		hb.add_child(pts)
 		vb.add_child(row)
 		row.modulate.a = 0.0
@@ -1515,13 +1513,10 @@ func _show_match_end(ev: Dictionary) -> void:
 	vb.add_child(title)
 	# The match winner, animated in their victory pose.
 	if not standings.is_empty():
-		var champ := GolferView.new()
+		var champ := GolferStage.new()
 		champ.custom_minimum_size = Vector2(0, 220)
-		champ.pad = Vector2(8, 46)   # headroom: victory poses rise above the idle frame
 		vb.add_child(champ)
 		champ.set_look(Appearance.normalize(_appearance_of(int(standings[0].slot))), "victory")
-		champ.set_animated(true)
-		champ.golfer.play("victory")
 	if str(ev.get("reason", "")) == "aborted":
 		var ab := Label.new()
 		ab.text = "Match ended early — no trophies were changed."
@@ -1554,7 +1549,6 @@ func _show_match_end(ev: Dictionary) -> void:
 		var pts := Label.new()
 		pts.text = "%d pts" % int(s.points)
 		pts.add_theme_font_override("font", UITheme.heading_font())
-		pts.add_theme_color_override("font_color", UITheme.SUN)
 		hb.add_child(pts)
 		vb.add_child(row)
 	var rewards := VBoxContainer.new()
@@ -1619,10 +1613,10 @@ func _load_rewards(box: VBoxContainer, status: Label) -> void:
 			box.add_child(line)
 			var td := int(r.get("trophyDelta", 0))
 			_reward_chip(line, "🏆", ("+%d" % td) if td >= 0 else str(td), UITheme.TROPHY if td >= 0 else UITheme.CORAL)
-			_reward_chip(line, "XP", "+%d" % int(r.get("xpGained", 0)), Color("80ed99"))
+			_reward_chip(line, "XP", "+%d" % int(r.get("xpGained", 0)), UITheme.GRASS)
 			_reward_chip(line, "🪙", "+%d" % int(r.get("coinsGained", 0)), UITheme.SUN)
 			if int(r.get("levelAfter", 0)) > int(r.get("levelBefore", 0)):
-				var lv := UITheme.styled_label("LEVEL UP!  Level %d" % int(r.levelAfter), 36, Color("80ed99"), 8)
+				var lv := UITheme.styled_label("LEVEL UP!  Level %d" % int(r.levelAfter), 36, UITheme.GRASS, 8)
 				box.add_child(lv)
 				Sfx.play("level_up")
 			Backend.refresh_profile()
@@ -1670,7 +1664,7 @@ func _build_practice_panel() -> void:
 	var lv := view as LocalMatchView
 	var root := PanelContainer.new()
 	root.theme = UITheme.get_theme()
-	var sb := UITheme.box(Color(UITheme.INK, 0.85), 18, UITheme.INK_LINE, 0, 8)
+	var sb := UITheme.panel_box()
 	root.add_theme_stylebox_override("panel", sb)
 	root.custom_minimum_size = Vector2(430, 0)
 	hud.add_child(root)
@@ -1794,21 +1788,17 @@ class _SpeechBubble extends Node2D:
 		_t += delta
 		queue_redraw()
 
+	var _cv := InkCanvas.new()
+
 	func _draw() -> void:
-		var sz := _label.size + Vector2(30, 10)
+		var sz := _label.size + Vector2(30, 12)
 		var r := Rect2(Vector2(-sz.x * 0.5, -sz.y - 14.0), sz)
 		_label.position = r.position + Vector2(15, 5)
-		var tail := PackedVector2Array([Vector2(-9, r.end.y - 2), Vector2(9, r.end.y - 2), Vector2(0, 0)])
-		var ink := UITheme.INK_LINE
-		_round_rect(r.grow(3.0), 17.0, ink)
-		draw_colored_polygon(PackedVector2Array([tail[0] + Vector2(-3, 0), tail[1] + Vector2(3, 0), Vector2(0, 4)]), ink)
-		_round_rect(r, 14.0, UITheme.PAPER)
-		draw_colored_polygon(tail, UITheme.PAPER)
-		draw_line(r.position + Vector2(14, 3), Vector2(r.end.x - 14, r.position.y + 3), accent, 4.0, true)
-
-	func _round_rect(r: Rect2, rad: float, col: Color) -> void:
-		var sb := StyleBoxFlat.new()
-		sb.bg_color = col
-		sb.set_corner_radius_all(int(rad))
-		sb.anti_aliasing = true
-		draw_style_box(sb, r)
+		var shape := InkStyleBox.outline_pts(r, 16.0, 1.2, sz.x)
+		var tail := PackedVector2Array([Vector2(-10, r.end.y - 4), Vector2(0, 2), Vector2(8, r.end.y - 4)])
+		var merged := Geometry2D.merge_polygons(shape, tail)
+		var body: PackedVector2Array = merged[0] if merged.size() > 0 else shape
+		_cv.fill(body, UITheme.PAPER)
+		_cv.stroke(PackedVector2Array([r.position + Vector2(16, 5), Vector2(r.end.x - 16, r.position.y + 5)]), 3.4, accent, 0.2, 0.2)
+		_cv.outline(body, 2.8, UITheme.INK_LINE, 2.0)
+		_cv.flush(get_canvas_item())

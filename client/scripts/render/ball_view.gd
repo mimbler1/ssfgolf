@@ -1,9 +1,12 @@
 class_name BallView
 extends Node2D
-## Visual for one golf ball: shading, spin marks, trail, ability skin, ground shadow,
-## name tag, and (for the local player) the cooldown ring.
+## Hand-drawn golf ball (docs/INK_ART_SPEC.md §11): ink outline, rotating dimple marks, a
+## tapered trail, ability skins and state overlays (shield, frost, anti-grav, magnet), ground
+## shadow, name tag and (for the local player) the cooldown ring. Purely visual; positions come
+## from the simulation every frame.
 
 const TRAIL_LEN := 26
+const INK := InkCanvas.INK
 
 var slot: int = 0
 var radius: float = 9.0
@@ -39,10 +42,7 @@ var _ready_pulse: float = 0.0
 var _was_ready: bool = false
 var _shadow_y: float = 0.0
 var _shadow_dist: float = 999.0
-
-
-func _ready() -> void:
-	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+var _cv := InkCanvas.new()
 
 
 func _process(delta: float) -> void:
@@ -75,133 +75,6 @@ func clear_trail() -> void:
 	_trail.clear()
 
 
-func _draw() -> void:
-	if not visible_ball:
-		return
-	# Trail (in world space -> local).
-	if _trail.size() > 2:
-		var n := _trail.size()
-		for i in range(1, n):
-			var k := float(i) / float(n)
-			var a := to_local(_trail[i - 1])
-			var b := to_local(_trail[i])
-			var col := trail_color
-			col.a = k * 0.75
-			draw_line(a, b, col, radius * 1.5 * k + 1.0, true)
-	# Ground shadow, shrinking with height.
-	if _shadow_dist < 480.0:
-		var s := clampf(1.0 - _shadow_dist / 480.0, 0.0, 1.0)
-		var pts := PackedVector2Array()
-		for i in 16:
-			var ang := TAU * float(i) / 16.0
-			pts.append(Vector2(cos(ang) * radius * (0.6 + s * 0.6), _shadow_y + sin(ang) * radius * 0.25 * (0.5 + s * 0.5)))
-		draw_colored_polygon(pts, Color(0, 0, 0, 0.22 * s))
-
-	# Nitro flames behind the ball.
-	if boosted > 0.0:
-		var dir := _trail_dir()
-		for i in 5:
-			var off := -dir * (radius + 4.0 + i * 5.0) + Vector2(randf_range(-2, 2), randf_range(-2, 2))
-			draw_circle(off, radius * (0.95 - i * 0.15), Color("ffd166").lerp(Color("ff4d1d"), float(i) / 4.0), true, -1.0, true)
-
-	# Air brake chute.
-	if braked > 0.0:
-		var top := Vector2(0, -radius - 30)
-		var chute := PackedVector2Array()
-		for i in 11:
-			var ang := PI + PI * float(i) / 10.0
-			chute.append(top + Vector2(cos(ang) * 22.0, sin(ang) * 12.0))
-		draw_colored_polygon(chute, Color("4cc9f0"))
-		draw_polyline(chute, Color("1b2040"), 2.0, true)
-		for x in [-20.0, 0.0, 20.0]:
-			draw_line(top + Vector2(x, 0), Vector2(0, -radius), Color("1b2040"), 1.2, true)
-
-	var outline := Color("1b2040")
-	var fill := ball_color
-	match ability:
-		"heavy":
-			fill = Color("8d99ae")
-		"sticky":
-			fill = Color("b65cff")
-		"grenade":
-			fill = Color("56c271")
-		"nitro":
-			fill = fill.lerp(Color("ff7b2e"), 0.55)
-		"air_brake":
-			fill = fill.lerp(Color("4cc9f0"), 0.55)
-		"standard", "laser", "mulligan", "free_shot":
-			pass
-		_:
-			fill = fill.lerp(Color(GameData.ability(ability).get("color", "#ffffff")), 0.5)
-	if iced:
-		fill = fill.lerp(Color("cdf3ff"), 0.6)
-	if finished or disconnected:
-		fill.a = 0.5
-
-	# Sprite ball (UI_ART.md): the greyscale spin strip tinted with the ball colour, frame chosen by
-	# rotation. Falls back to the drawn ball if the art is missing.
-	var strip := UIArt.tex("ball/ball_tint_spin.png")
-	if strip:
-		var n := 8
-		var fw := strip.get_width() / n
-		var fi := posmod(int(round(rot / (TAU / n))), n)
-		var d := radius * 2.0
-		draw_texture_rect_region(strip, Rect2(-radius, -radius, d, d), Rect2(fi * fw, 0, fw, strip.get_height()), fill)
-		_draw_states()
-		if is_local and not finished:
-			_draw_local_marker()
-		elif display_name != "" and not finished and show_name:
-			_draw_name()
-		return
-	draw_circle(Vector2.ZERO, radius + 2.2, outline, true, -1.0, true)
-	draw_circle(Vector2.ZERO, radius, fill, true, -1.0, true)
-	# Shading crescent (fixed light direction).
-	draw_arc(Vector2(1.2, 1.4), radius - 2.2, -0.2, PI * 0.85, 12, fill.darkened(0.22), 3.0, true)
-	# Spin marks rotate with the ball.
-	var r := radius * 0.55
-	for k in 3:
-		var a := rot + TAU * float(k) / 3.0
-		draw_circle(Vector2(cos(a), sin(a)) * r, 1.3, fill.darkened(0.3), true, -1.0, true)
-	if ability == "heavy":
-		draw_line(Vector2.from_angle(rot) * -radius * 0.8, Vector2.from_angle(rot) * radius * 0.8, Color("5c677d"), 2.0, true)
-	elif ability == "grenade":
-		draw_rect(Rect2(-2, -radius - 4, 4, 4), Color("2b2d42"))
-		var blink := 0.5 + 0.5 * sin(_t * 18.0)
-		draw_circle(Vector2(0, -2), 2.2, Color(1, 0.25, 0.2, blink), true, -1.0, true)
-	elif ability == "sticky":
-		draw_circle(Vector2(-radius * 0.5, radius * 0.6), 3.0, Color("7b2cbf"), true, -1.0, true)
-	# Highlight.
-	draw_circle(Vector2(-radius * 0.35, -radius * 0.38), radius * 0.28, Color(1, 1, 1, 0.75), true, -1.0, true)
-	_draw_states()
-
-	if is_local and not finished:
-		_draw_local_marker()
-	elif display_name != "" and not finished and show_name:
-		_draw_name()
-
-
-## Ability state overlays: shield bubble, frost, anti-grav rings, magnet pulse.
-func _draw_states() -> void:
-	if shield:
-		var p := 0.6 + 0.4 * sin(_t * 5.0)
-		draw_arc(Vector2.ZERO, radius + 7.0, 0, TAU, 28, Color("1b2040"), 5.0)
-		draw_arc(Vector2.ZERO, radius + 7.0, 0, TAU, 28, Color(0.36, 0.66, 1.0, p), 3.0)
-		draw_arc(Vector2.ZERO, radius + 7.0, -2.4, -1.5, 8, Color(1, 1, 1, 0.8), 2.0)
-	if iced:
-		for k in 4:
-			var a := rot + TAU * float(k) / 4.0
-			draw_line(Vector2.from_angle(a) * 2.0, Vector2.from_angle(a) * (radius - 1.5), Color(1, 1, 1, 0.7), 1.0)
-	if anti_grav:
-		for k in 2:
-			var ph := fmod(_t * 1.4 + k * 0.5, 1.0)
-			var y := radius + 6.0 + ph * 18.0
-			var w := radius * (1.2 - ph * 0.5)
-			draw_line(Vector2(-w, y), Vector2(w, y), Color(0.49, 0.95, 0.79, 1.0 - ph), 2.0)
-	if magnet:
-		var ph2 := fmod(_t * 2.0, 1.0)
-		draw_arc(Vector2.ZERO, radius + 4.0 + ph2 * 16.0, 0, TAU, 24, Color(0.9, 0.22, 0.23, 1.0 - ph2), 2.0)
-
-
 func _trail_dir() -> Vector2:
 	if _trail.size() >= 2:
 		var d := _trail[_trail.size() - 1] - _trail[_trail.size() - 2]
@@ -210,28 +83,155 @@ func _trail_dir() -> Vector2:
 	return Vector2.RIGHT
 
 
-func _draw_local_marker() -> void:
+## Ball fill for an ability (the same rules the old renderer used, so balls stay recognisable).
+static func ability_fill(base: Color, ability_id: String) -> Color:
+	match ability_id:
+		"heavy":
+			return Color("8d96a6")
+		"sticky":
+			return Color("b462e8")
+		"grenade":
+			return Color("5cbf6c")
+		"nitro":
+			return base.lerp(Color("ff8a3d"), 0.55)
+		"air_brake":
+			return base.lerp(Color("4cc9f0"), 0.5)
+		"standard", "laser", "mulligan", "free_shot":
+			return base
+	return base.lerp(Color(GameData.ability(ability_id).get("color", "#ffffff")), 0.5)
+
+
+func _draw() -> void:
+	if not visible_ball:
+		return
+	var cv := _cv
+	var r := radius
+	if _trail.size() > 3:
+		var local := PackedVector2Array()
+		for p in _trail:
+			local.append(to_local(p))
+		var smooth := InkCanvas.spline(local, 2)
+		cv.stroke(smooth, r * 1.7, Color(trail_color, 0.62), 0.95, 0.02, 1.0, 0.0, 0.0, 0.0)
+		cv.stroke(InkCanvas.offset_line(smooth, r * 0.55), 1.3, Color(INK, 0.35), 0.9, 0.05, 2.0, 0.0, 0.0, 0.0)
+	if _shadow_dist < 480.0:
+		var s := clampf(1.0 - _shadow_dist / 480.0, 0.0, 1.0)
+		cv.ellipse(Vector2(0, _shadow_y), Vector2(r * (0.6 + s * 0.6), r * 0.25 * (0.5 + s * 0.5)), Color(0.1, 0.07, 0.05, 0.2 * s))
+	if boosted > 0.0:
+		_flames(cv, r)
+	if braked > 0.0:
+		_chute(cv, r)
+	var fill := ability_fill(ball_color, ability)
+	if iced:
+		fill = fill.lerp(Color("cdf3ff"), 0.6)
+	var alpha := 0.5 if finished or disconnected else 1.0
+	cv.ellipse(Vector2.ZERO, Vector2(r, r), Color(fill, alpha))
+	cv.crescent(Vector2.ZERO, r * 0.98, Vector2(-r * 0.26, -r * 0.24), Color(fill.darkened(0.16), alpha))
+	var mark := fill.darkened(0.32)
+	for k in 3:
+		var a := rot + TAU * float(k) / 3.0
+		var p := Vector2(cos(a), sin(a)) * r * 0.52
+		cv.stroke(InkCanvas.arc_pts(p, r * 0.16, a + 1.2, a + 2.6, 4), 1.1, Color(mark, alpha * 0.9), 0.2, 0.2)
+	match ability:
+		"heavy":
+			cv.stroke(PackedVector2Array([Vector2.from_angle(rot) * -r * 0.85, Vector2.from_angle(rot) * r * 0.85]), 2.2, Color("4f5868"), 0.1, 0.1)
+		"grenade":
+			cv.shape(PackedVector2Array([Vector2(-2.5, -r - 3.5), Vector2(2.5, -r - 3.5), Vector2(2.5, -r + 1.0), Vector2(-2.5, -r + 1.0)]), Color("8d96a6"), 1.4)
+			cv.ink_circle(Vector2(4.0, -r - 3.0), Vector2(2.0, 2.0), 1.2, INK, 3.0)
+			cv.dot(Vector2(0, -1.5), 2.2, Color(1, 0.3, 0.2, 0.5 + 0.5 * sin(_t * 18.0)))
+		"sticky":
+			cv.stroke(PackedVector2Array([Vector2(r * 0.3, r * 0.75), Vector2(r * 0.34, r * 1.35)]), 2.6, Color("7a35b8"), 0.1, 0.3)
+			cv.dot(Vector2(r * 0.34, r * 1.35), 1.8, Color("7a35b8"))
+		"laser":
+			cv.stroke(PackedVector2Array([Vector2(-r * 0.6, 0), Vector2(r * 0.6, 0)]), 1.6, Color("ef3b3b"), 0.2, 0.2)
+		"super":
+			InkIcons._spark(cv, Vector2.ZERO, r * 0.55, Color(1, 1, 1, 0.75))
+		"zig_zag":
+			cv.stroke(PackedVector2Array([Vector2(-r * 0.6, -r * 0.2), Vector2(-r * 0.2, r * 0.25), Vector2(r * 0.2, -r * 0.25), Vector2(r * 0.6, r * 0.2)]), 1.4, Color(INK, 0.6), 0.1, 0.1)
+	_states(cv, r)
+	cv.ink_circle(Vector2.ZERO, Vector2(r, r), 2.4, Color(INK, alpha), float(slot) * 3.0 + 1.0, 0.0, 0.25, 0.025)
+	if is_local and not finished:
+		_local_marker(cv)
+	cv.flush(get_canvas_item())
+	if not is_local and display_name != "" and not finished and show_name:
+		_draw_name()
+
+
+## Ability state overlays: shield bubble, frost, anti-grav rings, magnet pulse.
+func _states(cv: InkCanvas, r: float) -> void:
+	if shield:
+		var p := 0.6 + 0.4 * sin(_t * 5.0)
+		var sr := r + 7.0
+		cv.ellipse(Vector2.ZERO, Vector2(sr, sr), Color(0.4, 0.68, 1.0, 0.16 * p))
+		cv.ink_circle(Vector2.ZERO, Vector2(sr, sr), 2.2, Color("3f7fd8"), 4.0, _t, 0.2, 0.03)
+		cv.stroke(InkCanvas.arc_pts(Vector2.ZERO, sr - 2.5, -2.4, -1.5, 6), 1.8, Color(1, 1, 1, 0.85), 0.2, 0.2)
+	if iced:
+		for k in 4:
+			var a := rot + TAU * float(k) / 4.0
+			cv.stroke(PackedVector2Array([Vector2.from_angle(a) * 2.0, Vector2.from_angle(a) * (r - 1.5)]), 1.0, Color(1, 1, 1, 0.8), 0.1, 0.1)
+	if anti_grav:
+		for k in 2:
+			var ph := fmod(_t * 1.4 + k * 0.5, 1.0)
+			var y := r + 6.0 + ph * 18.0
+			var w := r * (1.2 - ph * 0.5)
+			cv.stroke(InkCanvas.quad_bez(Vector2(-w, y), Vector2(0, y + 3.0), Vector2(w, y), 5), 1.8, Color(0.25, 0.75, 0.6, 1.0 - ph), 0.2, 0.2)
+	if magnet:
+		var ph2 := fmod(_t * 2.0, 1.0)
+		var mr := r + 4.0 + ph2 * 16.0
+		cv.ink_circle(Vector2.ZERO, Vector2(mr, mr), 1.8, Color(0.85, 0.2, 0.22, 1.0 - ph2), 6.0, 0.0, 0.0, 0.02)
+
+
+func _flames(cv: InkCanvas, r: float) -> void:
+	var dir := _trail_dir()
+	var n := Vector2(-dir.y, dir.x)
+	for k in 3:
+		var flick := sin(_t * 30.0 + k * 2.0) * 2.0
+		var len := r * (2.6 - k * 0.5) + flick
+		var w := r * (0.85 - k * 0.18)
+		var base := -dir * r * 0.4
+		var tongue := PackedVector2Array([base + n * w, base - dir * len * 0.55 + n * w * 0.6, base - dir * len, base - dir * len * 0.55 - n * w * 0.6, base - n * w])
+		var col: Color = [Color("ffb03b"), Color("ff7a2e"), Color("ffe08a")][k]
+		cv.fill(InkCanvas.spline(tongue, 3), col)
+		if k == 0:
+			cv.outline(InkCanvas.spline(tongue, 3), 1.6, INK, 2.0)
+	for k in 2:
+		var o := n * (k * 2.0 - 1.0) * r * 1.2
+		cv.stroke(PackedVector2Array([o - dir * r * 1.6, o - dir * r * 3.4]), 1.4, Color(INK, 0.5), 0.3, 0.6)
+
+
+func _chute(cv: InkCanvas, r: float) -> void:
+	var top := Vector2(0, -r - 30)
+	var canopy := InkCanvas.arc_pts(top, 22.0, PI, TAU, 12)
+	var hem := PackedVector2Array()
+	for k in 5:
+		hem.append(top + Vector2(22.0 - k * 11.0, 3.0 if k % 2 == 1 else 0.0))
+	var shape := canopy + hem
+	cv.fill(shape, Color("4cc9f0"))
+	for k in 3:
+		cv.stroke(PackedVector2Array([top + Vector2(-11 + k * 11, 0), top + Vector2(-6 + k * 6, -20)]), 1.0, Color(INK, 0.4), 0.2, 0.2)
+	cv.outline(shape, 2.0, INK, 7.0)
+	for x: float in [-20.0, 0.0, 20.0]:
+		cv.stroke(PackedVector2Array([top + Vector2(x, 2), Vector2(0, -r)]), 1.1, INK, 0.0, 0.0)
+
+
+func _local_marker(cv: InkCanvas) -> void:
 	var ring_r := radius + 9.0
 	if cooldown_frac > 0.001:
-		draw_arc(Vector2.ZERO, ring_r, 0, TAU, 40, Color(0, 0, 0, 0.25), 4.0, true)
-		draw_arc(Vector2.ZERO, ring_r, -PI * 0.5, -PI * 0.5 + TAU * (1.0 - cooldown_frac), 40, Color("ffd166"), 4.0, true)
+		cv.ink_circle(Vector2.ZERO, Vector2(ring_r, ring_r), 3.6, Color(INK, 0.25), 9.0, 0.0, 0.0, 0.0)
+		var a0 := -PI * 0.5
+		cv.stroke(InkCanvas.arc_pts(Vector2.ZERO, ring_r, a0, a0 + TAU * (1.0 - cooldown_frac), 28), 3.6, slot_color, 0.05, 0.05)
 	elif ready_to_shoot:
 		var pulse := _ready_pulse
-		draw_arc(Vector2.ZERO, ring_r + pulse * 10.0, 0, TAU, 40, Color(0.5, 1.0, 0.6, 0.35 + pulse * 0.6), 3.0, true)
-	# Bobbing arrow above the ball.
+		var rr := ring_r + pulse * 10.0
+		cv.ink_circle(Vector2.ZERO, Vector2(rr, rr), 2.4 + pulse * 2.0, Color(slot_color, 0.4 + pulse * 0.6), 5.0, 0.0, 0.2, 0.02)
 	var bob := sin(_t * 4.0) * 3.0
-	var tip := Vector2(0, -radius - 16 + bob)
-	var arrow := PackedVector2Array([tip, tip + Vector2(-8, -11), tip + Vector2(8, -11)])
-	draw_colored_polygon(arrow, slot_color)
-	var o := arrow.duplicate()
-	o.append(arrow[0])
-	draw_polyline(o, Color("1b2040"), 2.5, true)
+	var tip := Vector2(0, -radius - 15 + bob)
+	cv.shape(PackedVector2Array([tip, tip + Vector2(-8, -11), tip + Vector2(0, -8.5), tip + Vector2(8, -11)]), slot_color, 2.2)
 
 
 func _draw_name() -> void:
 	var font := UITheme.body_bold_font()
-	var size := 16
+	var size := 18
 	var w := font.get_string_size(display_name, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
 	var pos := Vector2(-w * 0.5, -radius - 14)
-	draw_string_outline(font, pos, display_name, HORIZONTAL_ALIGNMENT_LEFT, -1, size, 5, Color("1b2040"))
-	draw_string(font, pos, display_name, HORIZONTAL_ALIGNMENT_LEFT, -1, size, slot_color)
+	draw_string_outline(font, pos, display_name, HORIZONTAL_ALIGNMENT_LEFT, -1, size, 6, InkCanvas.PAPER)
+	draw_string(font, pos, display_name, HORIZONTAL_ALIGNMENT_LEFT, -1, size, slot_color.darkened(0.35))

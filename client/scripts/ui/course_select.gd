@@ -16,7 +16,7 @@ var _picker: Control
 
 
 func _ready() -> void:
-	RenderingServer.set_default_clear_color(Color("1b2040"))
+	RenderingServer.set_default_clear_color(Color("f1ebe0"))
 	var bg := MenuBackdrop.new()
 	add_child(bg)
 	bg.setup(GameData.theme_for("golf_land"), LocalStore.appearance(), false)
@@ -32,7 +32,7 @@ func _ready() -> void:
 
 func _build() -> void:
 	var dim := ColorRect.new()
-	dim.color = Color(0.06, 0.07, 0.16, 0.55)
+	dim.color = Color(0.97, 0.94, 0.88, 0.25)
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ui.add_child(dim)
@@ -111,7 +111,8 @@ func _card(cid: String) -> Control:
 	var accent := Color(theme.get("grass", "#6ccf4a"))
 	var card := PanelContainer.new()
 	card.custom_minimum_size = Vector2(CARD_W, CARD_H)
-	var sb := UITheme.arcade_box(Color(UITheme.INK, 0.94), accent.darkened(0.2), UITheme.SLANT * 0.35, 4)
+	var sb := InkStyleBox.make(UITheme.PAPER, 3.2, 16.0, 6.0, 5.0)
+	sb.lip_color = accent
 	sb.content_margin_left = 16; sb.content_margin_right = 16; sb.content_margin_top = 12; sb.content_margin_bottom = 14
 	card.add_theme_stylebox_override("panel", sb)
 	var vb := VBoxContainer.new()
@@ -121,7 +122,7 @@ func _card(cid: String) -> Control:
 	vb.add_child(top)
 	var num := UITheme.styled_label("%d" % int(c.get("order", 0)), 34, accent, 8)
 	top.add_child(num)
-	var name_l := UITheme.styled_label(str(c.name).to_upper(), 34, UITheme.PAPER, 8)
+	var name_l := UITheme.styled_label(str(c.name), 36, UITheme.PAPER, 9)
 	name_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	name_l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	top.add_child(name_l)
@@ -156,10 +157,10 @@ func _card(cid: String) -> Control:
 	if rec.get("completed", false):
 		var best := int(rec.best_total)
 		var diff := best - par
-		info.add_child(_badge("BEST %d (%s)" % [best, ("%+d" % diff) if diff != 0 else "E"], UITheme.PAPER))
+		info.add_child(_badge("BEST %d (%s)" % [best, ("%+d" % diff) if diff != 0 else "E"], UITheme.INK))
 		var medal := str(rec.get("medal", ""))
 		if medal != "":
-			info.add_child(_badge(medal.to_upper(), {"gold": Color("ffd166"), "silver": Color("d9e2f2"), "bronze": Color("f4a261")}.get(medal, UITheme.MUTED)))
+			info.add_child(_badge(medal.to_upper(), {"gold": Color("c98a0b"), "silver": Color("7d8794"), "bronze": Color("b06a32")}.get(medal, UITheme.MUTED)))
 	else:
 		info.add_child(_badge("NOT PLAYED", UITheme.MUTED))
 	var buttons := HBoxContainer.new()
@@ -211,7 +212,7 @@ func _open_hole_picker(cid: String) -> void:
 	var c := GameData.course(cid)
 	var rec := Records.course(cid)
 	var shade := ColorRect.new()
-	shade.color = Color(0, 0, 0, 0.55)
+	shade.color = Color(0.12, 0.1, 0.08, 0.5)
 	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	ui.add_child(shade)
 	_picker = shade
@@ -260,4 +261,4 @@ func _badge(text: String, col: Color) -> Control:
 
 
 static func _difficulty_color(d: String) -> Color:
-	return {"Beginner": Color("80ed99"), "Easy": Color("4cc9f0"), "Medium": Color("ffd166"), "Hard": Color("ef476f")}.get(d, UITheme.MUTED)
+	return {"Beginner": Color("4b9a33"), "Easy": Color("2f86d6"), "Medium": Color("d99a0b"), "Hard": Color("c44a3c")}.get(d, UITheme.MUTED)

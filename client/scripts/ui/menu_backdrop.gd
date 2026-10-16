@@ -76,7 +76,7 @@ func set_appearance(a: Dictionary) -> void:
 func _reset_ball() -> void:
 	var bx := golfer.position.x + golfer.ball_offset() * 3.0
 	var hit := _terrain.raycast(Vector2(bx, golfer.position.y - 300), Vector2.DOWN, 800)
-	_ball.pos = (hit.pos if hit.hit else Vector2(bx, golfer.position.y)) + Vector2(0, -27)
+	_ball.pos = (hit.pos if hit.hit else Vector2(bx, golfer.position.y)) + Vector2(0, -21)
 	_ball.vel = Vector2.ZERO
 	_ball.flying = false
 	_ball.trail_pts.clear()
@@ -146,19 +146,16 @@ class _MenuBall extends Node2D:
 	var trail := Color.YELLOW
 	var trail_pts: PackedVector2Array = PackedVector2Array()
 
+	var _cv := InkCanvas.new()
+
 	func _draw() -> void:
-		var n := trail_pts.size()
-		for i in range(1, n):
-			var k := float(i) / float(n)
-			draw_line(trail_pts[i - 1], trail_pts[i], Color(trail, k * 0.8), 22.0 * k + 2.0, true)
-		# Sprite ball (18 art px) at 3x, tinted with the player's ball colour; spins while flying.
-		var strip := UIArt.tex("ball/ball_tint_spin.png")
-		if strip:
-			texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-			var fw := strip.get_width() / 8
-			var fi := posmod(int(pos.x / 24.0), 8) if flying else 0
-			draw_texture_rect_region(strip, Rect2(pos - Vector2(27, 27), Vector2(54, 54)), Rect2(fi * fw, 0, fw, strip.get_height()), color)
-			return
-		draw_circle(pos, 27.0 + 5.0, Color("1b2040"), true, -1.0, true)
-		draw_circle(pos, 27.0, color, true, -1.0, true)
-		draw_circle(pos + Vector2(-9, -10), 7.5, Color(1, 1, 1, 0.8), true, -1.0, true)
+		var r := 21.0
+		if trail_pts.size() > 3:
+			_cv.stroke(InkCanvas.spline(trail_pts, 2), r * 1.6, Color(trail, 0.6), 0.95, 0.02, 1.0, 0.0, 0.0, 0.0)
+		_cv.ellipse(pos, Vector2(r, r), color)
+		_cv.crescent(pos, r * 0.97, Vector2(-r * 0.26, -r * 0.24), color.darkened(0.16))
+		for k in 3:
+			var a := pos.x * 0.05 + TAU * k / 3.0
+			_cv.stroke(InkCanvas.arc_pts(pos + Vector2(cos(a), sin(a)) * r * 0.52, r * 0.16, a + 1.2, a + 2.6, 4), 2.2, color.darkened(0.32), 0.2, 0.2)
+		_cv.ink_circle(pos, Vector2(r, r), 4.6, InkCanvas.INK, 2.0)
+		_cv.flush(get_canvas_item())

@@ -631,9 +631,9 @@ func test_collection_catalog() -> void:
 	check(client != null and client == server, "client offline catalog is identical to the backend catalog")
 	var missing: PackedStringArray = []
 	for it: Dictionary in (client as Dictionary).get("items", []):
-		if str(it.kind) == "character" and not CharacterDefs.has(str(it.value)):
+		if str(it.kind) == "character" and not InkLook.has_outfit(str(it.value)):
 			missing.append(str(it.value))
-	check(missing.is_empty(), "every catalog golfer exists in the roster %s" % str(missing))
+	check(missing.is_empty(), "every catalog golfer is a themed ink outfit %s" % str(missing))
 	_section_ok = true
 
 

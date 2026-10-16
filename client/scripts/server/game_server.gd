@@ -544,9 +544,10 @@ func _dev_join(name: String) -> String:
 		return id
 	if state != State.WAITING or sim.players.size() >= dev_players:
 		return ""
-	var app := Appearance.with_preset({}, Appearance.PRESETS[sim.players.size() % Appearance.PRESETS.size()].data)
-	if CharacterDefs.has(want_char):
-		app.character = want_char
+	# Dev players wear a different themed outfit each, so local multiplayer tests show distinct looks.
+	var ids := InkLook.outfit_ids()
+	var outfit: String = want_char if InkLook.has_outfit(want_char) else ids[(sim.players.size() * 5 + 1) % ids.size()]
+	var app := Appearance.for_outfit({}, outfit)
 	var p := sim.add_player(id, name, Appearance.normalize(app))
 	p.connected = false
 	_dev_names.append(name)

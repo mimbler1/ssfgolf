@@ -45,10 +45,15 @@ func _push(p: PackedVector2Array) -> void:
 	queue_redraw()
 
 
+var _cv := InkCanvas.new()
+
+
+## Faint pencil lines of the last shots (newest darkest).
 func _draw() -> void:
 	for i in range(_paths.size() - 1, -1, -1):
 		var p := _paths[i]
 		if p.size() > 1:
-			draw_polyline(p, COLORS[i], 3.0 - i * 0.6)
+			_cv.stroke(InkCanvas.resample(p, 6.0), 3.0 - i * 0.6, Color(InkCanvas.INK, COLORS[i].a * 0.8), 0.05, 0.3, float(i), 0.15, 0.4, 0.4)
 	if _recording.size() > 1:
-		draw_polyline(_recording, Color(1, 0.85, 0.4, 0.45), 2.0)
+		_cv.stroke(_recording, 2.0, Color(InkCanvas.INK, 0.3), 0.05, 0.05, 9.0, 0.1, 0.0, 0.5)
+	_cv.flush(get_canvas_item())

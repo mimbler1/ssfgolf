@@ -1,9 +1,12 @@
 class_name Appearance
 extends RefCounted
-## Versioned golfer appearance format (v1). Mirrors the backend schema in docs/API.md.
+## Versioned golfer appearance format. Mirrors the backend schema in docs/API.md.
+## v1 keys stay required and valid (older clients and stored profiles); v2 adds the hand-drawn
+## look under `ink` (InkLook, docs/INK_ART_SPEC.md §8). A profile without `ink` is migrated from
+## its v1 keys (character -> themed outfit, colours, hat, shirt, face).
 ## Unknown ids fall back to defaults so newer content never breaks older clients.
 
-const VERSION := 1
+const VERSION := 2
 
 const HEAD_SHAPES := {"round": "Round", "oval": "Oval", "square": "Boxy", "bean": "Bean"}
 const EYES := {"dot": "Dots", "happy": "Happy", "big": "Big Eyes", "sleepy": "Sleepy", "angry": "Fierce", "shades": "Shades", "visor": "Visor", "wink": "Wink"}
@@ -18,8 +21,8 @@ const PALETTE := [
 ]
 
 const DEFAULT := {
-	"v": 1,
-	"character": "rex",   ## v3: new profiles start as a sprite golfer; "stickman" stays valid
+	"v": 2,
+	"character": "stickman",   ## ink art: every golfer is the stick figure; ids name themed outfits
 	"bodyColor": "#2b2d42",
 	"outlineColor": "#11121c",
 	"headShape": "round",
@@ -33,6 +36,7 @@ const DEFAULT := {
 	"shirtColor": "#457b9d",
 	"ballColor": "#ffffff",
 	"trailColor": "#ffd166",
+	"ink": InkLook.DEFAULT,
 }
 
 ## Ready-made starting points shown in the Golfer Studio.
@@ -56,7 +60,7 @@ static func normalize(raw: Variant) -> Dictionary:
 	for key in ["bodyColor", "outlineColor", "hatColor", "shirtColor", "ballColor", "trailColor"]:
 		if d.has(key) and _is_hex(d[key]):
 			out[key] = str(d[key])
-	if d.has("character") and CharacterDefs.has(str(d.character)):
+	if d.has("character") and InkLook.has_outfit(str(d.character)):
 		out.character = str(d.character)
 	if d.has("headShape") and HEAD_SHAPES.has(str(d.headShape)):
 		out.headShape = str(d.headShape)
@@ -72,12 +76,27 @@ static func normalize(raw: Variant) -> Dictionary:
 		out.headScale = clampf(float(d.headScale), 0.8, 1.3)
 	if d.has("limbThickness"):
 		out.limbThickness = clampf(float(d.limbThickness), 0.7, 1.5)
+	if d.has("ink") and d.ink is Dictionary:
+		out.ink = InkLook.normalize(d.ink)
+	else:
+		out.ink = InkLook.from_v1(out)
+	out.v = VERSION
 	return out
+
+
+## Appearance for an outfit id: the outfit's ink look. Ball and trail colours are separate
+## collectibles, so they are kept from `base`.
+static func for_outfit(base: Dictionary, id: String) -> Dictionary:
+	var a := normalize(base)
+	a.character = id
+	a.ink = InkLook.outfit_look(id)
+	return a
 
 
 static func with_preset(base: Dictionary, preset_data: Dictionary) -> Dictionary:
 	var merged := DEFAULT.duplicate(true)
 	merged.ballColor = base.get("ballColor", merged.ballColor)
+	merged.erase("ink")
 	for k in preset_data:
 		merged[k] = preset_data[k]
 	return normalize(merged)

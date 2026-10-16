@@ -1,3 +1,4 @@
+import { SIGNATURE_PARTS } from '../profile/appearance.ts';
 import { randomInt, randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -83,6 +84,17 @@ export async function assertOwnsAppearance(db: Queryable, playerId: string, next
     if (!id || owned.has(id)) continue;
     if (was !== undefined && value !== undefined && was.toLowerCase() === value.toLowerCase()) continue;
     throw new AppError(403, 'not_owned', `You don't own ${itemById(id)?.name ?? id} yet`);
+  }
+  // Signature parts of the ink look unlock with the outfit they come from.
+  const nextInk = (next.ink ?? {}) as Record<string, unknown>;
+  const curInk = (current.ink ?? {}) as Record<string, unknown>;
+  for (const [key, table] of Object.entries(SIGNATURE_PARTS)) {
+    const value = nextInk[key];
+    if (typeof value !== 'string' || !(value in table)) continue;
+    const id = idFor('character', table[value]);
+    if (!id || owned.has(id)) continue;
+    if (curInk[key] === value) continue;
+    throw new AppError(403, 'not_owned', `That part comes with ${itemById(id)?.name ?? id}: unlock it in card packs first`);
   }
 }
 

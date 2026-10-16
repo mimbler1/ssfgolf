@@ -19,7 +19,7 @@ var _online := false
 
 
 func _ready() -> void:
-	RenderingServer.set_default_clear_color(Color("1b2040"))
+	RenderingServer.set_default_clear_color(Color("f1ebe0"))
 	backdrop = MenuBackdrop.new()
 	add_child(backdrop)
 	backdrop.setup(GameData.theme_for("golf_land"), _appearance())
@@ -42,66 +42,80 @@ func _appearance() -> Dictionary:
 
 func _build() -> void:
 	# Logo.
-	var logo := VBoxContainer.new()
-	logo.add_theme_constant_override("separation", -26)
-	logo.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var logo := InkLogo.new()
 	ui.add_child(logo)
-	UITheme.pin(logo, 0, 0, Vector2(70, 50), 1, 1)
-	var l1 := UITheme.styled_label("FAIRWAY", 128, UITheme.PAPER, 18)
-	l1.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	logo.add_child(l1)
-	var l2 := UITheme.styled_label("FRENZY", 128, UITheme.SUN, 18)
-	l2.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	logo.add_child(l2)
-	var tag := UITheme.styled_label("Real-time arcade golf racing", 30, Color("cfe9ff"), 7)
+	UITheme.pin(logo, 0, 0, Vector2(50, 30), 1, 1)
+	var tag := UITheme.styled_label("Real-time arcade golf racing", 30, UITheme.PAPER, 8)
 	tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	logo.add_child(tag)
-	logo.rotation = -0.03
+	ui.add_child(tag)
+	UITheme.pin(tag, 0, 0, Vector2(84, 318), 1, 1)
 
-	# Menu column.
+	# Menu column on a paper card.
+	var card := PanelContainer.new()
+	ui.add_child(card)
+	UITheme.pin(card, 1, 0.5, Vector2(-70, 50), -1, 0)
 	var col := VBoxContainer.new()
-	col.custom_minimum_size = Vector2(460, 0)
-	col.add_theme_constant_override("separation", 14)
-	ui.add_child(col)
-	UITheme.pin(col, 1, 0.5, Vector2(-80, 40), -1, 0)
-	var play := GameButton.make("PLAY ONLINE", "PrimaryButton", Vector2(460, 96))
-	play.add_theme_font_size_override("font_size", 40)
+	col.custom_minimum_size = Vector2(440, 0)
+	col.add_theme_constant_override("separation", 10)
+	card.add_child(col)
+	var play := MenuEntry.entry("Play Online", "play", "PrimaryButton", Vector2(440, 86))
+	play.add_theme_font_size_override("font_size", 38)
 	play.pressed.connect(_quick_play)
 	col.add_child(play)
 	_online_buttons.append(play)
-	var private := GameButton.make("Private Match", "", Vector2(460, 70))
+	var row1 := HBoxContainer.new()
+	row1.add_theme_constant_override("separation", 10)
+	col.add_child(row1)
+	var private := MenuEntry.entry("Private Match", "friends", "", Vector2(215, 62))
 	private.pressed.connect(func() -> void: _open_room_entry())
-	col.add_child(private)
+	row1.add_child(private)
 	_online_buttons.append(private)
-	var courses := GameButton.make("Courses", "", Vector2(460, 70))
+	var courses := MenuEntry.entry("Courses", "flag", "", Vector2(215, 62))
 	courses.tooltip_text = "Solo stroke play and practice on all six courses"
 	courses.pressed.connect(func() -> void: Router.goto(Router.COURSES))
-	col.add_child(courses)
-	var studio := GameButton.make("Golfer Studio", "SunButton", Vector2(460, 70))
+	row1.add_child(courses)
+	var studio := MenuEntry.entry("Golfer Studio", "studio", "SunButton", Vector2(440, 66))
 	studio.pressed.connect(func() -> void: Router.goto(Router.CUSTOMIZE))
 	col.add_child(studio)
-	var coll := GameButton.make("Collection & Packs", "GhostButton", Vector2(460, 62))
+	var grid := GridContainer.new()
+	grid.columns = 2
+	grid.add_theme_constant_override("h_separation", 10)
+	grid.add_theme_constant_override("v_separation", 10)
+	col.add_child(grid)
+	var coll := MenuEntry.entry("Collection", "collection", "GhostButton", Vector2(215, 56))
 	coll.pressed.connect(func() -> void: Router.goto(Router.COLLECTION))
-	col.add_child(coll)
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 14)
-	col.add_child(row)
-	var lb := GameButton.make("Leaderboard", "GhostButton", Vector2(223, 62))
+	grid.add_child(coll)
+	var packs := MenuEntry.entry("Card Packs", "pack", "GhostButton", Vector2(215, 56))
+	packs.tooltip_text = "Open card packs in the Collection"
+	packs.pressed.connect(func() -> void: Router.goto(Router.COLLECTION))
+	grid.add_child(packs)
+	var challenges := MenuEntry.entry("Challenges", "challenge", "GhostButton", Vector2(215, 56))
+	challenges.tooltip_text = "Today's daily challenge hole (on the Courses screen)"
+	challenges.pressed.connect(func() -> void: Router.goto(Router.COURSES))
+	grid.add_child(challenges)
+	var lb := MenuEntry.entry("Leaderboards", "leaderboard", "GhostButton", Vector2(215, 56))
 	lb.pressed.connect(_open_leaderboard)
-	row.add_child(lb)
+	grid.add_child(lb)
 	_online_buttons.append(lb)
-	var settings := GameButton.make("Settings", "GhostButton", Vector2(223, 62))
+	var friends := MenuEntry.entry("Friends", "friends", "GhostButton", Vector2(215, 56))
+	friends.disabled = true
+	friends.locked = true
+	friends.tooltip_text = "Friends lists aren't built yet. Share a Private Match room code to play together."
+	grid.add_child(friends)
+	var settings := MenuEntry.entry("Settings", "settings", "GhostButton", Vector2(215, 56))
 	settings.pressed.connect(func() -> void:
 		var sp := SettingsPanel.new()
 		ui.add_child(sp))
-	row.add_child(settings)
-	var quit := GameButton.make("Quit", "GhostButton", Vector2(460, 56))
+	grid.add_child(settings)
+	for b in grid.get_children():
+		(b as Button).add_theme_font_size_override("font_size", 23)
+	var quit := MenuEntry.entry("Quit", "back", "GhostButton", Vector2(440, 50))
 	quit.pressed.connect(func() -> void: get_tree().quit())
 	col.add_child(quit)
 
 	# Profile chip (top-right).
 	_chip = PanelContainer.new()
-	var sb := UITheme.box(Color(UITheme.INK, 0.9), 22, UITheme.INK_LINE, 0, 10)
+	var sb := UITheme.panel_box()
 	sb.content_margin_left = 16; sb.content_margin_right = 20; sb.content_margin_top = 10; sb.content_margin_bottom = 10
 	_chip.add_theme_stylebox_override("panel", sb)
 	_chip.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -134,8 +148,9 @@ func _build() -> void:
 	_chip_xp = ProgressBar.new()
 	_chip_xp.custom_minimum_size = Vector2(220, 12)
 	_chip_xp.show_percentage = false
-	_chip_xp.add_theme_stylebox_override("background", UITheme.box(Color(0, 0, 0, 0.4), 6))
-	_chip_xp.add_theme_stylebox_override("fill", UITheme.box(Color("80ed99"), 6))
+	var xp_fill := InkStyleBox.make(UITheme.GRASS, 0.0, 6.0)
+	xp_fill.set_content_margin_all(0)
+	_chip_xp.add_theme_stylebox_override("fill", xp_fill)
 	info.add_child(_chip_xp)
 	var stats := HBoxContainer.new()
 	stats.add_theme_constant_override("separation", 8)
@@ -152,7 +167,8 @@ func _build() -> void:
 
 	_status = Label.new()
 	_status.theme_type_variation = "MutedLabel"
-	_status.add_theme_color_override("font_outline_color", UITheme.INK_LINE)
+	_status.add_theme_color_override("font_color", UITheme.INK)
+	_status.add_theme_color_override("font_outline_color", UITheme.PAPER)
 	_status.add_theme_constant_override("outline_size", 6)
 	ui.add_child(_status)
 	UITheme.pin(_status, 1, 0, Vector2(-34, 130), -1, 1)
@@ -160,7 +176,8 @@ func _build() -> void:
 	var ver := Label.new()
 	ver.theme_type_variation = "MutedLabel"
 	ver.text = "Project Fairway Frenzy (working title) · v%s" % GameData.VERSION
-	ver.add_theme_color_override("font_outline_color", UITheme.INK_LINE)
+	ver.add_theme_color_override("font_color", UITheme.INK)
+	ver.add_theme_color_override("font_outline_color", UITheme.PAPER)
 	ver.add_theme_constant_override("outline_size", 6)
 	ui.add_child(ver)
 	UITheme.pin(ver, 0, 1, Vector2(28, -22), 1, -1)
@@ -189,6 +206,9 @@ func _set_online(on: bool) -> void:
 
 func _connect_backend() -> void:
 	_status.text = ""
+	if OS.get_cmdline_user_args().has("--dev-offline-menu"):
+		_show_offline()
+		return
 	if not Backend.has_saved_identity() and not Backend.is_logged_in():
 		_open_welcome()
 		return
@@ -247,7 +267,7 @@ func _open_panel(width: float, title: String) -> VBoxContainer:
 	_close_panel()
 	_poll_token += 1
 	var dim := ColorRect.new()
-	dim.color = Color(0.03, 0.04, 0.1, 0.55)
+	dim.color = Color(0.12, 0.1, 0.08, 0.5)
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	ui.add_child(dim)
 	_panel_root = dim
@@ -293,7 +313,7 @@ func _muted(text: String) -> Label:
 func _error(text: String) -> Label:
 	var l := Label.new()
 	l.text = text
-	l.add_theme_color_override("font_color", Color("ff8fa3"))
+	l.add_theme_color_override("font_color", UITheme.CORAL_DARK)
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	return l
@@ -587,7 +607,7 @@ func _open_room(code: String) -> void:
 				var hb := HBoxContainer.new()
 				hb.add_theme_constant_override("separation", 12)
 				row.add_child(hb)
-				hb.add_child(Icon.make("crown" if m.isHost else "user", 30, UITheme.PAPER))
+				hb.add_child(Icon.make("crown" if m.isHost else "user", 30))
 				var n := Label.new()
 				n.text = str(m.displayName) + ("  (you)" if str(m.playerId) == Backend.player_id else "")
 				n.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -595,7 +615,7 @@ func _open_room(code: String) -> void:
 				hb.add_child(n)
 				var st := Label.new()
 				st.text = "Host" if m.isHost else ("Ready" if m.ready else "Not ready")
-				st.add_theme_color_override("font_color", UITheme.SUN if m.isHost else (Color("80ed99") if m.ready else UITheme.MUTED))
+				st.add_theme_color_override("font_color", UITheme.SUN if m.isHost else (UITheme.GRASS_DARK if m.ready else UITheme.MUTED))
 				hb.add_child(st)
 				members.add_child(row)
 				if not m.isHost and not m.ready:
@@ -672,7 +692,7 @@ func _open_leaderboard() -> void:
 		rank.text = "#%d" % int(e.rank)
 		rank.custom_minimum_size = Vector2(70, 0)
 		rank.add_theme_font_override("font", UITheme.heading_font())
-		rank.add_theme_color_override("font_color", [UITheme.SUN, Color("d9e2f2"), Color("f4a261")][int(e.rank) - 1] if int(e.rank) <= 3 else UITheme.MUTED)
+		rank.add_theme_color_override("font_color", [Color("c98a0b"), Color("7d8794"), Color("b06a32")][int(e.rank) - 1] if int(e.rank) <= 3 else UITheme.MUTED)
 		hb.add_child(rank)
 		var n := Label.new()
 		n.text = str(e.displayName)
@@ -785,6 +805,7 @@ static func _ordinal(n: int) -> String:
 
 class _Spinner extends Control:
 	var _t := 0.0
+	var _cv := InkCanvas.new()
 
 	func _process(delta: float) -> void:
 		_t += delta
@@ -795,7 +816,11 @@ class _Spinner extends Control:
 		for i in 8:
 			var a := _t * 4.0 + TAU * float(i) / 8.0
 			var k := float(i) / 8.0
-			draw_circle(c + Vector2.from_angle(a) * 40.0, 6.0 + k * 6.0, Color(1, 1, 1, 0.2 + k * 0.8), true, -1.0, true)
-		draw_circle(c, 20.0, Color("1b2040"), true, -1.0, true)
-		draw_circle(c, 17.0, Color.WHITE, true, -1.0, true)
-		draw_circle(c + Vector2(-5, -6), 5.0, Color(1, 1, 1, 0.9), true, -1.0, true)
+			var p := c + Vector2.from_angle(a) * 40.0
+			var r := 5.0 + k * 5.0
+			_cv.ellipse(p, Vector2(r, r), Color(UITheme.SUN, 0.25 + k * 0.75))
+			_cv.ink_circle(p, Vector2(r, r), 1.6, Color(InkCanvas.INK, 0.25 + k * 0.75), float(i))
+		_cv.ellipse(c, Vector2(17, 17), Color.WHITE)
+		_cv.crescent(c, 16.5, Vector2(-5, -5), Color("e3ddd2"))
+		_cv.ink_circle(c, Vector2(17, 17), 2.6, InkCanvas.INK, 1.0)
+		_cv.flush(get_canvas_item())
