@@ -28,7 +28,8 @@ This document describes the game as implemented. Details live in:
 |---|---|---|
 | **Blitz (online)** | 2–6 | Everyone plays the same hole simultaneously from the tee. Finishing order scores points: 2 players 3-0; 3 players 3-1-0; 4 players 3-2-1-0; 5 players 4-3-2-1-0; 6 players 5-4-3-2-1-0. When the first player holes out, the rest have 25 s. Win at 9 points (5 players: 12; 6 players: 15). A tie at the top plays on, with a 15-hole cap. Holes are drawn at random from all six courses. Quick Play is ranked (trophies) with 2–4 players. Private rooms take 2–6 players; the host picks the target, the player cap, one course or all courses, and "all balls for everyone" |
 | **Stroke play (solo)** | 1 | One course's nine holes in order. Strokes count against par, plus 1 penalty stroke for each hazard or reset. Balls are limited by charges per round instead of energy. Optional Clean Ball challenge (no abilities). The round ends with a scorecard, medal and personal records |
-| **Practice** | 1 | Any hole on repeat. All balls available. Optional debug flight path. Physics Lab tuning panel |
+| **Practice** | 1 | Any hole on repeat. All balls available. Ghost paths of recent shots and a shot log. Optional debug flight path. Physics Lab tuning panel |
+| **Daily challenge** | 1 | Today's hole as stroke play, with a per-day best |
 
 ## The shot
 
@@ -114,16 +115,32 @@ Records are kept per profile:
 A swish is a ball holed with no terrain contact since the shot. Swishes and holes-in-one are
 announced but never change Blitz points.
 
+## Collection and packs
+
+The cosmetics are real items only: sprite golfers, ball colours and trail colours. Twenty
+starter items are owned by everyone. Coins come from online matches and buy packs on the
+server:
+
+- **Basic:** 120 coins for 3 items.
+- **Premium:** 400 coins for 4 items, the first epic or better.
+
+Duplicates refund coins by rarity, and equipping an unowned item is refused by the server.
+Cosmetics never change gameplay.
+
+## Daily challenge, practice and spectating
+
+- **Daily challenge.** One hole a day from all six courses, picked by the UTC date and the same
+  for everyone, played as stroke play. Daily bests are saved.
+- **Practice.** Ghost paths of your last three shots and a log of their angle, power and spin.
+  An optional debug flight path is available here only.
+- **Spectating.** After holing out online, the aim keys switch which golfer the camera follows.
+- **Pause menu (online).** Mute a player's emotes, or report them.
+
 ## Not implemented yet
 
-- Card packs.
-- The cosmetic collection.
-- Rematch.
-- Spectator mode.
-- Daily challenges.
-- Course flyover.
-- Shot replay.
 - Equipment modifiers for casual modes.
-- Collectible objectives.
+- Collectible objectives on holes.
+- Ability mastery challenges.
+- A shot-replay video.
 
 These are tracked in ROADMAP.md.

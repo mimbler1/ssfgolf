@@ -14,8 +14,19 @@ implemented, tested and committed; evidence is listed for each milestone. Earlie
 | 6 | First course | **Done** (gameplay) | Golf Land: 9 holes, solver-verified, authored meadow art |
 | 7 | Courses 2–6 | **Done** (gameplay) / art pending | Beach Land, Sticky Zone, Snow Field, Gravity Lab and Spin Land: 54 holes total, all solver-verified and robust (test_playable 55/55, test_sim 306/306). Stage art for themes 2–6 is the main remaining visual gap |
 | 8 | Multiplayer score HUD | **Done** | SSF2-inspired portrait and score panels for 2–6 players, adaptive and readable from 1160×736 to 3440×1440 (HUD_SPEC.md, screenshots) |
-| 9 | Convert remaining interfaces | **In progress** | Course select is new. Still to do: pixel ability icons and frames, main menu and results polish, profile screen. The cosmetic collection and card packs need to be built first, since they don't exist yet |
-| 10 | Multiplayer and performance validation | **Partly done** | Online soak for 2/3/4/5/6 players with abilities: all clients agree. The backend E2E passes. Gameplay perf probe added (sim tick ~0.13 ms); frame-time numbers to be re-measured on an idle GPU. Still to do: reconnect within the soak, and a low-end hardware pass |
+| 9 | Convert remaining interfaces | **Mostly done** | Done: pixel-art ability icons, card frames, energy cells, sprite ball, studio podium, framed portraits; course select; results with victory pose; Collection and card packs (new, backend + client); pause-menu mute/report. Still to do: a pixel logo, profile screen polish, hiding any character still not converted |
+| 10 | Multiplayer and performance validation | **Mostly done** | Online soak for 2/3/4/5/6 players with abilities: all clients agree. Abrupt drop and rejoin mid-match passes. The backend E2E passes. Gameplay perf probe added (sim tick ~0.13 ms). Still to do: re-measure frame times on an idle GPU, and a low-end hardware pass |
+
+Also added beyond the milestone list:
+
+- Ball unlock progression, enforced by the server.
+- Off-screen markers and hole flyover.
+- Visible gravity fields and belts.
+- Practice ghost paths and a shot log.
+- Reduced-motion setting.
+- Daily challenge.
+- Spectator switching.
+- Private-room course, player-count and all-balls settings.
 
 ## Next steps (priority order)
 
@@ -26,6 +37,6 @@ implemented, tested and committed; evidence is listed for each milestone. Earlie
 3. Re-measure gameplay and studio performance with the GPU idle, and update
    PERFORMANCE_REPORT.md.
 4. Golfer Studio on sprites: palette variants, and hat and equipment layers on sprite anchors.
-5. Collection and card packs (backend data model, rewards, screens), then the results screen
-   with victory poses.
-6. Off-screen opponent indicators, course flyover, rematch and spectator view.
+5. More collectible content as art lands: hats and equipment on sprite anchors, ball skins and
+   trail effects.
+6. Optional collectibles on holes, ability mastery challenges, a pixel-art logo.
