@@ -40,11 +40,11 @@ and every result is then grid-snapped, palette-quantised, defringed and outlined
 | Area | State |
 |---|---|
 | Golf Land stage (meadow) | Authored pixel art: illustrated parallax sky, mountains and castle hills, painted grass and soil, material strips, textured animated water, sprite decor, flag flipbook |
-| Beach Land, Sticky Zone, Snow Field, Gravity Lab, Spin Land stages | **Procedural fallback only.** Playable, but they look like the retired style until each theme's art set is produced |
-| Golfers | Sprite golfers with idle and swing animations. The roster is being converted from the old toon rig in stages (see CHARACTER_CONVERSION.md). Walk, victory, defeat and emote animations still fall back to idle |
-| Portraits | A cached head crop of the sprite, or an authored `portrait.png` where one exists |
-| Ball, trail, aim ring | Still drawn procedurally; a sprite ball is in production |
-| Ability icons | Old vector glyphs; pixel-art icons are in production |
-| Effects | Flipbooks for impact, dust, splash, sparkle and flame. Sparks, confetti and new ability states are still procedural |
-| UI | Arcade panels, display font, SSF2-inspired player score panels (HUD_SPEC.md). Pixel frame art for the HUD is in production |
-| Menus | Main menu, Golfer Studio, course select and results use the arcade theme over the meadow backdrop. Card packs and the cosmetic collection have no screens yet |
+| Beach Land, Sticky Zone, Snow Field, Gravity Lab, Spin Land stages | Pixel-art stage sets from the same pipeline: parallax backdrops, surface and soil tiles, material strips and sprite decor (STAGE_ART.md, `docs/screens/v4/stages/`). Weak points: some soil tiles are busy at close zoom, and stage props are static (no animated props yet) |
+| Golfers | All 17 roster golfers are sprites, with the same ids as before (CHARACTER_CONVERSION.md). Each has idle, swing, victory and an authored portrait. Walk, defeat and emote animations still fall back to idle |
+| Portraits | Authored `portrait.png` in a pixel frame (UI_ART.md) |
+| Ball, trail, aim ring | Sprite ball with tint and in-flight spin. Trails and the aim arrow are drawn shapes, kept deliberately flat |
+| Ability icons | Pixel-art icons for all 15 balls |
+| Effects | Flipbooks for impact, dust, splash, sparkle and flame. Sparks, confetti and some ability states (shield bubble, magnet pull) are still procedural |
+| UI | Arcade panels, display font, nine-slice pixel frames, SSF2-inspired player score panels (HUD_SPEC.md), energy cells and pips |
+| Menus | Main menu, Golfer Studio (pixel podium), course select, Collection and pack reveal, and results with the victory pose. No pixel-art logo yet; the title is set in the display font |

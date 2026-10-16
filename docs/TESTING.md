@@ -7,8 +7,8 @@ fast suites. The longer soak and benchmark tools are run by hand.
 
 | Suite | Command | Verifies | Last result |
 |---|---|---|---|
-| Compile | `godot --headless --path client --script res://tests/compile_all.gd` | Every script parses and compiles | 72 / 72 |
-| Characters | `... res://tests/test_characters.gd` | Roster definitions, every character × animation pose solves, legacy ids resolve | 1224 poses, 0 failures |
+| Compile | `godot --headless --path client --script res://tests/compile_all.gd` | Every script parses and compiles | 80 / 80 |
+| Characters | `... res://tests/test_characters.gd` | Roster definitions, every character × animation pose solves, legacy ids resolve | 1462 poses, 0 failures |
 | Simulation | `... res://tests/test_sim.gd` | Resting, tunnelling at max power, cup capture, command validation (energy, cooldown, airborne), grenade, sticky walls, momentum, scoring and match end, disconnect forfeits. **Every hole of every course:** cup cut, tee ground, and 40 random shots cycling all 14 online abilities with random spin, mid-flight activations and in-flight spin. The ball must never end inside terrain or become unshootable | 306 / 306 |
 | BallPhysicsLab | `... res://tests/test_abilities.gd` | Directive lab tests A–H, spin, surfaces, gravity fields (low, flipped, zero-G float), conveyors, modes / Free Shot / Mulligan / Clean Ball, 5–6 player rules, power curve, unlock routes and server enforcement, client/backend catalogue match. Writes `docs/physics/lab_results.md`. Every section must reach its end, so a script error fails the run | 98 / 98 |
 | Playability | `... res://tests/test_playable.gd` | The `CourseSolver` bot finishes every hole (54 course holes + lab) with the plain ball, no spin | 55 / 55 |
@@ -24,6 +24,7 @@ fast suites. The longer soak and benchmark tools are run by hand.
 |---|---|
 | `python tools/courses/check.py <course> [--hole N]` | Rebuild a course from `tools/courses/<id>.py`, run the solver and render review maps (terrain, hazards, fields, solver shot paths) |
 | `godot --path client --resolution WxH -- --profile perf --perf-studio out.json` | Golfer Studio benchmark (see PERFORMANCE_REPORT.md). Requires a separate `--profile` |
+| `godot --path client --resolution WxH -- --profile perf --perf-game out.json` | 6-player gameplay stress benchmark on three courses (see PERFORMANCE_REPORT.md) |
 | `-- --practice --course <id> --hole N` | Jump into practice |
 | `-- --stroke --course <id>` | Jump into stroke play |
 | `-- --courses` | Open course select |
@@ -42,12 +43,14 @@ never modified.
   - aim (regular, laser, classic);
   - course select;
   - stroke play;
-  - HUD for 2–6 players at 1920×1080, 1280×720, 1160×736, 2560×1440 and 3440×1440.
+  - HUD for 2–6 players at 1920×1080, 1280×720, 1160×736, 2560×1440 and 3440×1440;
+  - collection and pack reveal, daily challenge, flyover, off-screen markers, practice ghosts,
+    pause-menu players panel, match end, studio;
+  - every converted golfer (`characters/`) and every course stage (`stages/`).
 
 ## Known gaps
 
-- The perf probe covers the Golfer Studio only. A gameplay frame-time probe (practice and
-  6-ball online) is still to be added.
+- Performance has only been measured on one high-end PC; no low-end hardware run yet.
 - No automated test drives real mouse or keyboard input. Aim and controls were verified with
   the dev aim hooks and by reading the code.
 - Leaving during a hole is covered by the sim forfeit tests and `e2e_online.py`. Abrupt drop and
