@@ -53,7 +53,7 @@ func _build() -> void:
 	var l2 := UITheme.styled_label("FRENZY", 128, UITheme.SUN, 18)
 	l2.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	logo.add_child(l2)
-	var tag := UITheme.styled_label("Real-time stickman golf racing", 30, Color("cfe9ff"), 7)
+	var tag := UITheme.styled_label("Real-time arcade golf racing", 30, Color("cfe9ff"), 7)
 	tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	logo.add_child(tag)
 	logo.rotation = -0.03

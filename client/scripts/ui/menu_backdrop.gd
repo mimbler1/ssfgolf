@@ -151,6 +151,14 @@ class _MenuBall extends Node2D:
 		for i in range(1, n):
 			var k := float(i) / float(n)
 			draw_line(trail_pts[i - 1], trail_pts[i], Color(trail, k * 0.8), 22.0 * k + 2.0, true)
+		# Sprite ball (18 art px) at 3x, tinted with the player's ball colour; spins while flying.
+		var strip := UIArt.tex("ball/ball_tint_spin.png")
+		if strip:
+			texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			var fw := strip.get_width() / 8
+			var fi := posmod(int(pos.x / 24.0), 8) if flying else 0
+			draw_texture_rect_region(strip, Rect2(pos - Vector2(27, 27), Vector2(54, 54)), Rect2(fi * fw, 0, fw, strip.get_height()), color)
+			return
 		draw_circle(pos, 27.0 + 5.0, Color("1b2040"), true, -1.0, true)
 		draw_circle(pos, 27.0, color, true, -1.0, true)
 		draw_circle(pos + Vector2(-9, -10), 7.5, Color(1, 1, 1, 0.8), true, -1.0, true)
