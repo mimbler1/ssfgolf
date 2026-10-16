@@ -99,7 +99,52 @@ the warm-up of the shared sprite and bounds caches, and it stays flat afterwards
 - **Low-end hardware:** all numbers are from one high-end PC. A low-end pass (integrated GPU) is
   still to do.
 
+### Final studio results (all-sprite roster, GPU idle, 2026-10-16)
+
+Raw data: `docs/perf/studio_final.json`. Cycle 3, 1080p, VSync off.
+
+| Phase | Original build | Final |
+|---|---|---|
+| Idle studio (avg / p95 / max ms) | 63.7 / 66.7 / 67.0 | **0.45 / 0.56 / 0.79** |
+| Scroll roster | 60.6 / 64.9 / 73.3 | 0.52 / 0.63 / 0.87 |
+| Switch 30 characters | 97.7 / 150.4 / 157.9 | 1.15 / 3.18 / 3.56 |
+| Preview all animations | 8.1 / 18.0 / 20.2 | 0.45 / 0.57 / 1.64 |
+| Save | 60.0 / 62.8 / 62.8 | 0.44 / 0.56 / 0.87 |
+| Open studio (worst frame) | 137 | 40 (one frame) |
+| Draw calls with the studio open | 2,150–2,480 | 151 |
+| Static memory, studio open (cycles 1–3) | 95.7 / 109.1 / 109.2 MB | 76.4 / 77.0 / 77.0 MB |
+
+Notes:
+
+- The headwear and swatch phases no longer apply. Every golfer is now a sprite, so the toon
+  customisation tabs are hidden, and the probe skips those phases (0–3 frames recorded).
+- The remaining one-frame hitch on opening the studio is first-time sprite loading. It is far
+  below the original 137 ms.
+
 ## Gameplay
 
-Not yet measured in this overhaul. Planned for Milestone 10, using the same probe approach for
-practice holes and 6-ball online matches.
+Command: `godot --path client --resolution 1920x1080 -- --profile perf --perf-game out.json`.
+Raw data: `docs/perf/game_6p.json`.
+
+The probe plays a local 6-player Blitz match on three courses for 25 s each. All six balls are
+re-shot as soon as allowed, with random abilities, spin and mid-flight activations, so up to six
+balls are in flight at once. It was run on 2026-10-16 with the GPU idle, at 1080p with VSync
+off.
+
+| Course | Frames | avg ms | p95 ms | max ms | Frames over 33 ms | Sim tick avg / max ms | Draw calls |
+|---|---|---|---|---|---|---|---|
+| Golf Land | 18,167 | 1.38 | 1.93 | 14.7 | 0 | 0.156 / 0.328 | 236 |
+| Gravity Lab | 9,918 | 2.52 | 3.12 | 46.7 | 1 | 0.137 / 0.362 | 269 |
+| Spin Land | 17,706 | 1.41 | 1.89 | 48.6 | 2 | 0.153 / 0.367 | 216 |
+
+- Gameplay sits far inside the 16.7 ms budget for 60 FPS, at about 500+ FPS uncapped.
+- The authoritative simulation costs about 0.15 ms per 1/60 s tick with six balls.
+- The 1–2 isolated frames over 33 ms per course are most likely first-use texture or shader
+  uploads. A shader and texture warm-up at hole load is a planned fix.
+- Memory returns to about 85 MB at the menu after each course, so there is no growth across
+  matches.
+- An earlier run, taken while SDXL art generation saturated the same GPU, measured 12–14 ms per
+  frame. It is superseded and kept only for reference.
+
+**Not yet measured:** low-end hardware (integrated GPU). All numbers here come from one RTX 4080
+SUPER PC.

@@ -5,118 +5,118 @@
   "memory": [
     {
       "at": "menu start",
-      "draw_calls": 101,
-      "nodes": 105,
-      "objects": 1920,
+      "draw_calls": 98,
+      "nodes": 107,
+      "objects": 1930,
       "orphans": 0,
-      "static_mb": 62.99,
+      "static_mb": 63.36,
       "video_mb": 88.32
     },
     {
       "at": "in match golf_land",
-      "draw_calls": 420,
-      "nodes": 199,
-      "objects": 2367,
+      "draw_calls": 236,
+      "nodes": 206,
+      "objects": 2452,
       "orphans": 0,
-      "static_mb": 86.12,
-      "video_mb": 119.9
+      "static_mb": 86.53,
+      "video_mb": 113.73
     },
     {
       "at": "menu after golf_land",
-      "draw_calls": 101,
-      "nodes": 105,
-      "objects": 2143,
+      "draw_calls": 98,
+      "nodes": 107,
+      "objects": 2223,
       "orphans": 0,
-      "static_mb": 84.04,
-      "video_mb": 118.99
+      "static_mb": 84.85,
+      "video_mb": 113.5
     },
     {
       "at": "in match gravity_lab",
-      "draw_calls": 4621,
-      "nodes": 219,
-      "objects": 2406,
+      "draw_calls": 269,
+      "nodes": 221,
+      "objects": 2505,
       "orphans": 0,
-      "static_mb": 103.12,
-      "video_mb": 127.65
+      "static_mb": 87.15,
+      "video_mb": 114.14
     },
     {
       "at": "menu after gravity_lab",
-      "draw_calls": 101,
-      "nodes": 105,
-      "objects": 2145,
+      "draw_calls": 98,
+      "nodes": 107,
+      "objects": 2226,
       "orphans": 0,
-      "static_mb": 90.98,
-      "video_mb": 118.99
+      "static_mb": 84.99,
+      "video_mb": 113.63
     },
     {
       "at": "in match spin_land",
-      "draw_calls": 3863,
-      "nodes": 214,
-      "objects": 2421,
+      "draw_calls": 216,
+      "nodes": 209,
+      "objects": 2450,
       "orphans": 0,
-      "static_mb": 101.32,
-      "video_mb": 125.89
+      "static_mb": 86.6,
+      "video_mb": 113.81
     },
     {
       "at": "menu after spin_land",
-      "draw_calls": 101,
-      "nodes": 105,
-      "objects": 2145,
+      "draw_calls": 98,
+      "nodes": 107,
+      "objects": 2227,
       "orphans": 0,
-      "static_mb": 91.0,
-      "video_mb": 118.99
+      "static_mb": 85.03,
+      "video_mb": 113.63
     }
   ],
   "phases": [
     {
-      "avg_ms": 12.62,
-      "frames": 1981,
-      "max_ms": 28.6,
-      "p95_ms": 17.16,
+      "avg_ms": 1.38,
+      "frames": 18167,
+      "max_ms": 14.71,
+      "p95_ms": 1.93,
       "phase": "6p stress golf_land",
       "stalls_over_33ms": 0
     },
     {
-      "avg_ms": 13.23,
-      "frames": 1890,
-      "max_ms": 29.71,
-      "p95_ms": 17.82,
+      "avg_ms": 2.52,
+      "frames": 9918,
+      "max_ms": 46.65,
+      "p95_ms": 3.12,
       "phase": "6p stress gravity_lab",
-      "stalls_over_33ms": 0
+      "stalls_over_33ms": 1
     },
     {
-      "avg_ms": 14.27,
-      "frames": 1752,
-      "max_ms": 28.5,
-      "p95_ms": 17.69,
+      "avg_ms": 1.41,
+      "frames": 17706,
+      "max_ms": 48.55,
+      "p95_ms": 1.89,
       "phase": "6p stress spin_land",
-      "stalls_over_33ms": 0
+      "stalls_over_33ms": 2
     }
   ],
   "sim": [
     {
       "course": "golf_land",
       "max_balls_moving": 6,
-      "shots": 65,
-      "sim_tick_avg_ms": 0.138,
-      "sim_tick_max_ms": 0.45,
-      "ticks": 1499
+      "shots": 71,
+      "sim_tick_avg_ms": 0.156,
+      "sim_tick_max_ms": 0.328,
+      "ticks": 1500
     },
     {
       "course": "gravity_lab",
       "max_balls_moving": 6,
       "shots": 59,
-      "sim_tick_avg_ms": 0.127,
-      "sim_tick_max_ms": 1.123,
+      "sim_tick_avg_ms": 0.137,
+      "sim_tick_max_ms": 0.362,
       "ticks": 1500
     },
     {
       "course": "spin_land",
       "max_balls_moving": 6,
-      "shots": 61,
-      "sim_tick_avg_ms": 0.132,
-      "sim_tick_max_ms": 0.33,
-      "ticks": 1501
+      "shots": 70,
+      "sim_tick_avg_ms": 0.153,
+      "sim_tick_max_ms": 0.367,
+      "ticks": 1500
     }
   ],
   "window": [
