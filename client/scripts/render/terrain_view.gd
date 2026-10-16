@@ -35,8 +35,11 @@ func build(p_terrain: SimTerrain, p_hole: Dictionary, p_theme: Dictionary, p_hol
 	for c in get_children():
 		c.queue_free()
 	art = WorldArt.load_for(theme)
+	var forces := ForceOverlay.new()
+	forces.setup(terrain, GameData.materials, float(GameData.balance.physics.gravity))
 	if art:
 		_build_art()
+		add_child(forces)
 		return
 
 	var decor_back := Node2D.new()
@@ -87,6 +90,7 @@ func build(p_terrain: SimTerrain, p_hole: Dictionary, p_theme: Dictionary, p_hol
 		add_child(flag)
 
 	_build_decor(decor_back)
+	add_child(forces)
 
 
 ## Authored-art build: same geometry as the procedural path, dressed in world materials.
