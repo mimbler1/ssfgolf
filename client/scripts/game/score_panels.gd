@@ -137,6 +137,11 @@ func _ranks() -> Dictionary:
 		if not bool(view.ball_state(p.slot).get("forfeited", false)):
 			pts.append([p.slot, int(view.player_state(p.slot).get("points", 0))])
 	var out := {}
+	var top := 0
+	for a: Array in pts:
+		top = maxi(top, int(a[1]))
+	if top == 0:
+		return out   # nobody has scored yet: no placement badges
 	for a: Array in pts:
 		var better := 0
 		for b: Array in pts:

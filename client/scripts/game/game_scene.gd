@@ -57,6 +57,10 @@ var _spectate_slot := -1
 var _pending_predict := false
 var _last_predict_key := ""
 var _backdrop_theme_key := "-"
+## Hole flyover: seconds left / total. The camera shows the whole hole, then eases to the ball.
+var _flyover := 0.0
+var _flyover_len := 0.0
+var markers: OffscreenMarkers
 var _results_overlay: Control
 var _dev_aim: Vector2 = Vector2(-1, -1)  ## Developer screenshot hook: (angle, power)
 var _dev_overview := OS.get_cmdline_user_args().has("--dev-overview")
@@ -158,6 +162,11 @@ func _on_welcomed() -> void:
 	hud.setup(view)
 	hud.ability_clicked.connect(_select_ability)
 	hud.menu_pressed.connect(_toggle_menu)
+	markers = OffscreenMarkers.new()
+	markers.view = view
+	markers.camera = camera
+	hud_layer.add_child(markers)
+	hud_layer.move_child(markers, 0)
 	for r in view.roster:
 		var slot := int(r.slot)
 		var app: Dictionary = r.appearance
@@ -242,6 +251,13 @@ func _on_hole_loaded(index: int, number: int) -> void:
 	if not bs.is_empty():
 		camera.position = bs.pos
 		camera.reset_smoothing()
+	# Flyover: show the hole's layout first (online: during the countdown; solo: 2.2 s, skippable).
+	_flyover_len = float(GameData.balance.hole.countdown) if view.mode == "online" else 2.2
+	_flyover = _flyover_len
+	var ov := _overview()
+	camera.position = ov[0]
+	_cam_zoom = ov[1]
+	camera.zoom = Vector2(_cam_zoom, _cam_zoom)
 	_last_countdown = -1
 
 
@@ -360,7 +376,25 @@ func _update_golfer(slot: int, s: Dictionary, speed: float) -> void:
 		tw.tween_callback(func() -> void: g.visible = false)
 
 
+## Camera centre and zoom that frame the whole hole.
+func _overview() -> Array:
+	var bd := view.terrain.bounds
+	var vs := get_viewport().get_visible_rect().size
+	return [bd.get_center() + Vector2(0, bd.size.y * 0.12), clampf(minf(vs.x / (bd.size.x + 200.0), vs.y / (bd.size.y * 0.75)), 0.25, 1.0)]
+
+
 func _update_camera(delta: float) -> void:
+	if _flyover > 0.0:
+		_flyover = maxf(0.0, _flyover - delta)
+		var k := clampf((1.0 - _flyover / _flyover_len - 0.45) / 0.55, 0.0, 1.0)
+		k = k * k * (3.0 - 2.0 * k)
+		var ov := _overview()
+		var me := view.ball_state(view.local_slot)
+		var goal: Vector2 = (me.get("pos", ov[0]) as Vector2) + Vector2(0, -150)
+		camera.position = (ov[0] as Vector2).lerp(goal, k)
+		_cam_zoom = lerpf(float(ov[1]), _user_zoom, k)
+		camera.zoom = Vector2(_cam_zoom, _cam_zoom)
+		return
 	var target := camera.position
 	var follow := view.local_slot
 	var me := view.ball_state(view.local_slot)
@@ -412,6 +446,11 @@ func _pick_spectate() -> int:
 # ---------------------------------------------------------------------------
 
 func _unhandled_input(event: InputEvent) -> void:
+	# Any click or key skips the flyover in solo modes (online it follows the countdown).
+	if _flyover > 0.0 and view and view.mode != "online" and event.is_pressed() and not event.is_echo() 			and (event is InputEventKey or event is InputEventMouseButton):
+		_flyover = 0.0
+		get_viewport().set_input_as_handled()
+		return
 	if view == null or view.terrain == null or _menu_open:
 		if event.is_action_pressed("pause_menu"):
 			_toggle_menu()
