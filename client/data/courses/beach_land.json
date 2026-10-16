@@ -27,11 +27,11 @@
   "holes": [
     {
       "id": "bl_01",
-      "name": "Shoreline",
-      "par": 3,
-      "bounds": {"x": -200, "y": -1500, "w": 3500, "h": 2200},
+      "name": "Sandbar",
+      "par": 5,
+      "bounds": {"x": -200, "y": -1900, "w": 5600, "h": 2600},
       "tee": {"x": 360, "y": 0},
-      "cup": {"x": 2160, "y": -20},
+      "cup": {"x": 4650, "y": -468},
       "terrain": [
         {
           "material": "grass",
@@ -44,26 +44,40 @@
             [100, -50],
             [220, 0],
             [520, 0],
-            [800, -20],
-            [1100, -14],
-            [1320, 8],
-            [1400, 40, {"m": "sand"}],
-            [1560, 52, {"m": "sand"}],
-            [1700, 40],
-            [1780, 6],
-            [1900, -16],
-            [2100, -20],
-            [2300, -20],
-            [2480, -20],
-            [2515.0, 65.0],
-            [2550, 150, {"m": "sand"}],
-            [2910, 150],
-            [2945.0, 65.0],
-            [2980, -20],
-            [3060, -30],
-            [3150, -340],
-            [3300, -900, {"c": true}],
-            [3300, 700, {"c": true}],
+            [900, -20],
+            [1250, -10],
+            [1400, -8],
+            [1450.4, 23.499999999999996, {"m": "sand"}],
+            [1540.0, 37, {"m": "sand"}],
+            [1629.6, 23.499999999999996, {"m": "sand"}],
+            [1680, -8],
+            [1820, -10],
+            [1950, -10],
+            [1985.0, 65.0],
+            [2020, 140, {"m": "sand"}],
+            [2380, 140],
+            [2415.0, 65.0],
+            [2450, -10],
+            [2550, -20],
+            [2700, -28],
+            [2780, -28, {"c": true, "m": "rock"}],
+            [2820, -450, {"c": true}],
+            [2950, -462],
+            [3350, -470],
+            [3550, -470],
+            [3604.0, -438.5, {"m": "sand"}],
+            [3700.0, -425, {"m": "sand"}],
+            [3796.0, -438.5, {"m": "sand"}],
+            [3850, -470],
+            [4100, -475],
+            [4450, -480],
+            [4650, -468],
+            [4850, -482],
+            [5050, -505],
+            [5130, -580],
+            [5250, -830],
+            [5400, -1400, {"c": true}],
+            [5400, 700, {"c": true}],
             [-200, 700, {"c": true}]
           ]
         }
@@ -72,28 +86,560 @@
         {
           "type": "water",
           "points": [
-            [2484, -6],
-            [2976, -6],
-            [2976, 190],
-            [2484, 190]
+            [1954, 4],
+            [2446, 4],
+            [2446, 180],
+            [1954, 180]
           ]
         }
       ],
       "decor": [
-        {"type": "palm", "x": 600, "y": -10, "scale": 1.0},
-        {"type": "shell", "x": 1250, "y": 0, "scale": 1.0},
-        {"type": "umbrella", "x": 1950, "y": -20, "scale": 1.0},
-        {"type": "palm", "x": 3150, "y": -40, "scale": 1.0}
+        {"type": "palm", "x": 640, "y": -10, "scale": 1.0},
+        {"type": "shell", "x": 1150, "y": -12, "scale": 1.0},
+        {"type": "umbrella", "x": 1850, "y": -10, "scale": 1.0},
+        {"type": "crab", "x": 2600, "y": -22, "scale": 1.0},
+        {"type": "palm", "x": 3050, "y": -465, "scale": 1.0},
+        {"type": "grass_tuft", "x": 3300, "y": -470, "scale": 1.0},
+        {"type": "palm", "x": 4250, "y": -478, "scale": 1.0},
+        {"type": "lighthouse", "x": 5150, "y": -515, "scale": 1.1}
       ],
-      "notes": "A straightforward drive. The pot bunker plugs anything that lands short; the sea waits behind the green."
+      "notes": "Drive along the beach past the bunker and the sea inlet, pop the ball up onto the sea cliff, then work across the bunkered top to a green that gathers the ball toward the cup."
     },
     {
       "id": "bl_02",
-      "name": "Tide Pools",
-      "par": 4,
-      "bounds": {"x": -200, "y": -1500, "w": 3600, "h": 2200},
+      "name": "Palm Point",
+      "par": 5,
+      "bounds": {"x": -200, "y": -2100, "w": 6000, "h": 2800},
+      "tee": {"x": 380, "y": -420},
+      "cup": {"x": 5050, "y": -300},
+      "terrain": [
+        {
+          "material": "grass",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -1200, {"c": true}],
+            [-90, -1140],
+            [20, -800],
+            [120, -470],
+            [260, -420],
+            [560, -420],
+            [700, -400],
+            [800, -390, {"c": true, "m": "rock"}],
+            [890, -40, {"c": true}],
+            [1050, -10],
+            [1400, 0],
+            [1700, 10],
+            [1900, 10],
+            [1945.0, 39.4, {"m": "sand"}],
+            [2025.0, 52, {"m": "sand"}],
+            [2105.0, 39.4, {"m": "sand"}],
+            [2150, 10],
+            [2400, 0],
+            [2650, 0],
+            [2685.0, 70.0],
+            [2720, 140, {"m": "sand"}],
+            [3080, 140],
+            [3115.0, 70.0],
+            [3150, 0],
+            [3350, -10],
+            [3650, -50],
+            [3900, -150],
+            [4150, -250],
+            [4350, -280],
+            [4450, -280],
+            [4486.0, -252.0, {"m": "sand"}],
+            [4550.0, -240, {"m": "sand"}],
+            [4614.0, -252.0, {"m": "sand"}],
+            [4650, -280],
+            [4800, -295],
+            [5200, -300],
+            [5380, -310],
+            [5530, -360],
+            [5650, -610],
+            [5800, -1300, {"c": true}],
+            [5800, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [
+        {
+          "type": "water",
+          "points": [
+            [2654, 14],
+            [3146, 14],
+            [3146, 180],
+            [2654, 180]
+          ]
+        }
+      ],
+      "decor": [
+        {"type": "palm", "x": 520, "y": -420, "scale": 1.0},
+        {"type": "lighthouse", "x": 120, "y": -440, "scale": 0.8},
+        {"type": "shell", "x": 1300, "y": 0, "scale": 1.0},
+        {"type": "palm", "x": 2300, "y": 0, "scale": 1.0},
+        {"type": "crab", "x": 3450, "y": -15, "scale": 1.0},
+        {"type": "grass_tuft", "x": 4000, "y": -180, "scale": 1.0},
+        {"type": "palm", "x": 4250, "y": -270, "scale": 1.0},
+        {"type": "umbrella", "x": 5300, "y": -300, "scale": 1.0}
+      ],
+      "notes": "Tee off the headland onto the long beach, carry the tide pool, then climb the dunes to a raised green guarded by a pot bunker."
+    },
+    {
+      "id": "bl_03",
+      "name": "Lagoon Pier",
+      "par": 5,
+      "bounds": {"x": -200, "y": -1800, "w": 5400, "h": 2500},
       "tee": {"x": 360, "y": 0},
-      "cup": {"x": 2720, "y": -30},
+      "cup": {"x": 4500, "y": -150},
+      "terrain": [
+        {
+          "material": "grass",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -800, {"c": true}],
+            [-90, -740],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [900, -10],
+            [1100, -10],
+            [1180, 30, {"c": true}],
+            [1220, 220, {"c": true, "m": "sand"}],
+            [3360, 220, {"c": true}],
+            [3400, 30, {"c": true}],
+            [3480, -20],
+            [3800, -60],
+            [4100, -120],
+            [4300, -150],
+            [4700, -150],
+            [4780, -160],
+            [4930, -210],
+            [5050, -460],
+            [5200, -1100, {"c": true}],
+            [5200, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        },
+        {
+          "material": "wood",
+          "smooth": false,
+          "kind": "island",
+          "points": [
+            [1650, -40, {"c": true, "m": "wood"}],
+            [2550, -40, {"c": true}],
+            [2550, -14, {"c": true}],
+            [1650, -14, {"c": true}]
+          ]
+        },
+        {
+          "material": "wood",
+          "smooth": false,
+          "kind": "island",
+          "points": [
+            [1700, -14, {"c": true, "m": "wood"}],
+            [1730, -14, {"c": true}],
+            [1730, 220, {"c": true}],
+            [1700, 220, {"c": true}]
+          ]
+        },
+        {
+          "material": "wood",
+          "smooth": false,
+          "kind": "island",
+          "points": [
+            [2470, -14, {"c": true, "m": "wood"}],
+            [2500, -14, {"c": true}],
+            [2500, 220, {"c": true}],
+            [2470, 220, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [
+        {
+          "type": "water",
+          "points": [
+            [1184, 40],
+            [3396, 40],
+            [3396, 260],
+            [1184, 260]
+          ]
+        }
+      ],
+      "decor": [
+        {"type": "palm", "x": 600, "y": 0, "scale": 1.0},
+        {"type": "umbrella", "x": 950, "y": -10, "scale": 1.0},
+        {"type": "buoy", "x": 1400, "y": 60, "scale": 1.0},
+        {"type": "buoy", "x": 2950, "y": 60, "scale": 1.0},
+        {"type": "palm", "x": 3700, "y": -50, "scale": 1.0},
+        {"type": "shell", "x": 4000, "y": -110, "scale": 1.0},
+        {"type": "palm", "x": 4800, "y": -150, "scale": 1.0}
+      ],
+      "notes": "The lagoon is wider than any shot carries: lay up on the wooden pier, then play across to the far shore and up the dune to the green."
+    },
+    {
+      "id": "bl_04",
+      "name": "Cliffhanger",
+      "par": 5,
+      "bounds": {"x": -200, "y": -2100, "w": 4400, "h": 2800},
+      "tee": {"x": 360, "y": -700},
+      "cup": {"x": 2290, "y": -500},
+      "terrain": [
+        {
+          "material": "grass",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -1500, {"c": true}],
+            [-90, -1440],
+            [20, -1100],
+            [120, -760],
+            [260, -700],
+            [560, -700],
+            [650, -700, {"c": true, "m": "rock"}],
+            [710, 100, {"c": true}],
+            [780, 100, {"m": "sand"}],
+            [1150, 105, {"m": "sand"}],
+            [1250, 100],
+            [1450, 110],
+            [1650, 100],
+            [1700, 100, {"c": true, "m": "rock"}],
+            [1740, -150, {"c": true}],
+            [1800, -155],
+            [1850, -155, {"c": true, "m": "rock"}],
+            [1880, -500, {"c": true}],
+            [1960, -505],
+            [2150, -500],
+            [2420, -500],
+            [2440, -500, {"c": true, "m": "rock"}],
+            [2450, -900, {"c": true}],
+            [2600, -930],
+            [3000, -960],
+            [4200, -980, {"c": true}],
+            [4200, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "palm", "x": 500, "y": -700, "scale": 1.0},
+        {"type": "lighthouse", "x": 140, "y": -720, "scale": 0.9},
+        {"type": "crab", "x": 1350, "y": 105, "scale": 1.0},
+        {"type": "palm", "x": 1550, "y": 100, "scale": 1.0},
+        {"type": "grass_tuft", "x": 2050, "y": -503, "scale": 1.0},
+        {"type": "palm", "x": 2800, "y": -945, "scale": 1.0}
+      ],
+      "notes": "A high tee over a deep valley to a short plateau green with a rock backstop. Carry the lip perfectly and it can drop for an ace; come up short and it is the long way round: out of the valley sand and up the rock steps."
+    },
+    {
+      "id": "bl_05",
+      "name": "Sea Arch",
+      "par": 4,
+      "bounds": {"x": -200, "y": -1800, "w": 4800, "h": 2500},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 3950, "y": -20},
+      "terrain": [
+        {
+          "material": "grass",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -800, {"c": true}],
+            [-90, -740],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [900, -10],
+            [1300, -20],
+            [1500, -20],
+            [1800, -20],
+            [2100, -20],
+            [2300, -10],
+            [2500, -10],
+            [2536.0, 18.0, {"m": "sand"}],
+            [2600.0, 30, {"m": "sand"}],
+            [2664.0, 18.0, {"m": "sand"}],
+            [2700, -10],
+            [2900, -15],
+            [3300, -20],
+            [3700, -20],
+            [4200, -25],
+            [4330, -80],
+            [4450, -330],
+            [4600, -1000, {"c": true}],
+            [4600, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        },
+        {
+          "material": "rock",
+          "smooth": true,
+          "kind": "arch",
+          "points": [
+            [1350, -10, {"c": true, "m": "rock"}],
+            [1420, -260],
+            [1560, -480],
+            [1800, -560],
+            [2040, -480],
+            [2180, -260],
+            [2250, -10, {"c": true}],
+            [2120, -10, {"c": true}],
+            [2060, -180],
+            [1950, -300],
+            [1800, -330],
+            [1650, -300],
+            [1540, -180],
+            [1480, -10, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "palm", "x": 700, "y": -10, "scale": 1.0},
+        {"type": "shell", "x": 1150, "y": -18, "scale": 1.0},
+        {"type": "grass_tuft", "x": 1800, "y": -560, "scale": 1.0},
+        {"type": "crab", "x": 2800, "y": -15, "scale": 1.0},
+        {"type": "palm", "x": 3400, "y": -20, "scale": 1.0},
+        {"type": "umbrella", "x": 4100, "y": -25, "scale": 1.0}
+      ],
+      "notes": "A natural sea arch spans the fairway. Thread a low shot through it, or loft one over the top; the bunker beyond catches long run-outs."
+    },
+    {
+      "id": "bl_06",
+      "name": "Hidden Cove",
+      "par": 4,
+      "bounds": {"x": -200, "y": -1900, "w": 4600, "h": 2600},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 3500, "y": 0},
+      "terrain": [
+        {
+          "material": "grass",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -800, {"c": true}],
+            [-90, -740],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [900, -20],
+            [1300, -40],
+            [1600, -30],
+            [1750, -25],
+            [1786.0, 3.0, {"m": "sand"}],
+            [1850.0, 15, {"m": "sand"}],
+            [1914.0, 3.0, {"m": "sand"}],
+            [1950, -25],
+            [2100, -20],
+            [2500, -10],
+            [2900, 0],
+            [3300, 0],
+            [3700, 0],
+            [3820, 0, {"c": true, "m": "rock"}],
+            [3820, -230, {"c": true, "m": "rock"}],
+            [2700, -230, {"c": true, "m": "rock"}],
+            [2660, -300, {"c": true}],
+            [3100, -360],
+            [3700, -420],
+            [4400, -460, {"c": true}],
+            [4400, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "palm", "x": 650, "y": -10, "scale": 1.0},
+        {"type": "shell", "x": 1200, "y": -35, "scale": 1.0},
+        {"type": "palm", "x": 2200, "y": -18, "scale": 1.0},
+        {"type": "crab", "x": 3100, "y": 0, "scale": 1.0},
+        {"type": "grass_tuft", "x": 3200, "y": -365, "scale": 1.0},
+        {"type": "palm", "x": 3900, "y": -430, "scale": 1.0}
+      ],
+      "notes": "The cup hides in a cove under a rock overhang. Keep the approach low and run it in, or bank it off the cove's back wall."
+    },
+    {
+      "id": "bl_07",
+      "name": "Tide Steps",
+      "par": 4,
+      "bounds": {"x": -200, "y": -2100, "w": 4600, "h": 2800},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 3300, "y": -620},
+      "terrain": [
+        {
+          "material": "grass",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -800, {"c": true}],
+            [-90, -740],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [800, 0],
+            [1050, 0],
+            [1150, 0, {"c": true, "m": "rock"}],
+            [1190, -200, {"c": true}],
+            [1260, -202],
+            [1360, -202, {"m": "sand"}],
+            [1480, -200, {"m": "sand"}],
+            [1560, -202],
+            [1650, -202],
+            [1720, -202, {"c": true, "m": "rock"}],
+            [1760, -410, {"c": true}],
+            [1830, -412],
+            [1930, -412, {"m": "sand"}],
+            [2050, -410, {"m": "sand"}],
+            [2130, -412],
+            [2220, -412],
+            [2290, -412, {"c": true, "m": "rock"}],
+            [2330, -620, {"c": true}],
+            [2400, -622],
+            [2900, -620],
+            [3800, -620],
+            [3980, -640],
+            [4130, -690],
+            [4250, -940],
+            [4400, -1500, {"c": true}],
+            [4400, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "palm", "x": 700, "y": 0, "scale": 1.0},
+        {"type": "crab", "x": 950, "y": 0, "scale": 1.0},
+        {"type": "palm", "x": 1600, "y": -202, "scale": 1.0},
+        {"type": "shell", "x": 2180, "y": -412, "scale": 1.0},
+        {"type": "palm", "x": 2700, "y": -620, "scale": 1.0},
+        {"type": "lighthouse", "x": 4000, "y": -640, "scale": 1.0}
+      ],
+      "notes": "Three rock terraces up from the beach. Each step has a sand pocket that plugs the ball; land on the grass behind it or skip a step."
+    },
+    {
+      "id": "bl_08",
+      "name": "Sandcastle",
+      "par": 4,
+      "bounds": {"x": -200, "y": -1900, "w": 4400, "h": 2600},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 3050, "y": -240},
+      "terrain": [
+        {
+          "material": "grass",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -800, {"c": true}],
+            [-90, -740],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [900, -10],
+            [1300, -20],
+            [1600, -20],
+            [1750, -20],
+            [1785.0, 45.0],
+            [1820, 110, {"m": "sand"}],
+            [1980, 110],
+            [2015.0, 45.0],
+            [2050, -20],
+            [2300, -40],
+            [2500, -120],
+            [2700, -220],
+            [2800, -240],
+            [3400, -240],
+            [3550, -230],
+            [3800, -200],
+            [3930, -250],
+            [4050, -500],
+            [4200, -1000, {"c": true}],
+            [4200, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        },
+        {
+          "material": "sand",
+          "smooth": false,
+          "kind": "island",
+          "points": [
+            [2720, -400, {"c": true, "m": "sand"}],
+            [2780, -400, {"c": true}],
+            [2780, -238, {"c": true}],
+            [2720, -238, {"c": true}]
+          ]
+        },
+        {
+          "material": "sand",
+          "smooth": false,
+          "kind": "island",
+          "points": [
+            [2700, -430, {"c": true, "m": "sand"}],
+            [2800, -430, {"c": true}],
+            [2800, -400, {"c": true}],
+            [2700, -400, {"c": true}]
+          ]
+        },
+        {
+          "material": "sand",
+          "smooth": false,
+          "kind": "island",
+          "points": [
+            [3380, -400, {"c": true, "m": "sand"}],
+            [3440, -400, {"c": true}],
+            [3440, -238, {"c": true}],
+            [3380, -238, {"c": true}]
+          ]
+        },
+        {
+          "material": "sand",
+          "smooth": false,
+          "kind": "island",
+          "points": [
+            [3360, -430, {"c": true, "m": "sand"}],
+            [3460, -430, {"c": true}],
+            [3460, -400, {"c": true}],
+            [3360, -400, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [
+        {
+          "type": "water",
+          "points": [
+            [1754, -6],
+            [2046, -6],
+            [2046, 150],
+            [1754, 150]
+          ]
+        }
+      ],
+      "decor": [
+        {"type": "palm", "x": 700, "y": -10, "scale": 1.0},
+        {"type": "umbrella", "x": 1200, "y": -18, "scale": 1.0},
+        {"type": "buoy", "x": 1900, "y": 0, "scale": 1.0},
+        {"type": "flag_small", "x": 2750, "y": -430, "scale": 1.0},
+        {"type": "flag_small", "x": 3410, "y": -430, "scale": 1.0},
+        {"type": "shell", "x": 3600, "y": -225, "scale": 1.0},
+        {"type": "palm", "x": 3900, "y": -205, "scale": 1.0}
+      ],
+      "notes": "Carry the moat, climb the dune and drop the ball into the castle courtyard. The sand towers plug anything that hits them."
+    },
+    {
+      "id": "bl_09",
+      "name": "Coastal Classic",
+      "par": 5,
+      "bounds": {"x": -200, "y": -2000, "w": 6600, "h": 2700},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 5600, "y": -80},
       "terrain": [
         {
           "material": "grass",
@@ -107,359 +653,41 @@
             [220, 0],
             [520, 0],
             [700, 0],
-            [735.0, 60.0],
-            [770, 120, {"m": "sand"}],
-            [930, 120],
-            [965.0, 60.0],
-            [1000, 0],
-            [1120, -10],
-            [1240, -10],
-            [1350, -10],
-            [1385.0, 55.0],
-            [1420, 120, {"m": "sand"}],
-            [1580, 120],
-            [1615.0, 55.0],
-            [1650, -10],
-            [1760, -20],
-            [1880, -20],
-            [2000, -20],
-            [2035.0, 55.0],
-            [2070, 130, {"m": "sand"}],
-            [2230, 130],
-            [2265.0, 55.0],
-            [2300, -20],
-            [2450, -30],
-            [2900, -30],
-            [2980, -40],
-            [3130, -90],
-            [3250, -340],
-            [3400, -900, {"c": true}],
-            [3400, 700, {"c": true}],
-            [-200, 700, {"c": true}]
-          ]
-        }
-      ],
-      "zones": [
-        {
-          "type": "water",
-          "points": [
-            [704, 14],
-            [996, 14],
-            [996, 160],
-            [704, 160]
-          ]
-        },
-        {
-          "type": "water",
-          "points": [
-            [1354, 4],
-            [1646, 4],
-            [1646, 160],
-            [1354, 160]
-          ]
-        },
-        {
-          "type": "water",
-          "points": [
-            [2004, -6],
-            [2296, -6],
-            [2296, 170],
-            [2004, 170]
-          ]
-        }
-      ],
-      "decor": [
-        {"type": "shell", "x": 1180, "y": -10, "scale": 1.0},
-        {"type": "rock", "x": 1820, "y": -20, "scale": 1.0},
-        {"type": "palm", "x": 2600, "y": -30, "scale": 1.0},
-        {"type": "crab", "x": 2850, "y": -30, "scale": 1.0}
-      ],
-      "notes": "Three tide pools with short dry banks between them: carry them one at a time or fly them all."
-    },
-    {
-      "id": "bl_03",
-      "name": "Lighthouse Cliff",
-      "par": 4,
-      "bounds": {"x": -200, "y": -1900, "w": 3300, "h": 2600},
-      "tee": {"x": 360, "y": 0},
-      "cup": {"x": 2160, "y": -700},
-      "terrain": [
-        {
-          "material": "grass",
-          "smooth": true,
-          "kind": "ground",
-          "points": [
-            [-200, -800, {"c": true}],
-            [-90, -740],
-            [10, -330],
-            [100, -50],
-            [220, 0],
-            [560, 0],
-            [900, 10],
-            [1180, 0],
-            [1300, -20, {"c": true, "m": "rock"}],
-            [1330, -330, {"c": true, "m": "sand"}],
-            [1470, -340, {"c": true, "m": "rock"}],
-            [1500, -690, {"c": true}],
-            [1640, -700],
-            [1900, -700],
-            [2400, -700],
-            [2560, -720],
-            [2680, -740],
-            [2830, -790],
-            [2950, -1040],
-            [3100, -1300, {"c": true}],
-            [3100, 700, {"c": true}],
-            [-200, 700, {"c": true}]
-          ]
-        }
-      ],
-      "zones": [],
-      "decor": [
-        {"type": "lighthouse", "x": 2600, "y": -730, "scale": 1.2},
-        {"type": "palm", "x": 700, "y": 0, "scale": 1.0},
-        {"type": "rock", "x": 1100, "y": 0, "scale": 1.0},
-        {"type": "grass_tuft", "x": 1800, "y": -700, "scale": 1.0}
-      ],
-      "notes": "The green is on top of the cliff. A sandy ledge halfway up catches short shots (and plugs them)."
-    },
-    {
-      "id": "bl_04",
-      "name": "Dune Run",
-      "par": 5,
-      "bounds": {"x": -200, "y": -1500, "w": 4700, "h": 2200},
-      "tee": {"x": 360, "y": 0},
-      "cup": {"x": 3980, "y": 10},
-      "terrain": [
-        {
-          "material": "grass",
-          "smooth": true,
-          "kind": "ground",
-          "points": [
-            [-200, -800, {"c": true}],
-            [-90, -740],
-            [10, -330],
-            [100, -50],
-            [220, 0],
-            [520, 0],
-            [760, -90],
-            [980, -130],
-            [1160, -60],
-            [1300, 30, {"m": "sand"}],
-            [1460, 50, {"m": "sand"}],
-            [1600, 20],
-            [1800, -110],
-            [2050, -170],
-            [2300, -80],
-            [2450, 20, {"m": "sand"}],
-            [2640, 40, {"m": "sand"}],
-            [2780, 10],
-            [3000, -90],
-            [3250, -120],
-            [3480, -40],
-            [3700, 10],
-            [3900, 10],
-            [4100, 10],
-            [4230, -50],
-            [4350, -300],
-            [4500, -900, {"c": true}],
-            [4500, 700, {"c": true}],
-            [-200, 700, {"c": true}]
-          ]
-        }
-      ],
-      "zones": [],
-      "decor": [
-        {"type": "grass_tuft", "x": 900, "y": -130, "scale": 1.0},
-        {"type": "palm", "x": 2050, "y": -170, "scale": 1.0},
-        {"type": "shell", "x": 2700, "y": 30, "scale": 1.0},
-        {"type": "grass_tuft", "x": 3250, "y": -120, "scale": 1.0},
-        {"type": "umbrella", "x": 3800, "y": 10, "scale": 1.0}
-      ],
-      "notes": "Long rolling dunes. Sand fills every trough, so each shot has to land on a crest or roll over one."
-    },
-    {
-      "id": "bl_05",
-      "name": "Pier Pressure",
-      "par": 4,
-      "bounds": {"x": -200, "y": -1500, "w": 3600, "h": 2200},
-      "tee": {"x": 360, "y": 0},
-      "cup": {"x": 2700, "y": -40},
-      "terrain": [
-        {
-          "material": "grass",
-          "smooth": true,
-          "kind": "ground",
-          "points": [
-            [-200, -800, {"c": true}],
-            [-90, -740],
-            [10, -330],
-            [100, -50],
-            [220, 0],
-            [520, 0],
-            [780, 0],
-            [860, 40, {"c": true}],
-            [900, 220, {"c": true, "m": "sand"}],
-            [2380, 220, {"c": true}],
-            [2420, 40, {"c": true}],
-            [2480, -30],
-            [2600, -40],
-            [2900, -40],
-            [2980, -50],
-            [3130, -100],
-            [3250, -350],
-            [3400, -900, {"c": true}],
-            [3400, 700, {"c": true}],
-            [-200, 700, {"c": true}]
-          ]
-        },
-        {
-          "material": "wood",
-          "smooth": false,
-          "kind": "island",
-          "points": [
-            [1150, -40, {"c": true, "m": "wood"}],
-            [1750, -40, {"c": true}],
-            [1750, -14, {"c": true}],
-            [1150, -14, {"c": true}]
-          ]
-        },
-        {
-          "material": "wood",
-          "smooth": false,
-          "kind": "island",
-          "points": [
-            [1300, -14, {"c": true, "m": "wood"}],
-            [1330, -14, {"c": true}],
-            [1330, 220, {"c": true}],
-            [1300, 220, {"c": true}]
-          ]
-        },
-        {
-          "material": "wood",
-          "smooth": false,
-          "kind": "island",
-          "points": [
-            [1600, -14, {"c": true, "m": "wood"}],
-            [1630, -14, {"c": true}],
-            [1630, 220, {"c": true}],
-            [1600, 220, {"c": true}]
-          ]
-        }
-      ],
-      "zones": [
-        {
-          "type": "water",
-          "points": [
-            [864, 60],
-            [2416, 60],
-            [2416, 260],
-            [864, 260]
-          ]
-        }
-      ],
-      "decor": [
-        {"type": "palm", "x": 640, "y": 0, "scale": 1.0},
-        {"type": "buoy", "x": 2000, "y": 60, "scale": 1.0},
-        {"type": "umbrella", "x": 2800, "y": -40, "scale": 1.0}
-      ],
-      "notes": "Carry the bay, or play safe: lay up on the wooden pier halfway and chip on."
-    },
-    {
-      "id": "bl_06",
-      "name": "Hidden Cove",
-      "par": 4,
-      "bounds": {"x": -200, "y": -1600, "w": 3400, "h": 2300},
-      "tee": {"x": 360, "y": 0},
-      "cup": {"x": 2180, "y": 0},
-      "terrain": [
-        {
-          "material": "grass",
-          "smooth": true,
-          "kind": "ground",
-          "points": [
-            [-200, -800, {"c": true}],
-            [-90, -740],
-            [10, -330],
-            [100, -50],
-            [220, 0],
-            [520, 0],
             [900, 0],
-            [1200, -10],
-            [1500, -4],
+            [935.0, 75.0],
+            [970, 150, {"m": "sand"}],
+            [1730, 150],
+            [1765.0, 75.0],
             [1800, 0],
-            [2100, 0],
-            [2400, 0],
-            [2560, -40],
-            [2780, -60],
-            [2930, -110],
-            [3050, -360],
-            [3200, -1000, {"c": true}],
-            [3200, 700, {"c": true}],
-            [-200, 700, {"c": true}]
-          ]
-        },
-        {
-          "material": "rock",
-          "smooth": true,
-          "kind": "island",
-          "points": [
-            [1500, -200, {"c": true, "m": "rock"}],
-            [2500, -200],
-            [2900, -260],
-            [3300, -300, {"c": true}],
-            [3300, -1100, {"c": true}],
-            [1700, -1100, {"c": true}],
-            [1560, -760],
-            [1420, -420],
-            [1440, -260]
-          ]
-        }
-      ],
-      "zones": [],
-      "decor": [
-        {"type": "rock", "x": 1000, "y": -10, "scale": 1.0},
-        {"type": "shell", "x": 1700, "y": -4, "scale": 1.0},
-        {"type": "crab", "x": 2350, "y": 0, "scale": 1.0}
-      ],
-      "notes": "The cup hides under a rock overhang. Keep it low and run it in, or bank it off the ceiling."
-    },
-    {
-      "id": "bl_07",
-      "name": "High Tide",
-      "par": 4,
-      "bounds": {"x": -200, "y": -2000, "w": 3500, "h": 2700},
-      "tee": {"x": 360, "y": -600},
-      "cup": {"x": 2860, "y": 0},
-      "terrain": [
-        {
-          "material": "grass",
-          "smooth": true,
-          "kind": "ground",
-          "points": [
-            [-200, -1300, {"c": true}],
-            [-90, -1240],
-            [20, -900],
-            [120, -640],
-            [260, -600],
-            [560, -600],
-            [700, -560],
-            [860, -380, {"m": "rock"}],
-            [1000, -160],
-            [1150, -20],
-            [1240, 0],
-            [1300, 10],
-            [1335.0, 85.0],
-            [1370, 160, {"m": "sand"}],
-            [2430, 160],
-            [2465.0, 85.0],
-            [2500, 10],
-            [2620, 0],
-            [2800, 0],
-            [3000, 0],
-            [3150, -310],
-            [3300, -1000, {"c": true}],
-            [3300, 700, {"c": true}],
+            [1950, -10],
+            [2250, -30],
+            [2350, -30, {"c": true, "m": "rock"}],
+            [2390, -480, {"c": true}],
+            [2470, -485],
+            [2800, -490],
+            [3000, -490],
+            [3045.0, -460.6, {"m": "sand"}],
+            [3125.0, -448, {"m": "sand"}],
+            [3205.0, -460.6, {"m": "sand"}],
+            [3250, -490],
+            [3450, -492],
+            [3700, -495],
+            [3850, -495],
+            [3886.0, -467.0, {"m": "sand"}],
+            [3950.0, -455, {"m": "sand"}],
+            [4014.0, -467.0, {"m": "sand"}],
+            [4050, -495],
+            [4250, -490],
+            [4500, -420],
+            [4800, -250],
+            [5100, -110],
+            [5350, -80],
+            [5800, -80],
+            [5980, -90],
+            [6130, -140],
+            [6250, -390],
+            [6400, -1200, {"c": true}],
+            [6400, 700, {"c": true}],
             [-200, 700, {"c": true}]
           ]
         }
@@ -468,171 +696,26 @@
         {
           "type": "water",
           "points": [
-            [1304, 24],
-            [2496, 24],
-            [2496, 200],
-            [1304, 200]
-          ]
-        }
-      ],
-      "decor": [
-        {"type": "palm", "x": 450, "y": -600, "scale": 1.0},
-        {"type": "lighthouse", "x": 160, "y": -620, "scale": 0.8},
-        {"type": "buoy", "x": 1900, "y": 30, "scale": 1.0},
-        {"type": "palm", "x": 2950, "y": 0, "scale": 1.0}
-      ],
-      "notes": "Hit down off the bluff over a wide channel. The extra height carries further than it looks."
-    },
-    {
-      "id": "bl_08",
-      "name": "Sandcastle",
-      "par": 3,
-      "bounds": {"x": -200, "y": -1600, "w": 3000, "h": 2300},
-      "tee": {"x": 360, "y": 0},
-      "cup": {"x": 1720, "y": 0},
-      "terrain": [
-        {
-          "material": "grass",
-          "smooth": true,
-          "kind": "ground",
-          "points": [
-            [-200, -800, {"c": true}],
-            [-90, -740],
-            [10, -330],
-            [100, -50],
-            [220, 0],
-            [520, 0],
-            [900, 0],
-            [1200, 0],
-            [1500, 0],
-            [1700, 0],
-            [1900, 0],
-            [2200, 0],
-            [2400, -20],
-            [2530, -90],
-            [2650, -340],
-            [2800, -900, {"c": true}],
-            [2800, 700, {"c": true}],
-            [-200, 700, {"c": true}]
-          ]
-        },
-        {
-          "material": "sand",
-          "smooth": false,
-          "kind": "island",
-          "points": [
-            [1460, -230, {"c": true, "m": "sand"}],
-            [1520, -230, {"c": true}],
-            [1520, 0, {"c": true}],
-            [1460, 0, {"c": true}]
-          ]
-        },
-        {
-          "material": "sand",
-          "smooth": false,
-          "kind": "island",
-          "points": [
-            [1440, -270, {"c": true, "m": "sand"}],
-            [1540, -270, {"c": true}],
-            [1540, -230, {"c": true}],
-            [1440, -230, {"c": true}]
-          ]
-        },
-        {
-          "material": "sand",
-          "smooth": false,
-          "kind": "island",
-          "points": [
-            [1920, -230, {"c": true, "m": "sand"}],
-            [1980, -230, {"c": true}],
-            [1980, 0, {"c": true}],
-            [1920, 0, {"c": true}]
-          ]
-        },
-        {
-          "material": "sand",
-          "smooth": false,
-          "kind": "island",
-          "points": [
-            [1900, -270, {"c": true, "m": "sand"}],
-            [2000, -270, {"c": true}],
-            [2000, -230, {"c": true}],
-            [1900, -230, {"c": true}]
-          ]
-        }
-      ],
-      "zones": [],
-      "decor": [
-        {"type": "flag_small", "x": 1490, "y": -270, "scale": 1.0},
-        {"type": "flag_small", "x": 1950, "y": -270, "scale": 1.0},
-        {"type": "shell", "x": 1100, "y": 0, "scale": 1.0},
-        {"type": "umbrella", "x": 2300, "y": -20, "scale": 1.0}
-      ],
-      "notes": "The cup sits in the courtyard of a sandcastle. Lob it in high; anything that hits the walls plugs."
-    },
-    {
-      "id": "bl_09",
-      "name": "Coastal Classic",
-      "par": 5,
-      "bounds": {"x": -200, "y": -1900, "w": 4500, "h": 2600},
-      "tee": {"x": 360, "y": 0},
-      "cup": {"x": 3800, "y": -420},
-      "terrain": [
-        {
-          "material": "grass",
-          "smooth": true,
-          "kind": "ground",
-          "points": [
-            [-200, -800, {"c": true}],
-            [-90, -740],
-            [10, -330],
-            [100, -50],
-            [220, 0],
-            [520, 0],
-            [760, 0],
-            [795.0, 75.0],
-            [830, 150, {"m": "sand"}],
-            [1430, 150],
-            [1465.0, 75.0],
-            [1500, 0],
-            [1640, -20],
-            [1900, -40],
-            [2100, -40, {"c": true, "m": "rock"}],
-            [2140, -400, {"c": true}],
-            [2300, -410],
-            [2600, -420],
-            [2780, -410, {"m": "sand"}],
-            [2980, -400, {"m": "sand"}],
-            [3120, -410],
-            [3400, -420],
-            [3800, -420],
-            [4000, -430],
-            [4150, -740],
-            [4300, -1200, {"c": true}],
-            [4300, 700, {"c": true}],
-            [-200, 700, {"c": true}]
-          ]
-        }
-      ],
-      "zones": [
-        {
-          "type": "water",
-          "points": [
-            [764, 14],
-            [1496, 14],
-            [1496, 190],
-            [764, 190]
+            [904, 14],
+            [1796, 14],
+            [1796, 190],
+            [904, 190]
           ]
         }
       ],
       "decor": [
         {"type": "palm", "x": 600, "y": 0, "scale": 1.0},
-        {"type": "buoy", "x": 1100, "y": 30, "scale": 1.0},
-        {"type": "rock", "x": 1900, "y": -40, "scale": 1.0},
-        {"type": "palm", "x": 2450, "y": -415, "scale": 1.0},
-        {"type": "lighthouse", "x": 4100, "y": -440, "scale": 1.0}
+        {"type": "buoy", "x": 1350, "y": 30, "scale": 1.0},
+        {"type": "palm", "x": 2100, "y": -20, "scale": 1.0},
+        {"type": "palm", "x": 2650, "y": -488, "scale": 1.0},
+        {"type": "grass_tuft", "x": 3550, "y": -494, "scale": 1.0},
+        {"type": "palm", "x": 4350, "y": -470, "scale": 1.0},
+        {"type": "crab", "x": 5200, "y": -95, "scale": 1.0},
+        {"type": "lighthouse", "x": 6000, "y": -90, "scale": 1.1}
       ],
-      "notes": "Everything at once: a water carry, a cliff, a bunker across the top and a long final approach."
+      "notes": "The full tour: carry the lagoon, climb the sea cliff, thread the two cliff-top bunkers, then run down the slope to the lighthouse green."
     }
-  ]
+  ],
+  "parSource": "ssg3",
+  "layout": 2
 }

@@ -98,8 +98,64 @@ def hole(hid, name, par, bounds, tee, cup, terrain, zones=None, fields=None, dec
     return d
 
 
-def write_course(cid, name, theme, holes, order, difficulty, mechanic, extra=None):
+# Decor that would be drawn in mid-air. Courses must not use it (it reads as random floating junk).
+FLOATING_DECOR = {"balloon"}
+
+
+def _pip(pt, poly):
+    """Point in polygon (control points), or within 3 px of one of its edges."""
+    x, y = pt[0], pt[1]
+    inside = False
+    n = len(poly)
+    for i in range(n):
+        x1, y1 = poly[i][0], poly[i][1]
+        x2, y2 = poly[(i + 1) % n][0], poly[(i + 1) % n][1]
+        if (y1 > y) != (y2 > y) and x < x1 + (y - y1) * (x2 - x1) / (y2 - y1):
+            inside = not inside
+        dx, dy = x2 - x1, y2 - y1
+        t = max(0.0, min(1.0, ((x - x1) * dx + (y - y1) * dy) / (dx * dx + dy * dy or 1.0)))
+        if (x - x1 - t * dx) ** 2 + (y - y1 - t * dy) ** 2 <= 9.0:
+            return True
+    return inside
+
+
+def check_attached(h):
+    """Every solid piece must connect to the ground (directly or through other pieces): no
+    free-floating slabs, islands or platforms. Raises AssertionError naming the offender."""
+    polys = [t["points"] for t in h["terrain"]]
+    attached = [t.get("kind", "ground") == "ground" for t in h["terrain"]]
+    assert any(attached), "%s has no ground polygon" % h["id"]
+    changed = True
+    while changed:
+        changed = False
+        for i, pi in enumerate(polys):
+            if attached[i]:
+                continue
+            for j, pj in enumerate(polys):
+                if attached[j] and (any(_pip(v, pj) for v in pi) or any(_pip(v, pi) for v in pj)):
+                    attached[i] = True
+                    changed = True
+                    break
+    for i, ok in enumerate(attached):
+        assert ok, "%s: terrain piece %d floats (not connected to the ground)" % (h["id"], i)
+    for d in h.get("decor", []):
+        assert d["type"] not in FLOATING_DECOR, "%s: decor %s floats in mid-air" % (h["id"], d["type"])
+
+
+def bunker(x0, x1, y, depth=40, rim=None):
+    """Surface points for a sand bunker dipping `depth` px below `y` between x0 and x1."""
+    r = y if rim is None else rim
+    w = x1 - x0
+    return [P(x0, r), P(x0 + w * 0.18, y + depth * 0.7, m="sand"), P(x0 + w * 0.5, y + depth, m="sand"),
+            P(x1 - w * 0.18, y + depth * 0.7, m="sand"), P(x1, r)]
+
+
+def write_course(cid, name, theme, holes, order, difficulty, mechanic, extra=None, strict=False):
+    """strict=True (rebuilt courses) enforces attached terrain and no floating decor."""
     assert len(holes) == 9, "%s has %d holes" % (cid, len(holes))
+    if strict:
+        for h in holes:
+            check_attached(h)
     data = {"id": cid, "name": name, "version": 3, "order": order, "difficulty": difficulty,
             "mechanic": mechanic, "theme": theme, "holes": holes}
     if extra:

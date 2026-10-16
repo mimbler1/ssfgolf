@@ -2,7 +2,8 @@ class_name Records
 extends RefCounted
 ## Solo progress and personal records, stored per local profile (user://profiles/<name>/records.json).
 ##
-## courses.<id>: {completed, rounds, best_total, best_time, best_clean, medal, holes: {<hole id>: {best, aces, swishes}}}
+## courses.<id>: {completed, rounds, best_total, best_time, best_clean, medal, layout, holes: {<hole id>: {best, aces, swishes}},
+##                legacy: {<old layout>: {best_total, best_time, best_clean, medal, holes}}}
 ## totals:       {holes_in_one, swishes, rounds}
 ##
 ## Medals compare a full round with the course par: gold = 3 or more under par, silver = par or
@@ -27,7 +28,38 @@ static func load_all() -> Dictionary:
 		d["courses"] = {}
 	if not d.has("totals"):
 		d["totals"] = {"holes_in_one": 0, "swishes": 0, "rounds": 0}
+	if _migrate_layouts(d):
+		_save(d)
 	return d
+
+
+## Bests belong to one hole layout. When a course is rebuilt (its "layout" number changes), the old
+## bests and medal move to `legacy` instead of being compared with the new holes. Completion (which
+## unlocks balls) and round counts carry over. Nothing is deleted.
+static func _migrate_layouts(d: Dictionary) -> bool:
+	var gd: Node = (Engine.get_main_loop() as SceneTree).root.get_node_or_null("GameData") if Engine.get_main_loop() is SceneTree else null
+	if gd == null:
+		return false
+	var changed := false
+	for cid: String in (d.courses as Dictionary).keys():
+		var c: Dictionary = d.courses[cid]
+		var current := int((gd.course(cid) as Dictionary).get("layout", 1))
+		var stored := int(c.get("layout", 1))
+		if stored == current:
+			continue
+		var legacy: Dictionary = c.get("legacy", {})
+		var old := {}
+		for k in ["best_total", "best_time", "best_clean", "medal", "holes"]:
+			if c.has(k):
+				old[k] = c[k]
+				c.erase(k)
+		legacy[str(stored)] = old
+		c["legacy"] = legacy
+		c["holes"] = {}
+		c["medal"] = ""
+		c["layout"] = current
+		changed = true
+	return changed
 
 
 static func _save(d: Dictionary) -> void:
@@ -83,7 +115,8 @@ static func record_daily(date: String, strokes: int) -> Dictionary:
 static func record_round(course_dict: Dictionary, scorecard: Array, clean: bool) -> Dictionary:
 	var cid := str(course_dict.id)
 	var d := load_all()
-	var c: Dictionary = (d.courses as Dictionary).get(cid, {"completed": false, "rounds": 0, "holes": {}, "medal": ""})
+	var c: Dictionary = (d.courses as Dictionary).get(cid, {"completed": false, "rounds": 0, "holes": {}, "medal": "",
+		"layout": int(course_dict.get("layout", 1))})
 	var total := 0
 	var time := 0.0
 	var aces := 0

@@ -1,14 +1,18 @@
-"""Course 2: Beach Land - coastal terrain (docs/COURSE_MANIFEST.md).
+"""Course 2: Beach Land - coastal terrain (docs/COURSE_MANIFEST.md, docs/COURSE_REFERENCE.md).
 
-Original layouts built around the course's theme: sand traps that plug the ball, water carries,
-beaches, cliffs, changes of elevation, longer shots and careful landings. Fairways are dune grass
-("grass"); sand is the trap material.
+Rebuilt to Super Stickman Golf 3's verified Beach Land structure: nine holes with the original
+pars 5-5-5-5-4-4-4-4-5 (total 41). SSG3's hole geometry is not available, so every layout is
+original, built around the course's identity: sand traps that plug the ball, sea inlets and
+lagoons, palm-lined dunes, rock cliffs and a pier. Verified detail kept as a design constraint:
+hole 4 (par 5) can be holed in one with the plain ball.
+
+Every solid piece is attached to the ground (no floating platforms); fairways are dune grass.
 """
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from lib import P, ground, left_wall, right_wall, block, poly, water, pond, deco, hole, write_course  # noqa: E402
+from lib import P, ground, left_wall, right_wall, block, poly, water, pond, bunker, deco, hole, write_course  # noqa: E402
 
 THEME = {
     "id": "beach", "art": "beach",
@@ -20,104 +24,129 @@ THEME = {
 }
 
 
+def cliff(x, y_from, y_to, lean=40, mat="rock"):
+    """A near-vertical rock face from (x, y_from) up or down to (x + lean, y_to)."""
+    return [P(x, y_from, c=True, m=mat), P(x + lean, y_to, c=True)]
+
+
 def h1():
-    p, z = pond(2480, 2980, -20, 150)
-    return hole("bl_01", "Shoreline", 3, (-200, -1500, 3500, 2200), (360, 0), (2160, -20),
-        [ground(left_wall() + [P(520, 0), P(800, -20), P(1100, -14), P(1320, 8), P(1400, 40, m="sand"),
-            P(1560, 52, m="sand"), P(1700, 40), P(1780, 6), P(1900, -16), P(2100, -20), P(2300, -20)] + p +
-            [P(3060, -30)] + right_wall(3300, -900, -40))],
+    inlet, z = pond(1950, 2450, -10, 140)
+    return hole("bl_01", "Sandbar", 5, (-200, -1900, 5600, 2600), (360, 0), (4650, -468),
+        [ground(left_wall() + [P(520, 0), P(900, -20), P(1250, -10)] + bunker(1400, 1680, -8, 45) +
+            [P(1820, -10)] + inlet + [P(2550, -20), P(2700, -28)] + cliff(2780, -28, -450) +
+            [P(2950, -462), P(3350, -470)] + bunker(3550, 3850, -470, 45) +
+            [P(4100, -475), P(4450, -480), P(4650, -468), P(4850, -482), P(5050, -505)] + right_wall(5400, -1400, -530))],
         zones=[z],
-        decor=[deco("palm", 600, -10), deco("shell", 1250, 0), deco("umbrella", 1950, -20), deco("palm", 3150, -40)],
-        notes="A straightforward drive. The pot bunker plugs anything that lands short; the sea waits behind the green.")
+        decor=[deco("palm", 640, -10), deco("shell", 1150, -12), deco("umbrella", 1850, -10), deco("crab", 2600, -22),
+               deco("palm", 3050, -465), deco("grass_tuft", 3300, -470), deco("palm", 4250, -478), deco("lighthouse", 5150, -515, 1.1)],
+        notes="Drive along the beach past the bunker and the sea inlet, pop the ball up onto the sea cliff, then work across the bunkered top to a green that gathers the ball toward the cup.")
 
 
 def h2():
-    p1, z1 = pond(700, 1000, 0, 120)
-    p2, z2 = pond(1350, 1650, -10, 120)
-    p3, z3 = pond(2000, 2300, -20, 130)
-    return hole("bl_02", "Tide Pools", 4, (-200, -1500, 3600, 2200), (360, 0), (2720, -30),
-        [ground(left_wall() + [P(520, 0)] + p1 + [P(1120, -10), P(1240, -10)] + p2 + [P(1760, -20), P(1880, -20)] + p3 +
-            [P(2450, -30), P(2900, -30)] + right_wall(3400, -900, -40))],
-        zones=[z1, z2, z3],
-        decor=[deco("shell", 1180, -10), deco("rock", 1820, -20), deco("palm", 2600, -30), deco("crab", 2850, -30)],
-        notes="Three tide pools with short dry banks between them: carry them one at a time or fly them all.")
+    pool, z = pond(2650, 3150, 0, 140)
+    return hole("bl_02", "Palm Point", 5, (-200, -2100, 6000, 2800), (380, -420), (5050, -300),
+        [ground([P(-200, -1200, c=True), P(-90, -1140), P(20, -800), P(120, -470), P(260, -420), P(560, -420), P(700, -400)] +
+            cliff(800, -390, -40, 90) + [P(1050, -10), P(1400, 0), P(1700, 10)] + bunker(1900, 2150, 10, 42) +
+            [P(2400, 0)] + pool + [P(3350, -10), P(3650, -50), P(3900, -150), P(4150, -250), P(4350, -280)] +
+            bunker(4450, 4650, -280, 40) + [P(4800, -295), P(5200, -300)] + right_wall(5800, -1300, -310))],
+        zones=[z],
+        decor=[deco("palm", 520, -420), deco("lighthouse", 120, -440, 0.8), deco("shell", 1300, 0), deco("palm", 2300, 0),
+               deco("crab", 3450, -15), deco("grass_tuft", 4000, -180), deco("palm", 4250, -270), deco("umbrella", 5300, -300)],
+        notes="Tee off the headland onto the long beach, carry the tide pool, then climb the dunes to a raised green guarded by a pot bunker.")
 
 
 def h3():
-    return hole("bl_03", "Lighthouse Cliff", 4, (-200, -1900, 3300, 2600), (360, 0), (2160, -700),
-        [ground(left_wall() + [P(560, 0), P(900, 10), P(1180, 0), P(1300, -20, c=True, m="rock"), P(1330, -330, c=True, m="sand"),
-            P(1470, -340, c=True, m="rock"), P(1500, -690, c=True), P(1640, -700), P(1900, -700), P(2400, -700), P(2560, -720)] +
-            right_wall(3100, -1300, -740))],
-        decor=[deco("lighthouse", 2600, -730, 1.2), deco("palm", 700, 0), deco("rock", 1100, 0), deco("grass_tuft", 1800, -700)],
-        notes="The green is on top of the cliff. A sandy ledge halfway up catches short shots (and plugs them).")
+    return hole("bl_03", "Lagoon Pier", 5, (-200, -1800, 5400, 2500), (360, 0), (4500, -150),
+        [ground(left_wall() + [P(520, 0), P(900, -10), P(1100, -10), P(1180, 30, c=True), P(1220, 220, c=True, m="sand"),
+            P(3360, 220, c=True), P(3400, 30, c=True), P(3480, -20), P(3800, -60), P(4100, -120), P(4300, -150),
+            P(4700, -150)] + right_wall(5200, -1100, -160)),
+         block(1650, -40, 2550, -14, "wood"), block(1700, -14, 1730, 220, "wood"), block(2470, -14, 2500, 220, "wood")],
+        zones=[water(1184, 40, 3396, 260)],
+        decor=[deco("palm", 600, 0), deco("umbrella", 950, -10), deco("buoy", 1400, 60), deco("buoy", 2950, 60),
+               deco("palm", 3700, -50), deco("shell", 4000, -110), deco("palm", 4800, -150)],
+        notes="The lagoon is wider than any shot carries: lay up on the wooden pier, then play across to the far shore and up the dune to the green.")
 
 
 def h4():
-    return hole("bl_04", "Dune Run", 5, (-200, -1500, 4700, 2200), (360, 0), (3980, 10),
-        [ground(left_wall() + [P(520, 0), P(760, -90), P(980, -130), P(1160, -60), P(1300, 30, m="sand"), P(1460, 50, m="sand"),
-            P(1600, 20), P(1800, -110), P(2050, -170), P(2300, -80), P(2450, 20, m="sand"), P(2640, 40, m="sand"), P(2780, 10),
-            P(3000, -90), P(3250, -120), P(3480, -40), P(3700, 10), P(3900, 10), P(4100, 10)] + right_wall(4500, -900, 0))],
-        decor=[deco("grass_tuft", 900, -130), deco("palm", 2050, -170), deco("shell", 2700, 30), deco("grass_tuft", 3250, -120),
-               deco("umbrella", 3800, 10)],
-        notes="Long rolling dunes. Sand fills every trough, so each shot has to land on a crest or roll over one.")
+    steps = [P(780, 100, m="sand"), P(1150, 105, m="sand"), P(1250, 100)]
+    return hole("bl_04", "Cliffhanger", 5, (-200, -2100, 4400, 2800), (360, -700), (2290, -500),
+        [ground([P(-200, -1500, c=True), P(-90, -1440), P(20, -1100), P(120, -760), P(260, -700), P(560, -700)] +
+            cliff(650, -700, 100, 60) + steps + [P(1450, 110), P(1650, 100)] +
+            cliff(1700, 100, -150) + [P(1800, -155)] + cliff(1850, -155, -500, 30) +
+            [P(1960, -505), P(2150, -500), P(2420, -500)] + cliff(2440, -500, -900, 10, "rock") +
+            [P(2600, -930), P(3000, -960), P(4200, -980, c=True)])],
+        decor=[deco("palm", 500, -700), deco("lighthouse", 140, -720, 0.9), deco("crab", 1350, 105), deco("palm", 1550, 100),
+               deco("grass_tuft", 2050, -503), deco("palm", 2800, -945)],
+        notes="A high tee over a deep valley to a short plateau green with a rock backstop. Carry the lip perfectly and it can drop for an ace; come up short and it is the long way round: out of the valley sand and up the rock steps.")
 
 
 def h5():
-    return hole("bl_05", "Pier Pressure", 4, (-200, -1500, 3600, 2200), (360, 0), (2700, -40),
-        [ground(left_wall() + [P(520, 0), P(780, 0), P(860, 40, c=True), P(900, 220, c=True, m="sand"), P(2380, 220, c=True),
-            P(2420, 40, c=True), P(2480, -30), P(2600, -40), P(2900, -40)] + right_wall(3400, -900, -50)),
-         block(1150, -40, 1750, -14, "wood"), block(1300, -14, 1330, 220, "wood"), block(1600, -14, 1630, 220, "wood")],
-        zones=[water(864, 60, 2416, 260)],
-        decor=[deco("palm", 640, 0), deco("buoy", 2000, 60), deco("umbrella", 2800, -40)],
-        notes="Carry the bay, or play safe: lay up on the wooden pier halfway and chip on.")
+    return hole("bl_05", "Sea Arch", 4, (-200, -1800, 4800, 2500), (360, 0), (3950, -20),
+        [ground(left_wall() + [P(520, 0), P(900, -10), P(1300, -20), P(1500, -20), P(1800, -20), P(2100, -20),
+            P(2300, -10)] + bunker(2500, 2700, -10, 40) + [P(2900, -15), P(3300, -20), P(3700, -20), P(4200, -25)] +
+            right_wall(4600, -1000, -30)),
+         poly([P(1350, -10, c=True, m="rock"), P(1420, -260), P(1560, -480), P(1800, -560), P(2040, -480), P(2180, -260),
+               P(2250, -10, c=True), P(2120, -10, c=True), P(2060, -180), P(1950, -300), P(1800, -330), P(1650, -300),
+               P(1540, -180), P(1480, -10, c=True)], "rock", kind="arch", smooth=True)],
+        decor=[deco("palm", 700, -10), deco("shell", 1150, -18), deco("grass_tuft", 1800, -560), deco("crab", 2800, -15),
+               deco("palm", 3400, -20), deco("umbrella", 4100, -25)],
+        notes="A natural sea arch spans the fairway. Thread a low shot through it, or loft one over the top; the bunker beyond catches long run-outs.")
 
 
 def h6():
-    return hole("bl_06", "Hidden Cove", 4, (-200, -1600, 3400, 2300), (360, 0), (2180, 0),
-        [ground(left_wall() + [P(520, 0), P(900, 0), P(1200, -10), P(1500, -4), P(1800, 0), P(2100, 0), P(2400, 0), P(2560, -40)] +
-            right_wall(3200, -1000, -60)),
-         poly([P(1500, -200, c=True, m="rock"), P(2500, -200), P(2900, -260), P(3300, -300, c=True), P(3300, -1100, c=True),
-               P(1700, -1100, c=True), P(1560, -760), P(1420, -420), P(1440, -260)], "rock", smooth=True)],
-        decor=[deco("rock", 1000, -10), deco("shell", 1700, -4), deco("crab", 2350, 0)],
-        notes="The cup hides under a rock overhang. Keep it low and run it in, or bank it off the ceiling.")
+    return hole("bl_06", "Hidden Cove", 4, (-200, -1900, 4600, 2600), (360, 0), (3500, 0),
+        [ground(left_wall() + [P(520, 0), P(900, -20), P(1300, -40), P(1600, -30)] + bunker(1750, 1950, -25, 40) +
+            [P(2100, -20), P(2500, -10), P(2900, 0), P(3300, 0), P(3700, 0), P(3820, 0, c=True, m="rock"),
+             P(3820, -230, c=True, m="rock"), P(2700, -230, c=True, m="rock"), P(2660, -300, c=True), P(3100, -360), P(3700, -420),
+             P(4400, -460, c=True)])],
+        decor=[deco("palm", 650, -10), deco("shell", 1200, -35), deco("palm", 2200, -18), deco("crab", 3100, 0),
+               deco("grass_tuft", 3200, -365), deco("palm", 3900, -430)],
+        notes="The cup hides in a cove under a rock overhang. Keep the approach low and run it in, or bank it off the cove's back wall.")
 
 
 def h7():
-    p, z = pond(1300, 2500, 10, 160)
-    return hole("bl_07", "High Tide", 4, (-200, -2000, 3500, 2700), (360, -600), (2860, 0),
-        [ground([P(-200, -1300, c=True), P(-90, -1240), P(20, -900), P(120, -640), P(260, -600), P(560, -600), P(700, -560),
-            P(860, -380, m="rock"), P(1000, -160), P(1150, -20), P(1240, 0)] + p + [P(2620, 0), P(2800, 0), P(3000, 0)] +
-            right_wall(3300, -1000, -10))],
-        zones=[z],
-        decor=[deco("palm", 450, -600), deco("lighthouse", 160, -620, 0.8), deco("buoy", 1900, 30), deco("palm", 2950, 0)],
-        notes="Hit down off the bluff over a wide channel. The extra height carries further than it looks.")
+    return hole("bl_07", "Tide Steps", 4, (-200, -2100, 4600, 2800), (360, 0), (3300, -620),
+        [ground(left_wall() + [P(520, 0), P(800, 0), P(1050, 0)] + cliff(1150, 0, -200) +
+            [P(1260, -202), P(1360, -202, m="sand"), P(1480, -200, m="sand"), P(1560, -202), P(1650, -202)] +
+            cliff(1720, -202, -410) + [P(1830, -412), P(1930, -412, m="sand"), P(2050, -410, m="sand"), P(2130, -412),
+            P(2220, -412)] + cliff(2290, -412, -620) + [P(2400, -622), P(2900, -620), P(3800, -620)] +
+            right_wall(4400, -1500, -640))],
+        decor=[deco("palm", 700, 0), deco("crab", 950, 0), deco("palm", 1600, -202), deco("shell", 2180, -412),
+               deco("palm", 2700, -620), deco("lighthouse", 4000, -640, 1.0)],
+        notes="Three rock terraces up from the beach. Each step has a sand pocket that plugs the ball; land on the grass behind it or skip a step.")
 
 
 def h8():
-    return hole("bl_08", "Sandcastle", 3, (-200, -1600, 3000, 2300), (360, 0), (1720, 0),
-        [ground(left_wall() + [P(520, 0), P(900, 0), P(1200, 0), P(1500, 0), P(1700, 0), P(1900, 0), P(2200, 0), P(2400, -20)] +
-            right_wall(2800, -900, -40)),
-         block(1460, -230, 1520, 0, "sand"), block(1440, -270, 1540, -230, "sand"),
-         block(1920, -230, 1980, 0, "sand"), block(1900, -270, 2000, -230, "sand")],
-        decor=[deco("flag_small", 1490, -270), deco("flag_small", 1950, -270), deco("shell", 1100, 0), deco("umbrella", 2300, -20)],
-        notes="The cup sits in the courtyard of a sandcastle. Lob it in high; anything that hits the walls plugs.")
+    moat, z = pond(1750, 2050, -20, 110)
+    return hole("bl_08", "Sandcastle", 4, (-200, -1900, 4400, 2600), (360, 0), (3050, -240),
+        [ground(left_wall() + [P(520, 0), P(900, -10), P(1300, -20), P(1600, -20)] + moat +
+            [P(2300, -40), P(2500, -120), P(2700, -220), P(2800, -240), P(3400, -240), P(3550, -230), P(3800, -200)] +
+            right_wall(4200, -1000, -200)),
+         block(2720, -400, 2780, -238, "sand"), block(2700, -430, 2800, -400, "sand"),
+         block(3380, -400, 3440, -238, "sand"), block(3360, -430, 3460, -400, "sand")],
+        zones=[z],
+        decor=[deco("palm", 700, -10), deco("umbrella", 1200, -18), deco("buoy", 1900, 0), deco("flag_small", 2750, -430),
+               deco("flag_small", 3410, -430), deco("shell", 3600, -225), deco("palm", 3900, -205)],
+        notes="Carry the moat, climb the dune and drop the ball into the castle courtyard. The sand towers plug anything that hits them.")
 
 
 def h9():
-    p, z = pond(760, 1500, 0, 150)
-    return hole("bl_09", "Coastal Classic", 5, (-200, -1900, 4500, 2600), (360, 0), (3800, -420),
-        [ground(left_wall() + [P(520, 0)] + p + [P(1640, -20), P(1900, -40), P(2100, -40, c=True, m="rock"), P(2140, -400, c=True),
-            P(2300, -410), P(2600, -420), P(2780, -410, m="sand"), P(2980, -400, m="sand"), P(3120, -410), P(3400, -420),
-            P(3800, -420), P(4000, -430)] + right_wall(4300, -1200, -440))],
+    lagoon, z = pond(900, 1800, 0, 150)
+    return hole("bl_09", "Coastal Classic", 5, (-200, -2000, 6600, 2700), (360, 0), (5600, -80),
+        [ground(left_wall() + [P(520, 0), P(700, 0)] + lagoon + [P(1950, -10), P(2250, -30)] + cliff(2350, -30, -480) +
+            [P(2470, -485), P(2800, -490)] + bunker(3000, 3250, -490, 42) + [P(3450, -492), P(3700, -495)] +
+            bunker(3850, 4050, -495, 40) + [P(4250, -490), P(4500, -420), P(4800, -250), P(5100, -110), P(5350, -80),
+            P(5800, -80)] + right_wall(6400, -1200, -90))],
         zones=[z],
-        decor=[deco("palm", 600, 0), deco("buoy", 1100, 30), deco("rock", 1900, -40), deco("palm", 2450, -415),
-               deco("lighthouse", 4100, -440, 1.0)],
-        notes="Everything at once: a water carry, a cliff, a bunker across the top and a long final approach.")
+        decor=[deco("palm", 600, 0), deco("buoy", 1350, 30), deco("palm", 2100, -20), deco("palm", 2650, -488),
+               deco("grass_tuft", 3550, -494), deco("palm", 4350, -470), deco("crab", 5200, -95), deco("lighthouse", 6000, -90, 1.1)],
+        notes="The full tour: carry the lagoon, climb the sea cliff, thread the two cliff-top bunkers, then run down the slope to the lighthouse green.")
 
 
 def build():
     return write_course("beach_land", "Beach Land", THEME, [h1(), h2(), h3(), h4(), h5(), h6(), h7(), h8(), h9()], 2,
-                        "Easy", "Sand that plugs, water carries, cliffs and long shots")
+                        "Easy", "Sand that plugs, water carries, cliffs and long shots",
+                        {"parSource": "ssg3", "layout": 2}, strict=True)
 
 
 if __name__ == "__main__":
