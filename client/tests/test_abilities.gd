@@ -455,6 +455,19 @@ func test_gravity_field_and_conveyor() -> void:
 		if b.at_rest:
 			break
 	check(b.at_rest and b.pos.y < -880.0, "a ball inside an upward gravity field falls up and rests on the ceiling (y %.0f)" % b.pos.y)
+	var zero := _sim(_flat("grass", {"fields": [{"type": "gravity", "scale": 0.0, "points": [[-800, -2600], [8200, -2600], [8200, -200], [-800, -200]]}]}))
+	var zb := zero.players[0].ball
+	zb.place(Vector2(1000, -800))
+	zb.wake()
+	zb.vel = Vector2(12, 0)
+	zb.collides_balls = true
+	var floated := false
+	for i in 1200:
+		zero.tick()
+		if zb.at_rest:
+			floated = true
+			break
+	check(floated and zb.pos.y < -700.0 and zero.can_shoot(0) in ["", "cooldown"], "a ball that stalls in zero gravity floats at rest and can be shot again")
 	var belt := _sim(_flat("conveyor_r"))
 	var bb := belt.players[0].ball
 	bb.wake()

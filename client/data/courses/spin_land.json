@@ -1,0 +1,481 @@
+{
+  "id": "spin_land",
+  "name": "Spin Land",
+  "version": 3,
+  "order": 6,
+  "difficulty": "Hard",
+  "mechanic": "Spin control: perched greens, long rolls and conveyors",
+  "theme": {
+    "id": "spin",
+    "art": "spin",
+    "sky_top": "#ff9d6c",
+    "sky_bottom": "#ffe3b8",
+    "sun": "#fff6d8",
+    "far_hills": "#e7a3c0",
+    "mid_hills": "#9fd18a",
+    "ground_top": "#b07a52",
+    "ground_bottom": "#6e4430",
+    "ground_strata": "#946446",
+    "grass": "#8fdc5a",
+    "grass_light": "#c2f28a",
+    "grass_dark": "#57a83a",
+    "outline": "#3a2230",
+    "water_top": "#6fd2ff",
+    "water_bottom": "#2a78c0",
+    "cloud": "#fff4ea"
+  },
+  "holes": [
+    {
+      "id": "sl_01",
+      "name": "Check It",
+      "par": 3,
+      "bounds": {"x": -200, "y": -1600, "w": 3400, "h": 2300},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 1780, "y": -260},
+      "terrain": [
+        {
+          "material": "grass",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -800, {"c": true}],
+            [-90, -740],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [900, -10],
+            [1200, -40],
+            [1350, -120],
+            [1450, -230, {"m": "rock"}],
+            [1520, -260],
+            [1700, -262],
+            [1900, -258],
+            [2000, -240],
+            [2150, -150],
+            [2350, -40],
+            [2600, 20],
+            [2900, 20],
+            [3000, 0],
+            [3050, -320],
+            [3200, -900, {"c": true}],
+            [3200, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "windmill", "x": 700, "y": -10, "scale": 1.2},
+        {"type": "pinwheel", "x": 1600, "y": -262, "scale": 1.0},
+        {"type": "bush", "x": 2700, "y": 20, "scale": 1.0}
+      ],
+      "notes": "A small raised green with a run-off slope behind it. Backspin stops the ball on top; topspin runs it off."
+    },
+    {
+      "id": "sl_02",
+      "name": "Long Roller",
+      "par": 4,
+      "bounds": {"x": -200, "y": -1500, "w": 4800, "h": 2200},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 4100, "y": 80},
+      "terrain": [
+        {
+          "material": "grass",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -800, {"c": true}],
+            [-90, -740],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [800, -10],
+            [1200, 0],
+            [1600, 20],
+            [2000, 30],
+            [2300, 20],
+            [2500, 40],
+            [2800, 50],
+            [3200, 60],
+            [3600, 70],
+            [3900, 80],
+            [4300, 80],
+            [4400, 60],
+            [4450, -260],
+            [4600, -900, {"c": true}],
+            [4600, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "windmill", "x": 1400, "y": 10, "scale": 1.0},
+        {"type": "pinwheel", "x": 2600, "y": 45, "scale": 1.0},
+        {"type": "balloon", "x": 3500, "y": -300, "scale": 1.0},
+        {"type": "bush", "x": 4200, "y": 80, "scale": 1.0}
+      ],
+      "notes": "A long, gently falling fairway. Topspin turns a decent drive into a huge rolling one."
+    },
+    {
+      "id": "sl_03",
+      "name": "Conveyor Belt",
+      "par": 4,
+      "bounds": {"x": -200, "y": -1500, "w": 3800, "h": 2200},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 3000, "y": -20},
+      "terrain": [
+        {
+          "material": "grass",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -800, {"c": true}],
+            [-90, -740],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [800, 0],
+            [900, 0, {"m": "conveyor_l"}],
+            [2200, -10],
+            [2300, -10],
+            [2600, -20],
+            [3200, -20],
+            [3300, -30],
+            [3450, -350],
+            [3600, -900, {"c": true}],
+            [3600, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "gear", "x": 900, "y": 0, "scale": 1.0},
+        {"type": "gear", "x": 2200, "y": -10, "scale": 1.0},
+        {"type": "windmill", "x": 2900, "y": -20, "scale": 1.0}
+      ],
+      "notes": "A belt runs back toward the tee across the middle. Fly it, or land with topspin to fight the drag."
+    },
+    {
+      "id": "sl_04",
+      "name": "Ledge",
+      "par": 4,
+      "bounds": {"x": -200, "y": -1900, "w": 3100, "h": 2600},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 1950, "y": -560},
+      "terrain": [
+        {
+          "material": "grass",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -800, {"c": true}],
+            [-90, -740],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [900, 0],
+            [1300, 0],
+            [1500, 0],
+            [1700, 0, {"c": true, "m": "rock"}],
+            [1720, -540, {"c": true}],
+            [1880, -560],
+            [2040, -556],
+            [2100, -540, {"c": true, "m": "rock"}],
+            [2120, -360, {"c": true}],
+            [2400, -340],
+            [2700, -340],
+            [2800, -360],
+            [2750, -700],
+            [2900, -1300, {"c": true}],
+            [2900, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "pinwheel", "x": 1900, "y": -560, "scale": 1.0},
+        {"type": "windmill", "x": 600, "y": 0, "scale": 1.0},
+        {"type": "bush", "x": 2500, "y": -340, "scale": 1.0}
+      ],
+      "notes": "The green is a narrow shelf with drops on both sides. Land soft with backspin or chip on from the lower step."
+    },
+    {
+      "id": "sl_05",
+      "name": "Rollercoaster",
+      "par": 4,
+      "bounds": {"x": -200, "y": -1500, "w": 4200, "h": 2200},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 3600, "y": -20},
+      "terrain": [
+        {
+          "material": "grass",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -800, {"c": true}],
+            [-90, -740],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [800, 120],
+            [1000, 160],
+            [1200, 100],
+            [1400, -80],
+            [1550, -160],
+            [1700, -80],
+            [1900, 120],
+            [2100, 170],
+            [2300, 100],
+            [2500, -100],
+            [2650, -170],
+            [2800, -100],
+            [3000, 20],
+            [3200, 0],
+            [3400, -20],
+            [3800, -20],
+            [3900, -40],
+            [3850, -360],
+            [4000, -900, {"c": true}],
+            [4000, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "balloon", "x": 1550, "y": -400, "scale": 1.0},
+        {"type": "pinwheel", "x": 2650, "y": -170, "scale": 1.0},
+        {"type": "windmill", "x": 3700, "y": -20, "scale": 1.0}
+      ],
+      "notes": "Two big humps. Momentum management: carry the crests or let the dips swing the ball back and forth."
+    },
+    {
+      "id": "sl_06",
+      "name": "Back Door",
+      "par": 4,
+      "bounds": {"x": -200, "y": -1600, "w": 3600, "h": 2300},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 2050, "y": -40},
+      "terrain": [
+        {
+          "material": "grass",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -800, {"c": true}],
+            [-90, -740],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [900, -20],
+            [1300, -30],
+            [1700, -40],
+            [2000, -40],
+            [2150, -40],
+            [2250, 0],
+            [2400, 160],
+            [2550, 330, {"m": "sand"}],
+            [2900, 340, {"m": "sand"}],
+            [3050, 300],
+            [3200, 200],
+            [3250, -300],
+            [3400, -800, {"c": true}],
+            [3400, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "windmill", "x": 1100, "y": -30, "scale": 1.0},
+        {"type": "pinwheel", "x": 1900, "y": -40, "scale": 1.0},
+        {"type": "bush", "x": 2700, "y": 335, "scale": 1.0}
+      ],
+      "notes": "The green sits on the edge of a steep drop into a bunker. Any release sends the ball over: stop it dead."
+    },
+    {
+      "id": "sl_07",
+      "name": "Belt Maze",
+      "par": 4,
+      "bounds": {"x": -200, "y": -2000, "w": 3600, "h": 2700},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 2700, "y": -620},
+      "terrain": [
+        {
+          "material": "grass",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -800, {"c": true}],
+            [-90, -740],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [900, 0],
+            [1300, 0],
+            [1600, 0],
+            [2000, 0],
+            [2400, 0],
+            [2700, 0],
+            [3000, -20],
+            [3130, -110],
+            [3250, -360],
+            [3400, -1400, {"c": true}],
+            [3400, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        },
+        {
+          "material": "rock",
+          "smooth": false,
+          "kind": "island",
+          "points": [
+            [900, -280, {"c": true, "m": "conveyor_r"}],
+            [1900, -280, {"c": true}],
+            [1900, -230, {"c": true, "m": "rock"}],
+            [900, -230, {"c": true}]
+          ]
+        },
+        {
+          "material": "rock",
+          "smooth": false,
+          "kind": "island",
+          "points": [
+            [1500, -620, {"c": true, "m": "conveyor_l"}],
+            [3400, -620, {"c": true}],
+            [3400, -560, {"c": true, "m": "rock"}],
+            [1500, -560, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "gear", "x": 900, "y": -280, "scale": 1.0},
+        {"type": "gear", "x": 1900, "y": -280, "scale": 1.0},
+        {"type": "pinwheel", "x": 2800, "y": -620, "scale": 1.0}
+      ],
+      "notes": "Two belts: the low one carries you forward, the high one (with the green) drags you back toward its edge."
+    },
+    {
+      "id": "sl_08",
+      "name": "Half Pipe",
+      "par": 4,
+      "bounds": {"x": -200, "y": -1600, "w": 3300, "h": 2400},
+      "tee": {"x": 360, "y": -400},
+      "cup": {"x": 2560, "y": -400},
+      "terrain": [
+        {
+          "material": "grass",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -1000, {"c": true}],
+            [-90, -940],
+            [20, -640],
+            [120, -440],
+            [260, -400],
+            [560, -400],
+            [700, -360],
+            [900, -200],
+            [1100, -40],
+            [1300, 20],
+            [1500, 20],
+            [1700, -40],
+            [1900, -200],
+            [2100, -360],
+            [2240, -400],
+            [2500, -400],
+            [2700, -400],
+            [2800, -420],
+            [2950, -740],
+            [3100, -1000, {"c": true}],
+            [3100, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "windmill", "x": 400, "y": -400, "scale": 1.0},
+        {"type": "balloon", "x": 1400, "y": -500, "scale": 1.0},
+        {"type": "pinwheel", "x": 2600, "y": -400, "scale": 1.0}
+      ],
+      "notes": "A big bowl between two decks. Roll it through the pipe with exactly enough pace, or fly it straight over."
+    },
+    {
+      "id": "sl_09",
+      "name": "Spin Cycle",
+      "par": 5,
+      "bounds": {"x": -200, "y": -1900, "w": 4600, "h": 2600},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 4050, "y": -300},
+      "terrain": [
+        {
+          "material": "grass",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -800, {"c": true}],
+            [-90, -740],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [800, 0],
+            [900, 0, {"m": "conveyor_l"}],
+            [1700, 0],
+            [1900, -20],
+            [2200, -120],
+            [2400, -60],
+            [2600, 0],
+            [2700, 0],
+            [2735.0, 80.0],
+            [2770, 160, {"m": "sand"}],
+            [3330, 160],
+            [3365.0, 80.0],
+            [3400, 0],
+            [3500, -20],
+            [3700, -150, {"m": "rock"}],
+            [3800, -290],
+            [3950, -300],
+            [4150, -296],
+            [4250, -270],
+            [4300, -200],
+            [4250, -400],
+            [4400, -1100, {"c": true}],
+            [4400, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [
+        {
+          "type": "water",
+          "points": [
+            [2704, 14],
+            [3396, 14],
+            [3396, 200],
+            [2704, 200]
+          ]
+        }
+      ],
+      "decor": [
+        {"type": "gear", "x": 900, "y": 0, "scale": 1.0},
+        {"type": "windmill", "x": 2200, "y": -120, "scale": 1.0},
+        {"type": "balloon", "x": 3000, "y": -350, "scale": 1.0},
+        {"type": "pinwheel", "x": 4000, "y": -300, "scale": 1.0}
+      ],
+      "notes": "A backward belt, a rolling hill, a pond and a perched green to finish: every spin skill in one hole."
+    }
+  ]
+}

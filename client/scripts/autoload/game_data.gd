@@ -9,8 +9,13 @@ const PROTOCOL_VERSION := 2  ## 2: shots carry spin, c_spin, ability state flags
 
 var balance: Dictionary = {}
 var materials: Dictionary = {}
-var courses: Dictionary = {}           ## id -> course dictionary
-var course_order: PackedStringArray = PackedStringArray()
+var courses: Dictionary = {}           ## id (and alias) -> course dictionary
+var course_order: PackedStringArray = PackedStringArray()   ## every course file, by id
+## The six main courses in play order (course "order" field); practice-only courses excluded.
+var main_courses: PackedStringArray = PackedStringArray()
+
+## Online matchmaking plays holes drawn from every main course (each hole keeps its own theme).
+const POOL_ID := "blitz_pool"
 var abilities: Array[Dictionary] = []
 var _ability_index: Dictionary = {}
 
@@ -44,6 +49,34 @@ func reload() -> void:
 			continue
 		courses[str(c.id)] = c
 		course_order.append(str(c.id))
+		for alias: String in c.get("aliases", []):
+			courses[alias] = c
+	var mains: Array = []
+	for id in course_order:
+		if not bool(courses[id].get("practiceOnly", false)) and courses[id].has("order"):
+			mains.append(id)
+	mains.sort_custom(func(a: String, b: String) -> bool: return int(courses[a].order) < int(courses[b].order))
+	main_courses = PackedStringArray(mains)
+	courses[POOL_ID] = _build_pool()
+
+
+## Every hole of every main course, each tagged with its course's theme and id.
+func _build_pool() -> Dictionary:
+	var holes: Array = []
+	for id in main_courses:
+		var c: Dictionary = courses[id]
+		for h: Dictionary in c.holes:
+			var hh := h.duplicate(true)
+			hh["theme"] = c.theme
+			hh["course_id"] = id
+			holes.append(hh)
+	var first: Dictionary = courses[main_courses[0]] if not main_courses.is_empty() else {}
+	return {"id": POOL_ID, "name": "All Courses", "theme": first.get("theme", {}), "holes": holes}
+
+
+## Theme for one hole: the hole's own (pool holes) or its course's.
+static func hole_theme(course_dict: Dictionary, hole_dict: Dictionary) -> Dictionary:
+	return hole_dict.get("theme", course_dict.get("theme", {}))
 
 
 static func load_json(path: String) -> Dictionary:

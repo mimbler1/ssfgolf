@@ -1,0 +1,680 @@
+{
+  "id": "gravity_lab",
+  "name": "Gravity Lab",
+  "version": 3,
+  "order": 5,
+  "difficulty": "Hard",
+  "mechanic": "Gravity fields: low-G, heavy-G, lifts, sideways pull and zero-G",
+  "theme": {
+    "id": "lab",
+    "art": "lab",
+    "sky_top": "#141c33",
+    "sky_bottom": "#2c3e66",
+    "sun": "#9ff7ff",
+    "far_hills": "#24365a",
+    "mid_hills": "#33507a",
+    "ground_top": "#5c6a80",
+    "ground_bottom": "#2a3142",
+    "ground_strata": "#48546a",
+    "grass": "#9fe8ff",
+    "grass_light": "#d8fbff",
+    "grass_dark": "#4fb0d8",
+    "outline": "#0e1220",
+    "water_top": "#7dff6a",
+    "water_bottom": "#2a8a3a",
+    "cloud": "#3a4a70"
+  },
+  "holes": [
+    {
+      "id": "gl5_01",
+      "name": "Low-G Orientation",
+      "par": 3,
+      "bounds": {"x": -200, "y": -2600, "w": 4400, "h": 3300},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 3500, "y": -20},
+      "terrain": [
+        {
+          "material": "rock",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -1400, {"c": true}],
+            [-90, -1340],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [900, -10],
+            [1500, -20],
+            [2200, -20],
+            [2900, -20],
+            [3300, -20],
+            [3800, -30],
+            [3930, -90],
+            [4050, -340],
+            [4200, -1600, {"c": true}],
+            [4200, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        },
+        {
+          "material": "rock",
+          "smooth": false,
+          "kind": "island",
+          "points": [
+            [-200, -2400, {"c": true, "m": "rock"}],
+            [4200, -2400, {"c": true}],
+            [4200, -2300, {"c": true}],
+            [-200, -2300, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "lab_light", "x": 1000, "y": -10, "scale": 1.0},
+        {"type": "console", "x": 2400, "y": -20, "scale": 1.0},
+        {"type": "lab_light", "x": 3100, "y": -20, "scale": 1.0}
+      ],
+      "fields": [
+        {
+          "type": "gravity",
+          "points": [
+            [-200, -2300],
+            [4200, -2300],
+            [4200, 400],
+            [-200, 400]
+          ],
+          "scale": 0.4
+        }
+      ],
+      "notes": "The whole room runs at 40% gravity. Shots fly two and a half times as far and hang in the air."
+    },
+    {
+      "id": "gl5_02",
+      "name": "Lift Shaft",
+      "par": 4,
+      "bounds": {"x": -200, "y": -2100, "w": 3600, "h": 2800},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 2600, "y": 0},
+      "terrain": [
+        {
+          "material": "rock",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -1300, {"c": true}],
+            [-90, -1240],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [800, 0],
+            [1300, 0, {"c": true, "m": "rock"}],
+            [1300, -950, {"c": true}],
+            [1420, -950, {"c": true}],
+            [1420, 0, {"c": true}],
+            [1800, 0],
+            [2300, 0],
+            [2900, 0],
+            [3000, -20],
+            [3130, -90],
+            [3250, -340],
+            [3400, -1300, {"c": true}],
+            [3400, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        },
+        {
+          "material": "rock",
+          "smooth": false,
+          "kind": "island",
+          "points": [
+            [-200, -1900, {"c": true, "m": "rock"}],
+            [3400, -1900, {"c": true}],
+            [3400, -1800, {"c": true}],
+            [-200, -1800, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "arrow_up", "x": 1100, "y": 0, "scale": 1.0},
+        {"type": "console", "x": 600, "y": 0, "scale": 1.0},
+        {"type": "lab_light", "x": 2200, "y": 0, "scale": 1.0}
+      ],
+      "fields": [
+        {
+          "type": "gravity",
+          "points": [
+            [900, -1150],
+            [1300, -1150],
+            [1300, 0],
+            [900, 0]
+          ],
+          "vector": [0, -1400]
+        }
+      ],
+      "notes": "The wall is far too tall to clear. Roll into the lift shaft beside it and drift over the top."
+    },
+    {
+      "id": "gl5_03",
+      "name": "Float Chamber",
+      "par": 4,
+      "bounds": {"x": -200, "y": -1700, "w": 3800, "h": 2400},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 3020, "y": -20},
+      "terrain": [
+        {
+          "material": "rock",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -1100, {"c": true}],
+            [-90, -1040],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [760, 0],
+            [800, 30, {"c": true}],
+            [820, 260, {"c": true}],
+            [2580, 260, {"c": true}],
+            [2600, 30, {"c": true}],
+            [2660, -20],
+            [2900, -20],
+            [3200, -20],
+            [3330, -90],
+            [3450, -340],
+            [3600, -1100, {"c": true}],
+            [3600, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        },
+        {
+          "material": "rock",
+          "smooth": false,
+          "kind": "island",
+          "points": [
+            [700, -760, {"c": true, "m": "rock"}],
+            [2700, -760, {"c": true}],
+            [2700, -660, {"c": true}],
+            [700, -660, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [
+        {
+          "type": "acid",
+          "points": [
+            [824, 120],
+            [2576, 120],
+            [2576, 280],
+            [824, 280]
+          ]
+        }
+      ],
+      "decor": [
+        {"type": "vat_pipe", "x": 900, "y": 120, "scale": 1.0},
+        {"type": "vat_pipe", "x": 2500, "y": 120, "scale": 1.0},
+        {"type": "lab_light", "x": 3000, "y": -20, "scale": 1.0}
+      ],
+      "fields": [
+        {
+          "type": "gravity",
+          "points": [
+            [800, -660],
+            [2600, -660],
+            [2600, 30],
+            [800, 30]
+          ],
+          "scale": 0.25
+        }
+      ],
+      "notes": "A low-gravity chamber over an acid vat. Hit it softly: the ball floats, and the ceiling is low."
+    },
+    {
+      "id": "gl5_04",
+      "name": "Heavy Landing",
+      "par": 4,
+      "bounds": {"x": -200, "y": -1800, "w": 3600, "h": 2500},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 2500, "y": -20},
+      "terrain": [
+        {
+          "material": "rock",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -1200, {"c": true}],
+            [-90, -1140],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [900, -10],
+            [1400, -20],
+            [1900, -20],
+            [2100, -20],
+            [2500, -20],
+            [2900, -20],
+            [3000, -30],
+            [3130, -100],
+            [3250, -350],
+            [3400, -1200, {"c": true}],
+            [3400, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "arrow_down", "x": 2500, "y": -20, "scale": 1.0},
+        {"type": "console", "x": 1200, "y": -20, "scale": 1.0},
+        {"type": "lab_light", "x": 3100, "y": -30, "scale": 1.0}
+      ],
+      "fields": [
+        {
+          "type": "gravity",
+          "points": [
+            [2050, -1400],
+            [2950, -1400],
+            [2950, 0],
+            [2050, 0]
+          ],
+          "scale": 2.6
+        }
+      ],
+      "notes": "A heavy-gravity field over the green slams long shots down early. Aim to land just inside it."
+    },
+    {
+      "id": "gl5_05",
+      "name": "Crosswind",
+      "par": 4,
+      "bounds": {"x": -200, "y": -1800, "w": 4000, "h": 2500},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 3300, "y": -20},
+      "terrain": [
+        {
+          "material": "rock",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -1200, {"c": true}],
+            [-90, -1140],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [900, -10],
+            [1400, -20],
+            [1440, 20, {"c": true}],
+            [1460, 240, {"c": true}],
+            [2340, 240, {"c": true}],
+            [2360, 20, {"c": true}],
+            [2400, -20],
+            [3000, -20],
+            [3600, -30],
+            [3650, -350],
+            [3800, -1200, {"c": true}],
+            [3800, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        },
+        {
+          "material": "rock",
+          "smooth": false,
+          "kind": "island",
+          "points": [
+            [-200, -1600, {"c": true, "m": "rock"}],
+            [3800, -1600, {"c": true}],
+            [3800, -1500, {"c": true}],
+            [-200, -1500, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [
+        {
+          "type": "acid",
+          "points": [
+            [1464, 110],
+            [2336, 110],
+            [2336, 260],
+            [1464, 260]
+          ]
+        }
+      ],
+      "decor": [
+        {"type": "fan", "x": 2700, "y": -20, "scale": 1.0},
+        {"type": "lab_light", "x": 600, "y": -10, "scale": 1.0},
+        {"type": "console", "x": 3200, "y": -20, "scale": 1.0}
+      ],
+      "fields": [
+        {
+          "type": "gravity",
+          "points": [
+            [1000, -1500],
+            [2700, -1500],
+            [2700, -80],
+            [1000, -80]
+          ],
+          "vector": [-380, 1350]
+        }
+      ],
+      "notes": "Gravity in the middle bay pulls back toward the tee as well as down. Over-hit into the headwind."
+    },
+    {
+      "id": "gl5_06",
+      "name": "Ceiling Walk",
+      "par": 4,
+      "bounds": {"x": -200, "y": -1900, "w": 3800, "h": 2600},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 2800, "y": 0},
+      "terrain": [
+        {
+          "material": "rock",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -1200, {"c": true}],
+            [-90, -1140],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [800, 0],
+            [1000, 0],
+            [1050, 30, {"c": true}],
+            [1070, 260, {"c": true}],
+            [2230, 260, {"c": true}],
+            [2250, 30, {"c": true}],
+            [2300, 0],
+            [2700, 0],
+            [3100, 0],
+            [3180, -20],
+            [3330, -70],
+            [3450, -320],
+            [3600, -1200, {"c": true}],
+            [3600, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        },
+        {
+          "material": "rock",
+          "smooth": false,
+          "kind": "island",
+          "points": [
+            [900, -900, {"c": true, "m": "rock"}],
+            [2400, -900, {"c": true}],
+            [2400, -800, {"c": true}],
+            [900, -800, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [
+        {
+          "type": "acid",
+          "points": [
+            [1074, 120],
+            [2226, 120],
+            [2226, 280],
+            [1074, 280]
+          ]
+        }
+      ],
+      "decor": [
+        {"type": "arrow_up", "x": 1600, "y": -800, "scale": 1.0},
+        {"type": "lab_light", "x": 2600, "y": 0, "scale": 1.0},
+        {"type": "console", "x": 600, "y": 0, "scale": 1.0}
+      ],
+      "fields": [
+        {
+          "type": "gravity",
+          "points": [
+            [1050, -800],
+            [2250, -800],
+            [2250, -140],
+            [1050, -140]
+          ],
+          "vector": [0, -1500]
+        }
+      ],
+      "notes": "Over the vat gravity points up. The ball falls onto the ceiling, rolls along it and drops off the far end."
+    },
+    {
+      "id": "gl5_07",
+      "name": "Zero-G Corridor",
+      "par": 4,
+      "bounds": {"x": -200, "y": -1700, "w": 3900, "h": 2400},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 3150, "y": -320},
+      "terrain": [
+        {
+          "material": "rock",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -1100, {"c": true}],
+            [-90, -1040],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [900, 0],
+            [960, 30, {"c": true}],
+            [980, 260, {"c": true}],
+            [2420, 260, {"c": true}],
+            [2440, 30, {"c": true}],
+            [2500, -300, {"c": true}],
+            [2700, -310],
+            [3100, -320],
+            [3400, -320],
+            [3500, -340],
+            [3550, -660],
+            [3700, -1100, {"c": true}],
+            [3700, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        },
+        {
+          "material": "rock",
+          "smooth": false,
+          "kind": "island",
+          "points": [
+            [900, -560, {"c": true, "m": "rock"}],
+            [2500, -560, {"c": true}],
+            [2500, -480, {"c": true}],
+            [900, -480, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [
+        {
+          "type": "acid",
+          "points": [
+            [984, 120],
+            [2416, 120],
+            [2416, 280],
+            [984, 280]
+          ]
+        }
+      ],
+      "decor": [
+        {"type": "lab_light", "x": 700, "y": 0, "scale": 1.0},
+        {"type": "console", "x": 2900, "y": -315, "scale": 1.0},
+        {"type": "lab_light", "x": 3300, "y": -320, "scale": 1.0}
+      ],
+      "fields": [
+        {
+          "type": "gravity",
+          "points": [
+            [960, -480],
+            [2440, -480],
+            [2440, 30],
+            [960, 30]
+          ],
+          "scale": 0.0
+        }
+      ],
+      "notes": "No gravity at all over the vat: the ball flies dead straight. Aim the exit at the raised green."
+    },
+    {
+      "id": "gl5_08",
+      "name": "Flip Floors",
+      "par": 4,
+      "bounds": {"x": -200, "y": -2300, "w": 3600, "h": 3000},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 2700, "y": -1040},
+      "terrain": [
+        {
+          "material": "rock",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -1700, {"c": true}],
+            [-90, -1640],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [900, 0],
+            [1500, 0],
+            [1900, 0],
+            [2300, 0],
+            [2700, 0],
+            [2900, -20],
+            [2980, -40],
+            [3130, -90],
+            [3250, -340],
+            [3400, -1700, {"c": true}],
+            [3400, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        },
+        {
+          "material": "rock",
+          "smooth": false,
+          "kind": "island",
+          "points": [
+            [1400, -1020, {"c": true, "m": "rock"}],
+            [3400, -1020, {"c": true}],
+            [3400, -940, {"c": true}],
+            [1400, -940, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [],
+      "decor": [
+        {"type": "arrow_up", "x": 1250, "y": 0, "scale": 1.0},
+        {"type": "console", "x": 2200, "y": 0, "scale": 1.0},
+        {"type": "lab_light", "x": 3000, "y": -1030, "scale": 1.0}
+      ],
+      "fields": [
+        {
+          "type": "gravity",
+          "points": [
+            [1100, -940],
+            [1400, -940],
+            [1400, 0],
+            [1100, 0]
+          ],
+          "vector": [300, -1400]
+        }
+      ],
+      "notes": "The cup is on the upper deck. A lift beside the deck carries the ball up and over onto it."
+    },
+    {
+      "id": "gl5_09",
+      "name": "Experiment 9",
+      "par": 5,
+      "bounds": {"x": -200, "y": -2500, "w": 5000, "h": 3200},
+      "tee": {"x": 360, "y": 0},
+      "cup": {"x": 4300, "y": -620},
+      "terrain": [
+        {
+          "material": "rock",
+          "smooth": true,
+          "kind": "ground",
+          "points": [
+            [-200, -1800, {"c": true}],
+            [-90, -1740],
+            [10, -330],
+            [100, -50],
+            [220, 0],
+            [520, 0],
+            [800, 0],
+            [900, 30, {"c": true}],
+            [920, 260, {"c": true}],
+            [1880, 260, {"c": true}],
+            [1900, 30, {"c": true}],
+            [1960, 0],
+            [2300, 0],
+            [2500, 0, {"c": true, "m": "rock"}],
+            [2500, -600, {"c": true}],
+            [2620, -600, {"c": true}],
+            [2620, -600],
+            [3000, -600],
+            [3400, -610],
+            [3800, -620],
+            [4400, -620],
+            [4600, -640],
+            [4650, -960],
+            [4800, -1800, {"c": true}],
+            [4800, 700, {"c": true}],
+            [-200, 700, {"c": true}]
+          ]
+        },
+        {
+          "material": "rock",
+          "smooth": false,
+          "kind": "island",
+          "points": [
+            [-200, -2300, {"c": true, "m": "rock"}],
+            [4800, -2300, {"c": true}],
+            [4800, -2200, {"c": true}],
+            [-200, -2200, {"c": true}]
+          ]
+        }
+      ],
+      "zones": [
+        {
+          "type": "acid",
+          "points": [
+            [924, 120],
+            [1876, 120],
+            [1876, 280],
+            [924, 280]
+          ]
+        }
+      ],
+      "decor": [
+        {"type": "lab_light", "x": 600, "y": 0, "scale": 1.0},
+        {"type": "arrow_up", "x": 2320, "y": 0, "scale": 1.0},
+        {"type": "console", "x": 3600, "y": -620, "scale": 1.0},
+        {"type": "lab_light", "x": 4200, "y": -620, "scale": 1.0}
+      ],
+      "fields": [
+        {
+          "type": "gravity",
+          "points": [
+            [900, -1400],
+            [1900, -1400],
+            [1900, 30],
+            [900, 30]
+          ],
+          "scale": 0.3
+        },
+        {
+          "type": "gravity",
+          "points": [
+            [2150, -1100],
+            [2500, -1100],
+            [2500, 0],
+            [2150, 0]
+          ],
+          "vector": [250, -1400]
+        }
+      ],
+      "notes": "Float the vat, ride the lift to the upper deck, then a long approach on normal gravity."
+    }
+  ]
+}

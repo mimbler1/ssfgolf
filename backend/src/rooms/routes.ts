@@ -8,7 +8,7 @@ import { ROOM_CODE_ALPHABET, ROOM_CODE_LENGTH } from './rooms.ts';
 import type { RoomSettings } from './rooms.ts';
 
 const SettingsPatch = z.object({
-  maxPlayers: z.int().min(2).max(4).optional(),
+  maxPlayers: z.int().min(2).max(6).optional(),
   targetPoints: z.int().min(3).max(21).optional(),
   courseId: idSchema.optional(),
 });

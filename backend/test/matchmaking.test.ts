@@ -86,7 +86,7 @@ describe('matchmaking', () => {
     assert.equal(a.matchId, matchId);
     assert.equal(a.mode, 'quick');
     assert.equal(a.ranked, true);
-    assert.equal(a.courseId, 'sunny_meadows');
+    assert.equal(a.courseId, 'blitz_pool');
     assert.equal(a.targetPoints, 9);
     assert.equal(a.players.length, 4);
     assert.deepEqual(a.players.map((p) => p.slot), [0, 1, 2, 3]);

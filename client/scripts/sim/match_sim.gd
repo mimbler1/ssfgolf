@@ -71,6 +71,8 @@ var hole_time: float = 0.0
 var hole_deadline: float = INF
 ## Stroke play "Clean Ball" challenge: no abilities at all.
 var clean_ball: bool = false
+## A host-chosen win target (private rooms); 0 = use the table for the player count.
+var target_override: int = 0
 
 var terrain: SimTerrain
 var physics: SimPhysics
@@ -196,6 +198,9 @@ func add_player(player_id: String, display_name: String, appearance: Dictionary,
 
 ## Points needed to win for the current player count (match.target_points_by_count overrides).
 func _update_target() -> void:
+	if target_override > 0:
+		target_points = target_override
+		return
 	var by: Dictionary = _cfg_match.get("target_points_by_count", {})
 	target_points = int(by.get(str(players.size()), _cfg_match.target_points))
 

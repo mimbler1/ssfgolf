@@ -122,7 +122,7 @@ describe('match results', () => {
     const dj = detail.json();
     assert.equal(dj.mode, 'quick');
     assert.equal(dj.ranked, true);
-    assert.equal(dj.courseId, 'sunny_meadows');
+    assert.equal(dj.courseId, 'blitz_pool');
     assert.equal(dj.endedReason, 'completed');
     assert.deepEqual(dj.players.map((p: { placement: number }) => p.placement), [1, 2, 3, 4]);
     assert.deepEqual(dj.players[0], { playerId: a.playerId, displayName: 'Player_0', placement: 1, points: 9, disconnected: false });

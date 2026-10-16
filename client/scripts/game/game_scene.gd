@@ -56,6 +56,7 @@ var _clock := 0.0
 var _spectate_slot := -1
 var _pending_predict := false
 var _last_predict_key := ""
+var _backdrop_theme_key := "-"
 var _results_overlay: Control
 var _dev_aim: Vector2 = Vector2(-1, -1)  ## Developer screenshot hook: (angle, power)
 var _dev_overview := OS.get_cmdline_user_args().has("--dev-overview")
@@ -84,7 +85,10 @@ func _ready() -> void:
 		_hook_view()
 		var app := Appearance.normalize(_local_appearance())
 		var pname := str(Backend.profile.get("displayName", "You"))
-		lv.setup_practice(str(params.get("course", "sunny_meadows")), int(params.get("hole", 0)), app, pname)
+		if str(params.get("mode", "practice")) == "stroke":
+			lv.setup_stroke(str(params.get("course", "golf_land")), int(params.get("hole", 0)), app, pname, bool(params.get("clean", false)))
+		else:
+			lv.setup_practice(str(params.get("course", "golf_land")), int(params.get("hole", 0)), app, pname)
 		_on_welcomed()
 
 
@@ -137,7 +141,9 @@ func _build_layers() -> void:
 
 func _on_welcomed() -> void:
 	_hide_overlay()
-	backdrop.setup(view.course.get("theme", {}), hash(view.course_id))
+	var ctheme: Dictionary = view.course.get("theme", {})
+	backdrop.setup(ctheme, hash(view.course_id))
+	_backdrop_theme_key = str(ctheme.get("id", "")) + str(ctheme.get("art", ""))
 	hud = GameHud.new()
 	hud_layer.add_child(hud)
 	hud.setup(view)
@@ -158,7 +164,7 @@ func _on_welcomed() -> void:
 		bv.radius = float(GameData.balance.physics.ball_radius)
 		bv.ball_color = Color(app.get("ballColor", "#ffffff"))
 		bv.trail_color = Color(app.get("trailColor", "#ffd166"))
-		bv.slot_color = UITheme.SLOT_COLORS[slot % 4]
+		bv.slot_color = UITheme.SLOT_COLORS[slot % UITheme.SLOT_COLORS.size()]
 		bv.display_name = str(r.name)
 		bv.is_local = slot == view.local_slot
 		ball_layer.add_child(bv)
@@ -193,7 +199,13 @@ func _on_welcomed() -> void:
 
 func _on_hole_loaded(index: int, number: int) -> void:
 	var hole: Dictionary = view.course.holes[index]
-	terrain_view.build(view.terrain, hole, view.course.get("theme", {}), (number if view.mode == "online" else index) + 1)
+	var theme := GameData.hole_theme(view.course, hole)
+	terrain_view.build(view.terrain, hole, theme, (number if view.mode == "online" else index) + 1)
+	# Pool matches change world between holes: rebuild the backdrop only when the theme changes.
+	var tkey := str(theme.get("id", "")) + str(theme.get("art", ""))
+	if tkey != _backdrop_theme_key:
+		_backdrop_theme_key = tkey
+		backdrop.setup(theme, hash(str(hole.get("course_id", view.course_id))))
 	for slot: int in balls:
 		balls[slot].terrain = view.terrain
 		balls[slot].clear_trail()
@@ -212,6 +224,8 @@ func _on_hole_loaded(index: int, number: int) -> void:
 	var label := ""
 	if view.mode == "online":
 		label = "First to %d" % view.target_points
+	elif view.mode == "stroke":
+		label = "Par %d" % int(hole.get("par", 3))
 	if hud:
 		hud.set_hole(number if view.mode == "online" else index, str(hole.get("name", "")), label)
 	_spectate_slot = -1
@@ -789,12 +803,20 @@ func _on_event(ev: Dictionary) -> void:
 			if is_me:
 				if view.mode == "online":
 					hud.announce(PLACE_TEXT[clampi(place - 1, 0, 3)], PLACE_COLORS[clampi(place - 1, 0, 3)], 150, 1.0)
+				elif view.mode == "stroke":
+					var par := int(view.course.holes[view.hole_index].get("par", 3))
+					var strokes := int(ev.get("strokes", ev.get("shots", 0)))
+					hud.announce(_score_name(strokes, par), UITheme.SUN if strokes <= par else UITheme.PAPER, 110, 1.0)
+					if bool(ev.get("swish", false)):
+						hud.toast("SWISH! Straight in without a bounce", Color("80ed99"))
 				else:
 					var shots := int(ev.get("shots", 0))
 					hud.announce("HOLED IN %d!" % shots if shots > 1 else "HOLE IN ONE!", UITheme.SUN, 110, 1.0)
+					if bool(ev.get("swish", false)):
+						hud.toast("SWISH!", Color("80ed99"))
 				Sfx.play("fanfare")
 			else:
-				hud.toast("%s finished %s" % [_name(slot), _ordinal(place)], UITheme.SLOT_COLORS[slot % 4])
+				hud.toast("%s finished %s" % [_name(slot), _ordinal(place)], UITheme.SLOT_COLORS[slot % UITheme.SLOT_COLORS.size()])
 		"hole_timer":
 			hud.toast("%d seconds to finish!" % int(ev.remaining), UITheme.CORAL)
 			Sfx.play("alert")
@@ -803,7 +825,10 @@ func _on_event(ev: Dictionary) -> void:
 				_show_hole_results(ev)
 		"match_end":
 			_match_over = true
-			_show_match_end(ev)
+			if view.mode == "stroke":
+				_show_scorecard(ev)
+			else:
+				_show_match_end(ev)
 		"player_left":
 			hud.toast("%s disconnected" % _name(slot), UITheme.MUTED)
 		"player_rejoined":
@@ -816,8 +841,93 @@ func _on_event(ev: Dictionary) -> void:
 			_on_rejected(str(ev.error))
 
 
+## Golf name for a hole score relative to par.
+static func _score_name(strokes: int, par: int) -> String:
+	if strokes == 1:
+		return "HOLE IN ONE!"
+	match strokes - par:
+		-3: return "ALBATROSS!"
+		-2: return "EAGLE!"
+		-1: return "BIRDIE!"
+		0: return "PAR"
+		1: return "BOGEY"
+		2: return "DOUBLE BOGEY"
+	return "+%d" % (strokes - par) if strokes > par else "%d UNDER" % (par - strokes)
+
+
+## End of a stroke-play round: the scorecard, records and medal.
+func _show_scorecard(ev: Dictionary) -> void:
+	_cancel_aim()
+	var standings: Array = ev.get("standings", [])
+	var card: Array = standings[0].get("scorecard", []) if not standings.is_empty() else []
+	var clean := bool(params.get("clean", false))
+	var res := Records.record_round(view.course, card, clean)
+	var panel := _overlay_panel(Vector2(980, 0))
+	var vb := VBoxContainer.new()
+	vb.add_theme_constant_override("separation", 12)
+	panel.add_child(vb)
+	var diff := int(res.total) - int(res.par)
+	vb.add_child(UITheme.styled_label("%s COMPLETE" % str(view.course.name).to_upper(), 54, UITheme.SUN, 10))
+	vb.add_child(UITheme.styled_label("%d strokes · %s" % [int(res.total), "Even par" if diff == 0 else ("%+d" % diff)], 34, UITheme.PAPER, 8))
+	var grid := GridContainer.new()
+	grid.columns = card.size() + 2
+	grid.add_theme_constant_override("h_separation", 6)
+	grid.add_theme_constant_override("v_separation", 4)
+	vb.add_child(grid)
+	var rows := [["Hole"], ["Par"], ["Score"]]
+	var par_total := 0
+	for i in card.size():
+		var row: Dictionary = card[i]
+		rows[0].append(str(i + 1))
+		rows[1].append(str(int(row.par)))
+		rows[2].append(str(int(row.strokes)) + ("*" if bool(row.get("ace", false)) else ""))
+		par_total += int(row.par)
+	rows[0].append("Total")
+	rows[1].append(str(par_total))
+	rows[2].append(str(int(res.total)))
+	for r in 3:
+		for c in rows[r].size():
+			var l := Label.new()
+			l.text = str(rows[r][c])
+			l.custom_minimum_size = Vector2(62 if c > 0 else 80, 34)
+			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			l.add_theme_font_override("font", UITheme.heading_font() if r != 1 else UITheme.body_bold_font())
+			l.add_theme_font_size_override("font_size", 22)
+			var col := UITheme.PAPER
+			if r == 2 and c > 0 and c <= card.size():
+				var d := int(card[c - 1].strokes) - int(card[c - 1].par)
+				col = Color("80ed99") if d < 0 else (UITheme.PAPER if d == 0 else UITheme.CORAL)
+			l.add_theme_color_override("font_color", col if r != 0 else UITheme.MUTED)
+			grid.add_child(l)
+	var notes: PackedStringArray = []
+	if str(res.medal) != "":
+		notes.append("%s MEDAL" % str(res.medal).to_upper())
+	if bool(res.new_best):
+		notes.append("NEW PERSONAL BEST")
+	if int(res.aces) > 0:
+		notes.append("%d hole-in-one%s" % [int(res.aces), "s" if int(res.aces) > 1 else ""])
+	if int(res.swishes) > 0:
+		notes.append("%d swish%s" % [int(res.swishes), "es" if int(res.swishes) > 1 else ""])
+	if clean:
+		notes.append("Clean Ball")
+	if not notes.is_empty():
+		vb.add_child(UITheme.styled_label("  ·  ".join(notes), 26, Color("80ed99"), 7))
+	var buttons := HBoxContainer.new()
+	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
+	buttons.add_theme_constant_override("separation", 14)
+	vb.add_child(buttons)
+	var again := GameButton.make("Play Again", "PrimaryButton", Vector2(240, 64))
+	again.pressed.connect(func() -> void: Router.goto(Router.GAME, {"mode": "stroke", "course": view.course_id, "hole": 0, "clean": clean}))
+	buttons.add_child(again)
+	var courses := GameButton.make("Courses", "", Vector2(220, 64))
+	courses.pressed.connect(func() -> void: Router.goto(Router.COURSES))
+	buttons.add_child(courses)
+	Sfx.play("results")
+
+
 func _on_rejected(err: String) -> void:
 	var text := {"energy": "Not enough energy", "cooldown": "Recharging…", "airborne": "Wait until your ball lands",
+		"no_charges": "None of those left this round", "mode": "That ball isn't allowed in this mode",
 		"not_owned": "You don't have that ball yet", "resetting": "", "unavailable": "", "not_playing": ""}.get(err, "Action not allowed")
 	if text != "":
 		hud.toast(text, UITheme.CORAL)
@@ -874,7 +984,7 @@ func _show_emote(slot: int, id: int) -> void:
 		_bubbles[slot].node.queue_free()
 	var bubble := _SpeechBubble.new()
 	bubble.text = str(e.bubble)
-	bubble.accent = UITheme.SLOT_COLORS[slot % 4]
+	bubble.accent = UITheme.SLOT_COLORS[slot % UITheme.SLOT_COLORS.size()]
 	world.add_child(bubble)
 	_bubbles[slot] = {"node": bubble, "until": _clock + maxf(2.2, float(e.duration) + 0.4)}
 	Sfx.play("pop", -6.0, 1.0 + id * 0.02)
@@ -1019,7 +1129,12 @@ func _toggle_menu() -> void:
 		overlay_layer.add_child(sp)
 		sp.closed.connect(sp.queue_free))
 	vb.add_child(settings)
-	var leave := GameButton.make("Leave Match" if view.mode == "online" else "Exit Practice", "DangerButton", Vector2(0, 60))
+	if view.mode == "stroke":
+		var restart := GameButton.make("Restart Round", "", Vector2(0, 56))
+		restart.pressed.connect(func() -> void: Router.goto(Router.GAME, {"mode": "stroke", "course": view.course_id, "hole": 0, "clean": bool(params.get("clean", false))}))
+		vb.add_child(restart)
+	var leave := GameButton.make("Leave Match" if view.mode == "online" else ("Quit Round" if view.mode == "stroke" else "Exit Practice"), "DangerButton", Vector2(0, 60))
+
 	leave.pressed.connect(func() -> void:
 		if view.mode == "online":
 			_confirm_leave()
@@ -1119,7 +1234,7 @@ func _results_card(title: String, rows: Array[Dictionary], subtitle: String) -> 
 		hb.add_child(place)
 		var chip := ColorRect.new()
 		chip.custom_minimum_size = Vector2(12, 34)
-		chip.color = UITheme.SLOT_COLORS[int(r.slot) % 4]
+		chip.color = UITheme.SLOT_COLORS[int(r.slot) % UITheme.SLOT_COLORS.size()]
 		hb.add_child(chip)
 		var n := Label.new()
 		n.text = str(r.name) + ("  (you)" if int(r.slot) == view.local_slot else "")
@@ -1340,7 +1455,7 @@ func _build_practice_panel() -> void:
 	refresh.call()
 	view.hole_loaded.connect(func(_i: int, _n: int) -> void: refresh.call())
 
-	var other := "physics_lab" if view.course_id != "physics_lab" else "sunny_meadows"
+	var other := "physics_lab" if view.course_id != "physics_lab" else "golf_land"
 	var switch := GameButton.make("Open %s" % GameData.course(other).get("name", other), "GhostButton", Vector2(0, 50))
 	switch.pressed.connect(func() -> void: Router.goto(Router.GAME, {"mode": "practice", "course": other, "hole": 0, "lab": other == "physics_lab"}))
 	vb.add_child(switch)

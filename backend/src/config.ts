@@ -26,7 +26,7 @@ const EnvSchema = z.object({
   MM_TROPHY_WINDOW_STEP: intVar(75),
   MM_TROPHY_WINDOW_STEP_MS: intVar(5000),
   MM_TICK_MS: intVar(500),
-  MM_COURSE_ID: z.string().regex(/^[a-z0-9_]{1,32}$/).default('sunny_meadows'),
+  MM_COURSE_ID: z.string().regex(/^[a-z0-9_]{1,32}$/).default('blitz_pool'),
   MM_TARGET_POINTS: intVar(9),
   RATE_LIMIT_BURST: intVar(20),
   RATE_LIMIT_PER_SEC: intVar(10),

@@ -34,7 +34,7 @@ const RARITY := {
 }
 
 ## Distinct colours for the four player slots (used for names, trails, markers).
-const SLOT_COLORS := [Color("ffd166"), Color("4cc9f0"), Color("ef476f"), Color("80ed99")]
+const SLOT_COLORS := [Color("ffd166"), Color("4cc9f0"), Color("ef476f"), Color("80ed99"), Color("c77dff"), Color("ff9f43")]
 
 static var _theme: Theme
 static var _heading: FontVariation

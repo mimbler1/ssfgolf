@@ -402,6 +402,16 @@ func _recover(b: SimBall) -> void:
 func _rest_check(b: SimBall, dt: float) -> void:
 	var speed := b.vel.length()
 	var grounded := b.since_contact <= grounded_grace
+	# A ball that stalls inside a zero-gravity field floats in place: it rests there (and can be
+	# shot again) instead of hanging forever. Not for Anti-Grav, whose gravity comes back.
+	if not grounded and b.anti_grav_timer <= 0.0 and not terrain.fields.is_empty() 			and terrain.gravity_at(b.pos, Vector2(0, gravity)).length() < 1.0:
+		if speed < rest_speed:
+			b.rest_timer += dt
+			if b.rest_timer >= rest_time * 3.0:
+				_settle(b)
+		else:
+			b.rest_timer = 0.0
+		return
 	# A slow ball that is still spinning against the ground (backspin check) is not at rest.
 	var slip := absf(b.vel.dot(Vector2(-b.contact_normal.y, b.contact_normal.x)) - b.ang_vel * b.radius)
 	var accelerating := b.boost_timer > 0.0 or b.magnet_strength > 0.0 and speed > rest_speed * 0.5

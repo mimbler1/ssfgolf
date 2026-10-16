@@ -22,7 +22,7 @@ func _ready() -> void:
 	RenderingServer.set_default_clear_color(Color("1b2040"))
 	backdrop = MenuBackdrop.new()
 	add_child(backdrop)
-	backdrop.setup(GameData.theme_for("sunny_meadows"), _appearance())
+	backdrop.setup(GameData.theme_for("golf_land"), _appearance())
 	var layer := CanvasLayer.new()
 	layer.layer = 5
 	add_child(layer)
@@ -73,9 +73,10 @@ func _build() -> void:
 	private.pressed.connect(func() -> void: _open_room_entry())
 	col.add_child(private)
 	_online_buttons.append(private)
-	var practice := GameButton.make("Practice", "", Vector2(460, 70))
-	practice.pressed.connect(func() -> void: Router.goto(Router.GAME, {"mode": "practice", "course": "sunny_meadows", "hole": 0}))
-	col.add_child(practice)
+	var courses := GameButton.make("Courses", "", Vector2(460, 70))
+	courses.tooltip_text = "Solo stroke play and practice on all six courses"
+	courses.pressed.connect(func() -> void: Router.goto(Router.COURSES))
+	col.add_child(courses)
 	var studio := GameButton.make("Golfer Studio", "SunButton", Vector2(460, 70))
 	studio.pressed.connect(func() -> void: Router.goto(Router.CUSTOMIZE))
 	col.add_child(studio)

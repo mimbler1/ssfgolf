@@ -59,7 +59,7 @@ func _ready() -> void:
 		current = Appearance.normalize(current)
 	var bg := MenuBackdrop.new()
 	add_child(bg)
-	bg.setup(GameData.theme_for("sunny_meadows"), current, false)
+	bg.setup(GameData.theme_for("golf_land"), current, false)
 	var layer := CanvasLayer.new()
 	layer.layer = 5
 	add_child(layer)

@@ -48,6 +48,7 @@ func test_course_playable(path: String) -> void:
 		while sim.phase != MatchSim.Phase.PLAYING:
 			sim.tick()
 		var b := sim.players[0].ball
+		var solver := CourseSolver.new(balance, materials)
 		var shots := 0
 		var holed := false
 		var guard := 0
@@ -55,7 +56,7 @@ func test_course_playable(path: String) -> void:
 			guard += 1
 			# Wait for the ball to settle so the bot doesn't interrupt its own roll.
 			if sim.can_shoot(0) == "" and (b.at_rest or b.stuck or b.vel.length() < 12.0):
-				var best := _solve_shot(sim.terrain, b.pos)
+				var best := solver.solve(sim.terrain, b.pos)
 				if OS.get_cmdline_user_args().has("--verbose"):
 					print("    shot %d from %s angle %.2f power %.2f" % [shots + 1, b.pos, best.x, best.y])
 				sim.cmd_shoot(0, best.x, best.y, "standard")
@@ -67,30 +68,3 @@ func test_course_playable(path: String) -> void:
 		summary.append("%s=%s" % [course.holes[i].id, str(shots) if holed else "FAIL"])
 		check(holed, "%s playable by solver in %d shots" % [course.holes[i].id, shots])
 	print("  shots: ", ", ".join(summary))
-
-
-func _solve_shot(terrain: SimTerrain, from: Vector2) -> Vector2:
-	var cup := terrain.cup_pos
-	var best := Vector2(-PI * 0.25, 0.5)
-	var best_d := INF
-	for side in [1.0, -1.0]:
-		for ai in 11:
-			var elev := lerpf(0.04, 1.5, float(ai) / 10.0)
-			var angle := -elev if side > 0.0 else -PI + elev
-			for pi in 9:
-				var power := lerpf(0.05, 1.0, float(pi) / 8.0)
-				var vel := Vector2.from_angle(angle) * MatchSim.launch_speed(balance, power)
-				var r := float(balance.physics.ball_radius)
-				var res := SimPhysics.predict(terrain, balance.physics, materials, from, vel, r, 1.0, 12.0, 12.0, 8,
-					MatchSim.launch_spin(balance, vel, 0.0, r))
-				var pts: PackedVector2Array = res.points
-				var end := pts[pts.size() - 1]
-				if res.hazard or terrain.zone_at(end) != "":
-					continue
-				var d := end.distance_to(cup)
-				if terrain.cup_captures(end, 9.0, 0.0) or end.distance_to(Vector2(cup.x, terrain.cup_floor_y)) < 20.0:
-					d = 0.0
-				if d < best_d:
-					best_d = d
-					best = Vector2(angle, power)
-	return best

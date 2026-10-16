@@ -171,7 +171,7 @@ func _add_player_row(r: Dictionary) -> void:
 	var slot := int(r.slot)
 	var panel := PanelContainer.new()
 	var is_local := slot == view.local_slot
-	var sb := UITheme.arcade_box(Color(UITheme.INK, 0.92), UITheme.SLOT_COLORS[slot % 4] if is_local else UITheme.INK_LINE)
+	var sb := UITheme.arcade_box(Color(UITheme.INK, 0.92), UITheme.SLOT_COLORS[slot % UITheme.SLOT_COLORS.size()] if is_local else UITheme.INK_LINE)
 	sb.content_margin_top = 5; sb.content_margin_bottom = 9; sb.content_margin_left = 16; sb.content_margin_right = 18
 	panel.add_theme_stylebox_override("panel", sb)
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -180,7 +180,7 @@ func _add_player_row(r: Dictionary) -> void:
 	panel.add_child(hb)
 	var chip := ColorRect.new()
 	chip.custom_minimum_size = Vector2(14, 14)
-	chip.color = UITheme.SLOT_COLORS[slot % 4]
+	chip.color = UITheme.SLOT_COLORS[slot % UITheme.SLOT_COLORS.size()]
 	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	hb.add_child(chip)
 	var name_l := Label.new()
@@ -255,6 +255,9 @@ func _process(_delta: float) -> void:
 		if view.mode == "practice":
 			row.pts.text = "%d shots" % int(ps.get("hole_shots", 0))
 			row.pts.custom_minimum_size.x = 110
+		elif view.mode == "stroke":
+			row.pts.text = "%d strokes" % int(ps.get("strokes", 0))
+			row.pts.custom_minimum_size.x = 130
 		else:
 			row.pts.text = "%d / %d" % [int(ps.get("points", 0)), view.target_points]
 		var dim: bool = bs.get("forfeited", false) or not bs.get("connected", true)
@@ -276,11 +279,19 @@ func _process(_delta: float) -> void:
 	# Energy & cards.
 	var me := view.player_state(view.local_slot)
 	var energy := float(me.get("energy", 0.0))
+	var stroke := view.mode == "stroke"
+	_energy.visible = not stroke
 	_energy.value = energy
+	var charges: Dictionary = me.get("charges", {})
 	for id: String in _cards:
 		var c: Dictionary = _cards[id]
 		var cost := float(c.def.cost)
 		var affordable := energy + 0.0001 >= cost
+		if stroke:
+			# Stroke play spends limited charges per course instead of energy.
+			affordable = id == "standard" or int(charges.get(id, 0)) > 0
+			c.cost.cost = int(charges.get(id, 0)) if id != "standard" else 0
+			c.cost.energy = 99.0
 		var sel := id == selected_ability
 		var col: Color = c.color
 		c.icon.dimmed = not affordable

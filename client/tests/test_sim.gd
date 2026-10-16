@@ -11,7 +11,7 @@ var passes := 0
 func _initialize() -> void:
 	balance = _json("res://data/balance.json")
 	materials = _json("res://data/materials.json").materials
-	var courses := ["res://data/courses/sunny_meadows.json"]
+	var courses := ["res://data/courses/golf_land.json"]
 	var dir := DirAccess.open("res://data/courses")
 	if dir:
 		courses.clear()
@@ -50,7 +50,7 @@ func check(cond: bool, label: String) -> void:
 
 
 func _course() -> Dictionary:
-	return _json("res://data/courses/sunny_meadows.json")
+	return _json("res://data/courses/golf_land.json")
 
 
 func _flat_course() -> Dictionary:

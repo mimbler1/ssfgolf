@@ -39,7 +39,7 @@ describe('private rooms', () => {
     assert.match(room.code, /^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$/);
     assert.equal(room.hostId, h.playerId);
     assert.equal(room.status, 'open');
-    assert.deepEqual(room.settings, { maxPlayers: 4, targetPoints: 9, courseId: 'sunny_meadows' });
+    assert.deepEqual(room.settings, { maxPlayers: 4, targetPoints: 9, courseId: 'blitz_pool' });
     assert.deepEqual(room.members, [{ playerId: h.playerId, displayName: 'Player_0', ready: false, isHost: true }]);
     assert.equal(room.match, null);
     // Already in a room -> 409 for create and queue.
@@ -50,7 +50,7 @@ describe('private rooms', () => {
   it('validates settings', async () => {
     const [h] = await newGuests(t, 1);
     assert.ok(h);
-    for (const bad of [{ maxPlayers: 1 }, { maxPlayers: 5 }, { targetPoints: 2 }, { targetPoints: 22 }, { courseId: 'Bad Id' }]) {
+    for (const bad of [{ maxPlayers: 1 }, { maxPlayers: 7 }, { targetPoints: 2 }, { targetPoints: 22 }, { courseId: 'Bad Id' }]) {
       assert.equal((await req(h, 'POST', '/v1/rooms', bad)).statusCode, 400, JSON.stringify(bad));
     }
     const room = await createRoom(h, { maxPlayers: 2, targetPoints: 5, courseId: 'cliffs' });

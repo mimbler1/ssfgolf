@@ -25,6 +25,7 @@ var server_key := "dev-server-key-change-me"
 var join_secret := "dev-join-secret-change-me"
 var dev_mode := false
 var dev_players := 2
+var _dev_course := GameData.POOL_ID
 
 var server_id := ""
 var assignment: Dictionary = {}
@@ -68,7 +69,8 @@ func _parse_args() -> void:
 	server_key = _arg(args, "--server-key", OS.get_environment("FAIRWAY_GAME_SERVER_KEY") if OS.has_environment("FAIRWAY_GAME_SERVER_KEY") else server_key)
 	join_secret = _arg(args, "--join-secret", OS.get_environment("FAIRWAY_JOIN_TOKEN_SECRET") if OS.has_environment("FAIRWAY_JOIN_TOKEN_SECRET") else join_secret)
 	dev_mode = args.has("--insecure-dev")
-	dev_players = clampi(int(_arg(args, "--dev-players", "2")), 1, 4)
+	dev_players = clampi(int(_arg(args, "--dev-players", "2")), 1, MatchSim.MAX_PLAYERS)
+	_dev_course = _arg(args, "--dev-course", GameData.POOL_ID)
 
 
 static func _arg(args: PackedStringArray, key: String, fallback: String) -> String:
@@ -153,13 +155,15 @@ func _kick(pid: int) -> void:
 
 func _begin_assignment(a: Dictionary) -> void:
 	assignment = a
-	var course := GameData.course(str(a.get("courseId", "sunny_meadows")))
-	if course.is_empty():
-		_log("Assignment %s references unknown course %s; using sunny_meadows." % [a.get("matchId"), a.get("courseId")])
-		course = GameData.course("sunny_meadows")
-		assignment.courseId = "sunny_meadows"
+	var course := GameData.course(str(a.get("courseId", GameData.POOL_ID)))
+	if course.is_empty() or bool(course.get("practiceOnly", false)):
+		_log("Assignment %s references unknown course %s; using the full course pool." % [a.get("matchId"), a.get("courseId")])
+		course = GameData.course(GameData.POOL_ID)
+		assignment.courseId = GameData.POOL_ID
 	sim = MatchSim.new(GameData.balance, GameData.materials, course, "online", hash(str(a.matchId)))
-	sim.target_points = int(a.get("targetPoints", 9))
+	# Private rooms play to the host's target; matchmaking uses the table for the player count.
+	if a.get("roomCode") != null and str(a.get("roomCode", "")) != "":
+		sim.target_override = int(a.get("targetPoints", 9))
 	var roster: Array = a.get("players", [])
 	roster.sort_custom(func(x: Dictionary, y: Dictionary) -> bool: return int(x.get("slot", 0)) < int(y.get("slot", 0)))
 	for r: Dictionary in roster:
@@ -512,7 +516,7 @@ func _dev_join(name: String) -> String:
 		name = "Dev"
 	var id := "dev-" + name.to_lower().validate_filename()
 	if state == State.IDLE:
-		_begin_assignment({"matchId": "dev-%d" % Time.get_ticks_msec(), "courseId": "sunny_meadows", "targetPoints": 9, "players": []})
+		_begin_assignment({"matchId": "dev-%d" % Time.get_ticks_msec(), "courseId": _dev_course, "targetPoints": 9, "players": []})
 	if sim.player_by_id(id) != null:
 		return id
 	if state != State.WAITING or sim.players.size() >= dev_players:

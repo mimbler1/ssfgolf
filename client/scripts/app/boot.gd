@@ -16,8 +16,12 @@ func _ready() -> void:
 	get_window().min_size = Vector2i(1024, 576)
 	if args.has("--studio"):
 		Router.goto(Router.CUSTOMIZE)
+	elif args.has("--courses"):
+		Router.goto(Router.COURSES)
+	elif args.has("--stroke"):
+		Router.goto(Router.GAME, {"mode": "stroke", "course": _arg(args, "--course", "golf_land"), "hole": int(_arg(args, "--hole", "0"))})
 	elif args.has("--practice"):
-		Router.goto(Router.GAME, {"mode": "practice", "course": _arg(args, "--course", "sunny_meadows"),
+		Router.goto(Router.GAME, {"mode": "practice", "course": _arg(args, "--course", "golf_land"),
 			"hole": int(_arg(args, "--hole", "0")), "lab": args.has("--lab")})
 	elif args.has("--connect"):
 		var hp := _arg(args, "--connect", "127.0.0.1:7777").split(":")

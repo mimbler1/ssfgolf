@@ -16,6 +16,14 @@ var _art_sky: TextureRect
 
 
 func setup(p_theme: Dictionary, seed_value: int) -> void:
+	# Re-setup (a pool match changes world between holes): drop the previous theme's layers.
+	for c in get_children():
+		c.queue_free()
+	_sky = null
+	_layers.clear()
+	_clouds.clear()
+	_art_layers.clear()
+	_art_sky = null
 	theme = p_theme
 	layer = -50
 	var art := WorldArt.load_for(theme)

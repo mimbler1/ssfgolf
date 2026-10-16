@@ -1,4 +1,8 @@
-"""Authoring script for the built-in courses (until the in-game course editor exists).\n\nWrites client/data/courses/sunny_meadows.json and physics_lab.json in the course data format\ndocumented in docs/COURSES.md. Run from the repo root:  python tools/build_courses.py\n"""
+"""Physics Lab course, plus the original Sunny Meadows hole definitions reused by Golf Land.
+
+Writes client/data/courses/physics_lab.json (golf_land.json comes from tools/courses/golf_land.py) in the
+course data format documented in docs/COURSES.md. Run from the repo root:  python tools/build_courses.py
+"""
 import json
 import os
 
@@ -199,12 +203,10 @@ def dumps(obj, indent=0):
 
 def main():
     os.makedirs(OUT, exist_ok=True)
-    meadows = {"id": "sunny_meadows", "name": "Sunny Meadows", "version": 2, "theme": MEADOW_THEME, "holes": HOLES}
-    with open(os.path.join(OUT, "sunny_meadows.json"), "w", encoding="utf-8") as f:
-        f.write(dumps(meadows) + "\n")
+    # The Sunny Meadows holes above now build into Golf Land (tools/courses/golf_land.py).
     with open(os.path.join(OUT, "physics_lab.json"), "w", encoding="utf-8") as f:
         f.write(dumps(LAB) + "\n")
-    print("wrote", len(HOLES), "Sunny Meadows holes + physics lab")
+    print("wrote physics lab")
 
 
 if __name__ == "__main__":
