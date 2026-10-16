@@ -79,8 +79,10 @@ func _solve_shot(terrain: SimTerrain, from: Vector2) -> Vector2:
 			var angle := -elev if side > 0.0 else -PI + elev
 			for pi in 9:
 				var power := lerpf(0.05, 1.0, float(pi) / 8.0)
-				var speed := lerpf(float(balance.shot.min_speed), float(balance.shot.max_speed), power)
-				var res := SimPhysics.predict(terrain, balance.physics, materials, from, Vector2.from_angle(angle) * speed, float(balance.physics.ball_radius), 1.0, 12.0, 12.0, 8)
+				var vel := Vector2.from_angle(angle) * MatchSim.launch_speed(balance, power)
+				var r := float(balance.physics.ball_radius)
+				var res := SimPhysics.predict(terrain, balance.physics, materials, from, vel, r, 1.0, 12.0, 12.0, 8,
+					MatchSim.launch_spin(balance, vel, 0.0, r))
 				var pts: PackedVector2Array = res.points
 				var end := pts[pts.size() - 1]
 				if res.hazard or terrain.zone_at(end) != "":

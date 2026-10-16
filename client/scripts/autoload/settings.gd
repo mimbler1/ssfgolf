@@ -14,7 +14,13 @@ const ACTIONS := {
 	"ability_4": {"label": "Select ability 4", "default": [{"key": KEY_4}]},
 	"ability_5": {"label": "Select ability 5", "default": [{"key": KEY_5}]},
 	"ability_6": {"label": "Select ability 6", "default": [{"key": KEY_6}]},
+	"ability_page": {"label": "Next page of balls", "default": [{"key": KEY_Q}]},
 	"activate_ability": {"label": "Trigger ability mid-flight", "default": [{"key": KEY_SPACE}]},
+	"swing": {"label": "Classic: start / stop the power meter", "default": [{"key": KEY_SPACE}]},
+	"aim_left": {"label": "Classic: turn aim left", "default": [{"key": KEY_A}, {"key": KEY_LEFT}]},
+	"aim_right": {"label": "Classic: turn aim right", "default": [{"key": KEY_D}, {"key": KEY_RIGHT}]},
+	"spin_top": {"label": "Topspin (before the shot) / spin forward in flight", "default": [{"key": KEY_W}, {"key": KEY_UP}]},
+	"spin_back": {"label": "Backspin (before the shot) / spin back in flight", "default": [{"key": KEY_S}, {"key": KEY_DOWN}]},
 	"cancel_aim": {"label": "Cancel aim", "default": [{"mouse": MOUSE_BUTTON_RIGHT}, {"key": KEY_X}]},
 	"reset_ball": {"label": "Return ball to last shot", "default": [{"key": KEY_R}]},
 	"camera_recenter": {"label": "Re-centre camera", "default": [{"key": KEY_C}]},
@@ -37,7 +43,7 @@ const ACTIONS := {
 var values: Dictionary = {
 	"display": {"window_mode": "windowed", "vsync": true, "max_fps": 0},
 	"audio": {"master": 0.8, "sfx": 0.9, "music": 0.6},
-	"gameplay": {"aim_mode": "pull", "aim_distance": 280.0, "show_trajectory": true, "screen_shake": 1.0},
+	"gameplay": {"control_style": "blitz", "aim_mode": "pull", "aim_distance": 280.0, "screen_shake": 1.0},
 	"network": {"backend_url": "http://127.0.0.1:8080"},
 }
 var bindings: Dictionary = {}  ## action -> Array of descriptors

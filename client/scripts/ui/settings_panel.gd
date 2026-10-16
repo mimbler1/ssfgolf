@@ -102,9 +102,9 @@ func _show_tab(name: String) -> void:
 			_slider("Sound effects", "audio", "sfx", 0.0, 1.0)
 			_slider("Music", "audio", "music", 0.0, 1.0)
 		"Gameplay":
-			_option("Aiming style", ["pull", "push"], ["Pull back (slingshot)", "Push toward target"], "gameplay", "aim_mode")
-			_slider("Drag length for full power", "gameplay", "aim_distance", 140.0, 520.0)
-			_toggle("Show trajectory preview", "gameplay", "show_trajectory")
+			_option("Controls", ["blitz", "classic"], ["Blitz: drag and release", "Classic: arrow keys + power meter"], "gameplay", "control_style")
+			_option("Drag direction (Blitz)", ["pull", "push"], ["Pull back (slingshot)", "Push toward target"], "gameplay", "aim_mode")
+			_slider("Drag length for full power (Blitz)", "gameplay", "aim_distance", 140.0, 520.0)
 			_slider("Screen shake", "gameplay", "screen_shake", 0.0, 1.0)
 		"Controls":
 			_note("Click a binding, then press a key or mouse button. Esc cancels. Left-click is always aim/shoot.")

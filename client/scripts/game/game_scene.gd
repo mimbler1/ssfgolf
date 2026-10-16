@@ -31,10 +31,17 @@ var _bubbles: Dictionary = {}   ## slot -> {node: Control, until: float}
 var _wheel: EmoteWheel
 var _last_emote := -10.0
 
+## Shot input for both control styles (Blitz drag / Classic meter); see ShotController.
+var shot := ShotController.new()
+var aim_view: AimView
+## True while the aim arrow is up (Blitz: dragging; Classic: the ball is ready to aim).
 var _aiming := false
-var _aim_start := Vector2.ZERO
-var _aim_angle := 0.0
-var _aim_power := 0.0
+## In-flight spin key currently held (-1, 0, +1).
+var _spin_held := 0
+## Which page of balls the number keys select (pages of six).
+var _ability_page := 0
+## Practice-only debug overlay of the flight path (never available online).
+var _debug_traj := false
 var _queued_shot: Dictionary = {}
 var _selected := "standard"
 var _last_local_swing := -10.0
@@ -48,6 +55,7 @@ var _match_over := false
 var _clock := 0.0
 var _spectate_slot := -1
 var _pending_predict := false
+var _last_predict_key := ""
 var _results_overlay: Control
 var _dev_aim: Vector2 = Vector2(-1, -1)  ## Developer screenshot hook: (angle, power)
 var _dev_overview := OS.get_cmdline_user_args().has("--dev-overview")
@@ -55,6 +63,9 @@ var _dev_overview := OS.get_cmdline_user_args().has("--dev-overview")
 
 func _ready() -> void:
 	params = Router.params
+	var dcs := OS.get_cmdline_user_args().find("--dev-controls")
+	if dcs != -1 and dcs + 1 < OS.get_cmdline_user_args().size():
+		Settings.values.gameplay.control_style = OS.get_cmdline_user_args()[dcs + 1]  # dev only, not saved
 	RenderingServer.set_default_clear_color(Color("1b2040"))
 	_build_layers()
 	if str(params.get("mode", "practice")) == "online":
@@ -107,6 +118,9 @@ func _build_layers() -> void:
 	world.add_child(ball_layer)
 	trajectory = TrajectoryView.new()
 	world.add_child(trajectory)
+	aim_view = AimView.new()
+	aim_view.visible = false
+	world.add_child(aim_view)
 	fx = FxLayer.new()
 	world.add_child(fx)
 	camera = Camera2D.new()
@@ -166,8 +180,15 @@ func _on_welcomed() -> void:
 	if di != -1 and di + 1 < args.size():
 		var parts := args[di + 1].split(",")
 		_dev_aim = Vector2(float(parts[0]), float(parts[1]))
+		var dab := args.find("--dev-ability")
+		if dab != -1 and dab + 1 < args.size():
+			_selected = args[dab + 1]
+			hud.selected_ability = _selected
+		var dsp := args.find("--dev-spin")
+		if dsp != -1 and dsp + 1 < args.size():
+			shot.spin = float(args[dsp + 1])
 		await get_tree().create_timer(1.2).timeout
-		_aiming = true
+		shot.aiming = true
 
 
 func _on_hole_loaded(index: int, number: int) -> void:
@@ -176,10 +197,13 @@ func _on_hole_loaded(index: int, number: int) -> void:
 	for slot: int in balls:
 		balls[slot].terrain = view.terrain
 		balls[slot].clear_trail()
+	fx.clear_persistent()
 	for slot: int in golfers:
 		golfers[slot].visible = false
 		_golfer_state[slot].shown = false
 	_cancel_aim()
+	var me0 := view.ball_state(view.local_slot)
+	shot.reset_for_hole(view.terrain.cup_pos.x - (me0.get("pos", view.terrain.tee) as Vector2).x)
 	var bd := view.terrain.bounds
 	camera.limit_left = int(bd.position.x - 400)
 	camera.limit_right = int(bd.end.x + 400)
@@ -212,11 +236,10 @@ func _process(delta: float) -> void:
 		_update_ball(slot, delta)
 	_update_camera(delta)
 	_update_bubbles()
-	if _aiming:
-		_update_aim()
+	_update_controls(delta)
 	if not _queued_shot.is_empty():
 		if view.local_shot_block() == "":
-			view.shoot(_queued_shot.angle, _queued_shot.power, _queued_shot.ability)
+			view.shoot(_queued_shot.angle, _queued_shot.power, _queued_shot.ability, _queued_shot.spin)
 			_after_local_shot(_queued_shot.power)
 			_queued_shot = {}
 		elif _clock > float(_queued_shot.expires):
@@ -244,6 +267,10 @@ func _update_ball(slot: int, _delta: float) -> void:
 	bv.visible_ball = bool(s.active) and not bool(s.finished)
 	bv.finished = bool(s.finished)
 	bv.disconnected = bool(s.forfeited)
+	bv.shield = bool(s.get("shield", false))
+	bv.iced = bool(s.get("ice", false))
+	bv.anti_grav = bool(s.get("anti_grav", false))
+	bv.magnet = bool(s.get("magnet", false))
 	var speed: float = s.vel.length()
 	bv.moving = speed > 40.0 and bool(s.active)
 	if slot == view.local_slot:
@@ -266,7 +293,7 @@ func _update_golfer(slot: int, s: Dictionary, speed: float) -> void:
 	if settled:
 		var facing := 1.0
 		if slot == view.local_slot and _aiming:
-			facing = 1.0 if cos(_aim_angle) >= 0.0 else -1.0
+			facing = 1.0 if cos(shot.angle) >= 0.0 else -1.0
 		else:
 			facing = 1.0 if view.terrain.cup_pos.x >= s.pos.x else -1.0
 		var gx: float = s.pos.x - facing * Golfer.BALL_OFFSET * GOLFER_SCALE
@@ -286,7 +313,7 @@ func _update_golfer(slot: int, s: Dictionary, speed: float) -> void:
 		else:
 			g.position = g.position.lerp(ground, 0.5)
 		if slot == view.local_slot and _aiming:
-			g.aim_power = _aim_power
+			g.aim_power = shot.shot_power()
 			g.play("aim")
 		elif not g.is_performing():
 			g.play("idle")
@@ -311,8 +338,8 @@ func _update_camera(delta: float) -> void:
 			target = view.terrain.cup_pos
 	var want_zoom := _user_zoom
 	if _aiming:
-		target += Vector2.from_angle(_aim_angle) * _aim_power * 260.0
-		want_zoom = _user_zoom * lerpf(1.0, 0.82, _aim_power)
+		target += Vector2.from_angle(shot.angle) * shot.shot_power() * 260.0
+		want_zoom = _user_zoom * lerpf(1.0, 0.82, shot.shot_power())
 	if Input.is_action_pressed("camera_overview") or _dev_overview:
 		var bd := view.terrain.bounds
 		var vs := get_viewport().get_visible_rect().size
@@ -353,18 +380,20 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.is_action_pressed("pause_menu"):
 			_toggle_menu()
 		return
+	var classic := shot.style == "classic"
 	if event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
-		if mb.button_index == MOUSE_BUTTON_LEFT:
+		if mb.button_index == MOUSE_BUTTON_LEFT and not classic:
 			if mb.pressed:
 				_begin_aim(mb.position)
-			elif _aiming:
+			elif shot.aiming:
 				_release_aim()
 		elif mb.pressed and mb.button_index == MOUSE_BUTTON_WHEEL_UP:
 			_user_zoom = clampf(_user_zoom * 1.1, 0.4, 1.5)
 		elif mb.pressed and mb.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			_user_zoom = clampf(_user_zoom / 1.1, 0.4, 1.5)
-	if event.is_action_pressed("cancel_aim") and _aiming:
+	var cancellable := (shot.aiming and not classic) or shot.meter_on
+	if event.is_action_pressed("cancel_aim") and cancellable:
 		_cancel_aim()
 		Sfx.play("ui_back", -6.0)
 		get_viewport().set_input_as_handled()
@@ -372,12 +401,17 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("pause_menu"):
 		if _wheel:
 			_wheel.cancel()
-		elif _aiming:
+		elif cancellable:
 			_cancel_aim()
 		else:
 			_toggle_menu()
 		return
-	if event.is_action_pressed("activate_ability"):
+	# Swing (classic) and the mid-flight ability share a key: the swing wins while the ball can
+	# be hit, the ability while it is flying.
+	if classic and event.is_action_pressed("swing") and not event.is_echo() and _classic_swing():
+		get_viewport().set_input_as_handled()
+		return
+	if event.is_action_pressed("activate_ability") and not event.is_echo():
 		var s := view.ball_state(view.local_slot)
 		if s.get("manual", false):
 			view.activate()
@@ -394,11 +428,29 @@ func _unhandled_input(event: InputEvent) -> void:
 		_show_scoreboard(true)
 	elif event.is_action_released("scoreboard"):
 		_show_scoreboard(false)
+	elif event.is_action_pressed("ability_page") and not event.is_echo():
+		var pages := maxi(1, ceili(_ability_order().size() / 6.0))
+		_ability_page = (_ability_page + 1) % pages
+		hud.set_page(_ability_page)
+		Sfx.play("ui_select", -8.0)
+	# Spin: before the shot the keys set launch spin; in flight, holding them spins the ball.
+	for pair: Array in [["spin_top", 1], ["spin_back", -1]]:
+		if event.is_action_pressed(pair[0]) and not event.is_echo():
+			if _local_airborne():
+				_spin_held = pair[1]
+				view.spin(pair[1])
+			else:
+				shot.adjust_spin(pair[1])
+				Sfx.play("ui_select", -10.0, 1.0 + shot.spin * 0.2)
+		elif event.is_action_released(pair[0]) and _spin_held == int(pair[1]):
+			_spin_held = 0
+			view.spin(0)
 	for i in 6:
 		if event.is_action_pressed("ability_%d" % (i + 1)):
 			var ids := _ability_order()
-			if i < ids.size():
-				_select_ability(ids[i])
+			var idx := _ability_page * 6 + i
+			if idx < ids.size():
+				_select_ability(ids[idx])
 	for i in Emotes.count():
 		if event.is_action_pressed("emote_%d" % (i + 1)):
 			_send_emote(i)
@@ -411,7 +463,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _open_emote_wheel() -> void:
 	if _wheel or _match_over:
 		return
-	if _aiming:
+	if shot.aiming or shot.meter_on:
 		_cancel_aim()
 	_wheel = EmoteWheel.new()
 	_wheel.appearance = Appearance.normalize(_local_appearance())
@@ -440,94 +492,169 @@ func _select_ability(id: String) -> void:
 	var def := GameData.ability(id)
 	if def.is_empty():
 		return
-	var energy := float(view.player_state(view.local_slot).get("energy", 0.0))
-	if energy + 0.0001 < float(def.cost) and id != "standard":
-		hud.toast("Not enough energy for %s" % def.name, UITheme.CORAL)
-		Sfx.play("ui_deny", -4.0)
-		return
+	if id != "standard" and _selected != id:
+		var ps := view.player_state(view.local_slot)
+		if view.mode == "stroke":
+			if int((ps.get("charges", {}) as Dictionary).get(id, 0)) <= 0:
+				hud.toast("No %s left this round" % def.name, UITheme.CORAL)
+				Sfx.play("ui_deny", -4.0)
+				return
+		elif float(ps.get("energy", 0.0)) + 0.0001 < float(def.cost):
+			hud.toast("Not enough energy for %s" % def.name, UITheme.CORAL)
+			Sfx.play("ui_deny", -4.0)
+			return
 	_selected = id if _selected != id else "standard"
 	hud.selected_ability = _selected
-	Sfx.play("ui_select", -6.0, 1.0 + GameData.ability_index(_selected) * 0.05)
-	if _aiming:
-		_pending_predict = true
+	Sfx.play("ui_select", -6.0, 1.0 + GameData.ability_index(_selected) * 0.03)
+	_pending_predict = true
+
+
+func _local_airborne() -> bool:
+	var s := view.ball_state(view.local_slot)
+	return not s.is_empty() and bool(s.get("active", false)) and not bool(s.get("grounded", true)) and not bool(s.get("finished", false))
+
+
+## The local ball can be aimed: on the ground, in play, not finished.
+func _local_ready_to_aim() -> bool:
+	var block := view.local_shot_block()
+	return block in ["", "cooldown"] and not _match_over and not _menu_open and _wheel == null
 
 
 func _begin_aim(screen_pos: Vector2) -> void:
 	var block := view.local_shot_block()
 	if block in ["finished", "not_playing"] or _match_over:
 		return
-	_aiming = true
-	_aim_start = screen_pos
-	_aim_power = 0.0
+	shot.begin_drag(screen_pos)
 	Sfx.play("aim_start", -10.0)
 
 
-func _update_aim() -> void:
+## Classic Swing key: first press starts the meter, the second hits. Returns true if handled.
+func _classic_swing() -> bool:
+	if not shot.meter_on:
+		if not _local_ready_to_aim():
+			return false
+		shot.start_meter()
+		Sfx.play("aim_start", -8.0)
+		return true
+	var power := shot.shot_power()
+	shot.meter_on = false
+	_fire(shot.angle, power)
+	return true
+
+
+## Per-frame control update: aim keys, the meter, putting profile, arrow and laser guide.
+func _update_controls(delta: float) -> void:
+	var style := str(Settings.get_value("gameplay", "control_style"))
+	if style != shot.style:
+		_cancel_aim()
+		shot.style = style if style in ["blitz", "classic"] else "blitz"
+	var s := view.ball_state(view.local_slot)
+	var ready := not s.is_empty() and bool(s.get("active", false)) and _local_ready_to_aim()
+	# Putting: on the ground, close to the cup and roughly level with it.
+	var cup := view.terrain.cup_pos
+	var bpos: Vector2 = s.get("pos", Vector2.ZERO)
+	shot.putting = view.terrain.has_cup and ready and absf(cup.x - bpos.x) < ShotController.PUTT_RANGE and absf(cup.y - bpos.y) < 150.0
+	var changed := false
 	if _dev_aim.y >= 0.0:
-		_aim_angle = _dev_aim.x
-		_aim_power = _dev_aim.y
-		_predict()
-		return
-	var mouse := get_viewport().get_mouse_position()
-	var drag := mouse - _aim_start
-	var dist := float(Settings.get_value("gameplay", "aim_distance"))
-	var pull := str(Settings.get_value("gameplay", "aim_mode")) == "pull"
-	var dir := -drag if pull else drag
-	var new_power := clampf((drag.length() - AIM_DEADZONE * 0.5) / dist, 0.0, 1.0)
-	var new_angle := dir.angle() if drag.length() > 1.0 else _aim_angle
-	var changed := absf(new_power - _aim_power) > 0.002 or absf(angle_difference(new_angle, _aim_angle)) > 0.002 or _pending_predict
-	_aim_power = new_power
-	_aim_angle = new_angle
-	if drag.length() < AIM_DEADZONE:
-		trajectory.clear()
-		return
-	if changed and bool(Settings.get_value("gameplay", "show_trajectory")):
+		shot.angle = _dev_aim.x
+		shot.power = _dev_aim.y
+		changed = true
+	elif shot.style == "classic":
+		shot.aiming = ready or shot.meter_on
+		if shot.aiming:
+			changed = shot.classic_aim(delta, Input.is_action_pressed("aim_left"), Input.is_action_pressed("aim_right"),
+				Input.is_action_just_pressed("aim_left"), Input.is_action_just_pressed("aim_right"))
+			shot.classic_meter(delta)
+			changed = changed or shot.meter_on
+	elif shot.aiming:
+		var dist := float(Settings.get_value("gameplay", "aim_distance"))
+		var pull := str(Settings.get_value("gameplay", "aim_mode")) == "pull"
+		changed = shot.update_drag(get_viewport().get_mouse_position(), dist, pull)
+	_aiming = shot.aiming
+	# Arrow.
+	var show_arrow := shot.aiming and not s.is_empty() and bool(s.get("active", false))
+	if shot.style == "blitz" and not shot.drag_long_enough(get_viewport().get_mouse_position()) and _dev_aim.y < 0.0:
+		show_arrow = false
+	aim_view.visible = show_arrow
+	if show_arrow:
+		aim_view.ball_pos = bpos
+		aim_view.ball_radius = float(GameData.balance.physics.ball_radius)
+		aim_view.angle = shot.angle
+		aim_view.power = shot.power
+		aim_view.shot_power = shot.shot_power()
+		aim_view.spin = shot.spin
+		aim_view.putting = shot.putting
+		aim_view.meter = shot.meter_on
+		aim_view.classic = shot.style == "classic"
+		aim_view.color = Color(GameData.ability(_selected).get("color", "#ffffff"))
+		aim_view.blocked = view.local_shot_block() != ""
+	# Flight-path guide: Laser Ball only (or the practice debug overlay).
+	var guide := _guide_style()
+	if show_arrow and guide != "" and (changed or _pending_predict or guide + _selected + str(shot.spin) != _last_predict_key):
 		_pending_predict = false
-		_predict()
+		_last_predict_key = guide + _selected + str(shot.spin)
+		_predict(guide)
+	elif not show_arrow or guide == "":
+		trajectory.clear()
+		_last_predict_key = ""
 
 
-func _predict() -> void:
+## "laser" when the selected ball grants the aiming guide, "debug" for the practice overlay, else "".
+func _guide_style() -> String:
+	if str(GameData.ability(_selected).get("assist", "")) == "trajectory":
+		return "laser"
+	if _debug_traj and view.mode == "practice":
+		return "debug"
+	return ""
+
+
+func _predict(guide: String) -> void:
 	var s := view.ball_state(view.local_slot)
 	if s.is_empty() or not s.active:
 		trajectory.clear()
 		return
 	var bal := view.balance if not view.balance.is_empty() else GameData.balance
-	var speed := lerpf(float(bal.shot.min_speed), float(bal.shot.max_speed), _aim_power)
-	var gscale := 1.0
-	if _selected == "heavy":
-		gscale = float(GameData.ability("heavy").params.gravity_scale)
-	var res := SimPhysics.predict(view.terrain, bal.physics, GameData.materials, s.pos, Vector2.from_angle(_aim_angle) * speed,
-		float(bal.physics.ball_radius), gscale, 2.5, 0.28)
-	var end_hazard: bool = res.hazard
-	var col := Color(GameData.ability(_selected).get("color", "#ffffff"))
-	if view.local_shot_block() not in ["", "cooldown"]:
-		col = Color(1, 1, 1, 0.5)
-	trajectory.set_path(res.points, res.contact_index, _aim_power, col, end_hazard)
+	var def := GameData.ability(_selected)
+	var speed := MatchSim.launch_speed(bal, shot.shot_power())
+	if _selected == "super":
+		speed *= float(def.params.power_scale)
+	var vel := Vector2.from_angle(shot.angle) * speed
+	var r := float(bal.physics.ball_radius)
+	var params: Dictionary = def.get("params", {})
+	var max_t := float(params.get("guide_time", 3.0)) if guide == "laser" else 6.0
+	var after := float(params.get("after_contact", 0.25)) if guide == "laser" else 1.2
+	var res := SimPhysics.predict(view.terrain, bal.physics, GameData.materials, s.pos, vel, r, 1.0, max_t, after, 2,
+		MatchSim.launch_spin(bal, vel, shot.spin, r), func(b: SimBall) -> void: MatchSim.apply_ability(b, def), view.terrain.cup_pos)
+	trajectory.set_path(res.points, res.contact_index, shot.shot_power(), Color(def.get("color", "#ffffff")), res.hazard, guide)
 
 
 func _release_aim() -> void:
-	var drag := get_viewport().get_mouse_position() - _aim_start
-	var power := _aim_power
-	var angle := _aim_angle
+	var long_enough := shot.drag_long_enough(get_viewport().get_mouse_position())
+	var power := shot.shot_power()
+	var angle := shot.angle
 	_cancel_aim()
-	if drag.length() < AIM_DEADZONE or power <= 0.01:
+	if not long_enough or power <= 0.01:
 		return
+	_fire(angle, power)
+
+
+## Sends a shot (or queues it if the cooldown is about to end). Shared by both control styles.
+func _fire(angle: float, power: float) -> void:
 	var block := view.local_shot_block()
 	if block == "":
-		view.shoot(angle, power, _selected)
+		view.shoot(angle, power, _selected, shot.spin)
 		_after_local_shot(power)
 	elif block == "cooldown":
 		var cd := float(view.player_state(view.local_slot).get("cooldown", 0.0))
 		if cd < 0.4:
-			_queued_shot = {"angle": angle, "power": power, "ability": _selected, "expires": _clock + 0.6}
+			_queued_shot = {"angle": angle, "power": power, "ability": _selected, "spin": shot.spin, "expires": _clock + 0.6}
+			shot.after_shot()
 		else:
 			hud.toast("Recharging…", UITheme.MUTED)
 			Sfx.play("ui_deny", -8.0)
 	elif block == "airborne":
 		hud.toast("Wait until your ball lands", UITheme.MUTED)
 		Sfx.play("ui_deny", -8.0)
-	elif block == "resetting":
-		pass
 
 
 func _after_local_shot(power: float) -> void:
@@ -536,6 +663,7 @@ func _after_local_shot(power: float) -> void:
 		g.swing(power, "watch")
 		_golfer_state[view.local_slot].swing_until = _clock + 0.55
 	_last_local_swing = _clock
+	shot.after_shot()
 	if _selected != "standard":
 		_selected = "standard"
 		hud.selected_ability = _selected
@@ -543,9 +671,11 @@ func _after_local_shot(power: float) -> void:
 
 
 func _cancel_aim() -> void:
-	_aiming = false
-	_aim_power = 0.0
+	shot.cancel()
+	_aiming = shot.aiming
+	aim_view.visible = false
 	trajectory.clear()
+	_last_predict_key = ""
 
 
 # ---------------------------------------------------------------------------
@@ -590,6 +720,27 @@ func _on_event(ev: Dictionary) -> void:
 				fx.brake_puff(ev.pos)
 				balls[slot].braked = 1.1
 				Sfx.play("air_brake")
+			elif ab == "zig_zag":
+				fx.impact_ring(ev.pos, Color("c77dff"), 30.0)
+				fx.sparkle(ev.pos, Color("c77dff"), 8)
+				Sfx.play("whoosh", -4.0, 1.3)
+			elif ab == "mulligan":
+				fx.poof(ev.get("from", ev.pos))
+				fx.poof(ev.pos)
+				Sfx.play("whoosh", -2.0, 0.8)
+				if balls.has(slot):
+					balls[slot].clear_trail()
+				if is_me:
+					hud.toast("Mulligan! Take it again", Color("c9a227"))
+		"freeze":
+			fx.ice_patch(ev.pos)
+			Sfx.play("clink_ice")
+		"shield_block":
+			fx.splash(ev.pos)
+			fx.impact_ring(ev.pos, Color("5aa9ff"), 40.0)
+			Sfx.play("boing", -4.0)
+			if is_me:
+				hud.toast("Shield saved you!", Color("5aa9ff"))
 		"explode":
 			fx.explosion(ev.pos, float(ev.radius))
 			Sfx.play("explosion")
@@ -728,7 +879,7 @@ func _show_emote(slot: int, id: int) -> void:
 	_bubbles[slot] = {"node": bubble, "until": _clock + maxf(2.2, float(e.duration) + 0.4)}
 	Sfx.play("pop", -6.0, 1.0 + id * 0.02)
 	var g: Golfer = golfers.get(slot)
-	if g and g.visible and not (slot == view.local_slot and _aiming):
+	if g and g.visible and not (slot == view.local_slot and shot.aiming):
 		g.emote(str(e.id))
 
 
@@ -1193,6 +1344,13 @@ func _build_practice_panel() -> void:
 	var switch := GameButton.make("Open %s" % GameData.course(other).get("name", other), "GhostButton", Vector2(0, 50))
 	switch.pressed.connect(func() -> void: Router.goto(Router.GAME, {"mode": "practice", "course": other, "hole": 0, "lab": other == "physics_lab"}))
 	vb.add_child(switch)
+	var dbg := CheckButton.new()
+	dbg.text = "Debug: show flight path"
+	dbg.tooltip_text = "Practice only. Draws the predicted flight for every ball. Never available online."
+	dbg.toggled.connect(func(on: bool) -> void:
+		_debug_traj = on
+		_pending_predict = true)
+	vb.add_child(dbg)
 	var lab_toggle := CheckButton.new()
 	lab_toggle.text = "Physics Lab (tuning)"
 	vb.add_child(lab_toggle)

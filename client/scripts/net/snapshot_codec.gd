@@ -12,6 +12,12 @@ const F_MANUAL := 64
 const F_FORFEIT := 128
 const F_HAZARD := 256
 const F_GRENADE := 512
+const F_SHIELD := 1024
+const F_ICE := 2048
+const F_ANTIGRAV := 4096
+const F_MAGNET := 8192
+const F_BRAKE := 16384
+const F_BOOST := 32768
 const MAX_IMPACTS := 16
 
 
@@ -37,10 +43,16 @@ static func encode(sim: MatchSim, ability_index: Callable) -> PackedByteArray:
 		if b.is_grounded(grace): f |= F_GROUNDED
 		if p.finished: f |= F_FINISHED
 		if p.connected: f |= F_CONNECTED
-		if b.manual_available: f |= F_MANUAL
+		if b.manual_available or b.mulligan_ready: f |= F_MANUAL
 		if p.forfeited: f |= F_FORFEIT
 		if p.hazard_timer >= 0.0: f |= F_HAZARD
 		if b.grenade_pending: f |= F_GRENADE
+		if b.shield > 0: f |= F_SHIELD
+		if b.freezes_water: f |= F_ICE
+		if b.anti_grav_timer > 0.0: f |= F_ANTIGRAV
+		if b.magnet_strength > 0.0: f |= F_MAGNET
+		if b.brake_timer > 0.0: f |= F_BRAKE
+		if b.boost_timer > 0.0: f |= F_BOOST
 		buf.put_u8(p.slot)
 		buf.put_u16(f)
 		buf.put_float(b.pos.x)
@@ -102,6 +114,12 @@ static func decode(data: PackedByteArray) -> Dictionary:
 		s.forfeited = f & F_FORFEIT != 0
 		s.hazard = f & F_HAZARD != 0
 		s.grenade = f & F_GRENADE != 0
+		s.shield = f & F_SHIELD != 0
+		s.ice = f & F_ICE != 0
+		s.anti_grav = f & F_ANTIGRAV != 0
+		s.magnet = f & F_MAGNET != 0
+		s.brake = f & F_BRAKE != 0
+		s.boost = f & F_BOOST != 0
 		s.pos = Vector2(buf.get_float(), buf.get_float())
 		s.vel = Vector2(buf.get_float(), buf.get_float())
 		s.rot = buf.get_float()

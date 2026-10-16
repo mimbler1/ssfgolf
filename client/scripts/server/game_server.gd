@@ -348,16 +348,22 @@ func _rate_ok(pid: int) -> bool:
 	return true
 
 
-func on_shoot(pid: int, seq: int, angle: float, power: float, ability: int) -> void:
+func on_shoot(pid: int, seq: int, angle: float, power: float, ability: int, spin: float) -> void:
 	if not _rate_ok(pid) or sim == null or state != State.RUNNING:
 		return
 	var b: Dictionary = _bound[pid]
 	if ability < 0 or ability >= GameData.abilities.size():
 		Net.s_cmd_result.rpc_id(pid, seq, "unknown_ability")
 		return
-	var err := sim.cmd_shoot(int(b.slot), angle, power, GameData.ability_id_at(ability))
+	var err := sim.cmd_shoot(int(b.slot), angle, power, GameData.ability_id_at(ability), spin)
 	if err != "":
 		Net.s_cmd_result.rpc_id(pid, seq, err)
+
+
+func on_spin(pid: int, dir: int) -> void:
+	if not _rate_ok(pid) or sim == null or state != State.RUNNING:
+		return
+	sim.cmd_spin(int(_bound[pid].slot), dir)
 
 
 func on_activate(pid: int, _seq: int) -> void:

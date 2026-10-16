@@ -7,7 +7,7 @@ extends Node
 
 const CH_SNAPSHOT := 1
 
-## Server side: object implementing on_hello/on_shoot/on_activate/on_reset/on_emote/on_leave/on_ping.
+## Server side: object implementing on_hello/on_shoot/on_spin/on_activate/on_reset/on_emote/on_leave/on_ping.
 var server_handler: Object = null
 ## Client side: object implementing on_welcome/on_reject/on_event/on_snapshot/on_pong/on_cmd_result.
 var client_handler: Object = null
@@ -64,9 +64,16 @@ func c_hello(token: String, protocol: int, version: String) -> void:
 
 
 @rpc("any_peer", "call_remote", "reliable")
-func c_shoot(seq: int, angle: float, power: float, ability: int) -> void:
+func c_shoot(seq: int, angle: float, power: float, ability: int, spin: float) -> void:
 	if server_handler:
-		server_handler.on_shoot(_sender(), seq, angle, power, ability)
+		server_handler.on_shoot(_sender(), seq, angle, power, ability, spin)
+
+
+## In-flight spin input: -1 backspin, 0 release, +1 topspin.
+@rpc("any_peer", "call_remote", "reliable")
+func c_spin(dir: int) -> void:
+	if server_handler:
+		server_handler.on_spin(_sender(), dir)
 
 
 @rpc("any_peer", "call_remote", "reliable")

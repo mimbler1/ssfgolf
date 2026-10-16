@@ -200,6 +200,41 @@ func brake_puff(pos: Vector2) -> void:
 	impact_ring(pos, Color("4cc9f0"), 34.0)
 
 
+## A frozen patch on a water surface (Ice Ball). Stays until clear_persistent().
+func ice_patch(pos: Vector2) -> void:
+	var patch := _IcePatch.new()
+	patch.position = pos
+	add_child(patch)
+	sparkle(pos + Vector2(0, -6), Color("e6fbff"), 14)
+	impact_ring(pos, Color("a5e8ff"), 34.0)
+
+
+func clear_persistent() -> void:
+	for c in get_children():
+		if c is _IcePatch:
+			c.queue_free()
+
+
+class _IcePatch extends Node2D:
+	var _t := 0.0
+
+	func _process(delta: float) -> void:
+		_t += delta
+		if _t < 0.6:
+			queue_redraw()
+
+	func _draw() -> void:
+		var grow := clampf(_t / 0.35, 0.0, 1.0)
+		var w := 70.0 * grow
+		draw_rect(Rect2(-w - 3, -5, w * 2 + 6, 12), Color("1b2040"))
+		draw_rect(Rect2(-w, -3, w * 2, 8), Color("bfefff"))
+		draw_rect(Rect2(-w, -3, w * 2, 2), Color("ffffff"))
+		var x := -w + 10.0
+		while x < w - 8.0:
+			draw_rect(Rect2(x, 1, 6, 2), Color("8fd8f5"))
+			x += 22.0
+
+
 func goo(pos: Vector2) -> void:
 	for i in 12:
 		var a := randf() * TAU

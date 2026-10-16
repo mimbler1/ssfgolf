@@ -25,6 +25,11 @@ var cooldown_frac: float = 0.0  ## 0 = ready, 1 = just shot
 var ready_to_shoot: bool = false
 var finished: bool = false
 var disconnected: bool = false
+## Ability states mirrored from the authoritative ball (snapshot flags).
+var shield: bool = false
+var iced: bool = false
+var anti_grav: bool = false
+var magnet: bool = false
 
 var _trail: PackedVector2Array = PackedVector2Array()
 var _t: float = 0.0
@@ -118,6 +123,12 @@ func _draw() -> void:
 			fill = fill.lerp(Color("ff7b2e"), 0.55)
 		"air_brake":
 			fill = fill.lerp(Color("4cc9f0"), 0.55)
+		"standard", "laser", "mulligan", "free_shot":
+			pass
+		_:
+			fill = fill.lerp(Color(GameData.ability(ability).get("color", "#ffffff")), 0.5)
+	if iced:
+		fill = fill.lerp(Color("cdf3ff"), 0.6)
 	if finished or disconnected:
 		fill.a = 0.5
 
@@ -140,11 +151,34 @@ func _draw() -> void:
 		draw_circle(Vector2(-radius * 0.5, radius * 0.6), 3.0, Color("7b2cbf"), true, -1.0, true)
 	# Highlight.
 	draw_circle(Vector2(-radius * 0.35, -radius * 0.38), radius * 0.28, Color(1, 1, 1, 0.75), true, -1.0, true)
+	_draw_states()
 
 	if is_local and not finished:
 		_draw_local_marker()
 	elif display_name != "" and not finished:
 		_draw_name()
+
+
+## Ability state overlays: shield bubble, frost, anti-grav rings, magnet pulse.
+func _draw_states() -> void:
+	if shield:
+		var p := 0.6 + 0.4 * sin(_t * 5.0)
+		draw_arc(Vector2.ZERO, radius + 7.0, 0, TAU, 28, Color("1b2040"), 5.0)
+		draw_arc(Vector2.ZERO, radius + 7.0, 0, TAU, 28, Color(0.36, 0.66, 1.0, p), 3.0)
+		draw_arc(Vector2.ZERO, radius + 7.0, -2.4, -1.5, 8, Color(1, 1, 1, 0.8), 2.0)
+	if iced:
+		for k in 4:
+			var a := rot + TAU * float(k) / 4.0
+			draw_line(Vector2.from_angle(a) * 2.0, Vector2.from_angle(a) * (radius - 1.5), Color(1, 1, 1, 0.7), 1.0)
+	if anti_grav:
+		for k in 2:
+			var ph := fmod(_t * 1.4 + k * 0.5, 1.0)
+			var y := radius + 6.0 + ph * 18.0
+			var w := radius * (1.2 - ph * 0.5)
+			draw_line(Vector2(-w, y), Vector2(w, y), Color(0.49, 0.95, 0.79, 1.0 - ph), 2.0)
+	if magnet:
+		var ph2 := fmod(_t * 2.0, 1.0)
+		draw_arc(Vector2.ZERO, radius + 4.0 + ph2 * 16.0, 0, TAU, 24, Color(0.9, 0.22, 0.23, 1.0 - ph2), 2.0)
 
 
 func _trail_dir() -> Vector2:

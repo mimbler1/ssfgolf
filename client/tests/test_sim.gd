@@ -87,7 +87,7 @@ func test_rest_on_flat() -> void:
 	print("test_rest_on_flat")
 	var sim := _practice(_flat_course())
 	var b := sim.players[0].ball
-	check(sim.cmd_shoot(0, -PI * 0.25, 0.5, "standard") == "", "shot accepted")
+	check(sim.cmd_shoot(0, -PI * 0.25, 0.3, "standard") == "", "shot accepted")
 	var rested_at := -1
 	for i in 900:
 		sim.tick()
@@ -294,8 +294,18 @@ func test_course_random_shots(path: String) -> void:
 				print("    ball never became shootable at ", b.pos, " ", sim.can_shoot(0))
 				break
 			sim.players[0].energy = 10.0
-			var abilities := ["standard", "standard", "heavy", "sticky", "nitro", "air_brake", "grenade"]
-			sim.cmd_shoot(0, rng.randf_range(-PI * 0.95, -PI * 0.05), rng.randf_range(0.1, 1.0), abilities[s % abilities.size()])
+			var abilities := ["standard", "standard", "heavy", "sticky", "nitro", "air_brake", "grenade", "anti_grav",
+				"ice", "laser", "magnet", "mulligan", "shield", "super", "zig_zag"]
+			var ab: String = abilities[s % abilities.size()]
+			sim.cmd_shoot(0, rng.randf_range(-PI * 0.95, -PI * 0.05), rng.randf_range(0.1, 1.0), ab, rng.randf_range(-1.0, 1.0))
+			# Exercise mid-flight activations (and in-flight spin) at a random moment.
+			for k in rng.randi_range(10, 50):
+				sim.tick()
+				if sim.terrain.is_point_solid(b.pos) and b.active:
+					bad += 1
+			if ab in ["nitro", "air_brake", "zig_zag", "grenade"]:
+				sim.cmd_activate(0)
+			sim.cmd_spin(0, rng.randi_range(-1, 1))
 			shots += 1
 		check(bad == 0, "%s: %d shots, never inside terrain (bad ticks %d)" % [course.holes[i].id, shots, bad])
 

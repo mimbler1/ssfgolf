@@ -11,18 +11,50 @@
     "rest_speed": 24.0,
     "rest_time": 0.14,
     "max_speed": 3400.0,
-    "max_angular_velocity": 70.0,
+    "max_angular_velocity": 300.0,
     "ball_restitution": 0.82,
     "ball_impulse_scale": 1.0,
     "grounded_grace": 0.12,
     "stuck_time": 9.0,
-    "slow_creep_speed": 60.0
+    "slow_creep_speed": 60.0,
+    "inertia_k": 0.4,
+    "impact_friction": 1.0,
+    "slip_friction": 1.0,
+    "air_spin_decay": 0.1,
+    "spin_air_accel": 95.0
   },
   "shot": {
     "min_speed": 140.0,
     "max_speed": 1520.0,
     "cooldown": 1.7,
-    "reset_cooldown": 3.0
+    "reset_cooldown": 3.0,
+    "power_curve": [
+      [
+        0,
+        0
+      ],
+      [
+        0.25,
+        0.42
+      ],
+      [
+        0.5,
+        0.68
+      ],
+      [
+        0.75,
+        0.86
+      ],
+      [
+        1,
+        1
+      ]
+    ],
+    "spin_enabled": true,
+    "spin_in_flight": true,
+    "stroke_cooldown": 0.3,
+    "spin_gain_back": 2.8,
+    "spin_gain_top": 1.4
   },
   "energy": {
     "max": 10.0,
@@ -37,49 +69,324 @@
     "hazard_reset_delay": 1.1
   },
   "match": {
-    "points": { "1": [1], "2": [3, 0], "3": [3, 1, 0], "4": [3, 2, 1, 0] },
+    "points": {
+      "1": [
+        1
+      ],
+      "2": [
+        3,
+        0
+      ],
+      "3": [
+        3,
+        1,
+        0
+      ],
+      "4": [
+        3,
+        2,
+        1,
+        0
+      ],
+      "5": [
+        4,
+        3,
+        2,
+        1,
+        0
+      ],
+      "6": [
+        5,
+        4,
+        3,
+        2,
+        1,
+        0
+      ]
+    },
     "target_points": 9,
     "max_holes": 15,
     "join_timeout": 25.0,
     "disconnect_grace": 30.0,
-    "intro_duration": 2.5
+    "intro_duration": 2.5,
+    "target_points_by_count": {
+      "5": 12,
+      "6": 15
+    }
   },
   "abilities": [
     {
-      "id": "standard", "name": "Standard", "cost": 0, "color": "#f4f4f8",
+      "id": "standard",
+      "name": "Regular",
+      "cost": 0,
+      "color": "#f4f4f8",
       "activation": "none",
-      "desc": "A trusty, honest golf ball. No tricks.",
+      "max_activations": 0,
+      "modes": [
+        "online",
+        "practice",
+        "stroke"
+      ],
+      "desc": "The reference ball. No tricks, no guide.",
       "params": {}
     },
     {
-      "id": "nitro", "name": "Nitro", "cost": 3, "color": "#ff7b2e",
+      "id": "nitro",
+      "name": "Nitro",
+      "cost": 3,
+      "color": "#ff7b2e",
       "activation": "manual",
-      "desc": "Press [Space] mid-flight to ignite a speed burst along your path.",
-      "params": { "boost": 640.0, "max_speed": 2300.0 }
+      "max_activations": 1,
+      "modes": [
+        "online",
+        "practice",
+        "stroke"
+      ],
+      "desc": "Press [Space] mid-flight to fire a short thrust along your path.",
+      "params": {
+        "boost": 640.0,
+        "duration": 0.22,
+        "max_speed": 2300.0
+      }
     },
     {
-      "id": "sticky", "name": "Sticky", "cost": 2, "color": "#b65cff",
+      "id": "sticky",
+      "name": "Sticky",
+      "cost": 2,
+      "color": "#b65cff",
       "activation": "none",
-      "desc": "Glues to the first surface it touches, even walls and ceilings.",
+      "max_activations": 0,
+      "modes": [
+        "online",
+        "practice",
+        "stroke"
+      ],
+      "desc": "Glues to the first surface it touches: ground, walls, slopes or ceilings.",
       "params": {}
     },
     {
-      "id": "grenade", "name": "Grenade", "cost": 4, "color": "#56c271",
+      "id": "grenade",
+      "name": "Grenade",
+      "cost": 4,
+      "color": "#56c271",
       "activation": "impact_or_manual",
+      "max_activations": 1,
+      "modes": [
+        "online",
+        "practice",
+        "stroke"
+      ],
       "desc": "Explodes on impact (or press [Space]), blasting nearby balls away.",
-      "params": { "radius": 175.0, "impulse": 1150.0, "self_scale": 0.4, "arm_time": 0.12, "fuse": 3.0 }
+      "params": {
+        "radius": 175.0,
+        "impulse": 1150.0,
+        "self_scale": 0.4,
+        "arm_time": 0.12,
+        "fuse": 3.0
+      }
     },
     {
-      "id": "heavy", "name": "Heavy", "cost": 3, "color": "#7d8597",
+      "id": "heavy",
+      "name": "Heavy",
+      "cost": 3,
+      "color": "#7d8597",
       "activation": "none",
+      "max_activations": 0,
+      "modes": [
+        "online",
+        "practice",
+        "stroke"
+      ],
       "desc": "Four times the mass. Barely bounces and bullies other balls.",
-      "params": { "mass": 4.0, "restitution_scale": 0.4, "gravity_scale": 1.18, "roll_drag_scale": 0.55 }
+      "params": {
+        "mass": 4.0,
+        "restitution_scale": 0.4,
+        "gravity_scale": 1.18,
+        "roll_drag_scale": 0.55
+      }
     },
     {
-      "id": "air_brake", "name": "Air Brake", "cost": 2, "color": "#4cc9f0",
+      "id": "air_brake",
+      "name": "Air Brakes",
+      "cost": 2,
+      "color": "#4cc9f0",
       "activation": "manual",
-      "desc": "Press [Space] mid-flight to slam the brakes and drop almost straight down.",
-      "params": { "keep": 0.12, "gravity_scale": 0.55, "slow_time": 0.4 }
+      "max_activations": 1,
+      "modes": [
+        "online",
+        "practice",
+        "stroke"
+      ],
+      "desc": "Press [Space] mid-flight to brake hard and drop close to where you are.",
+      "params": {
+        "duration": 0.35,
+        "rate": 8.0,
+        "gravity_scale": 0.35
+      }
+    },
+    {
+      "id": "anti_grav",
+      "name": "Anti-Grav",
+      "cost": 3,
+      "color": "#7cf2c9",
+      "activation": "none",
+      "max_activations": 0,
+      "modes": [
+        "online",
+        "practice",
+        "stroke"
+      ],
+      "desc": "Ignores gravity for a short time after the hit, flying straight until it touches anything.",
+      "params": {
+        "duration": 1.0,
+        "gravity_scale": 0.0
+      }
+    },
+    {
+      "id": "free_shot",
+      "name": "Free Shot",
+      "cost": 0,
+      "color": "#ffe066",
+      "activation": "none",
+      "max_activations": 0,
+      "modes": [
+        "stroke"
+      ],
+      "desc": "Stroke play only: this shot does not count toward your score.",
+      "params": {}
+    },
+    {
+      "id": "ice",
+      "name": "Ice Ball",
+      "cost": 2,
+      "color": "#a5e8ff",
+      "activation": "none",
+      "max_activations": 0,
+      "modes": [
+        "online",
+        "practice",
+        "stroke"
+      ],
+      "desc": "Freezes water it lands on, so it can bounce, roll and stop on ponds.",
+      "params": {}
+    },
+    {
+      "id": "laser",
+      "name": "Laser",
+      "cost": 2,
+      "color": "#ff3d6e",
+      "activation": "none",
+      "max_activations": 0,
+      "modes": [
+        "online",
+        "practice",
+        "stroke"
+      ],
+      "assist": "trajectory",
+      "desc": "Shows a laser guide of the flight up to its first bounce while you aim.",
+      "params": {
+        "guide_time": 3.0,
+        "after_contact": 0.25
+      }
+    },
+    {
+      "id": "magnet",
+      "name": "Magnet",
+      "cost": 4,
+      "color": "#e5383b",
+      "activation": "none",
+      "max_activations": 0,
+      "modes": [
+        "online",
+        "practice",
+        "stroke"
+      ],
+      "desc": "Pulled toward the hole while it is nearby. Walls still get in the way.",
+      "params": {
+        "strength": 1500.0,
+        "falloff": 260.0,
+        "radius": 900.0
+      }
+    },
+    {
+      "id": "mulligan",
+      "name": "Mulligan",
+      "cost": 3,
+      "color": "#c9a227",
+      "activation": "manual",
+      "max_activations": 0,
+      "modes": [
+        "online",
+        "practice",
+        "stroke"
+      ],
+      "desc": "Press [Space] any time before your next shot to take this one back from where you hit it.",
+      "params": {}
+    },
+    {
+      "id": "shield",
+      "name": "Shield",
+      "cost": 2,
+      "color": "#5aa9ff",
+      "activation": "none",
+      "max_activations": 0,
+      "modes": [
+        "online",
+        "practice",
+        "stroke"
+      ],
+      "desc": "Bounces off one water, lava or acid hazard and shrugs off blasts and bumps.",
+      "params": {
+        "blocks": 1,
+        "zones": [
+          "water",
+          "lava",
+          "acid"
+        ],
+        "bounce": 0.55,
+        "min_pop": 420.0
+      }
+    },
+    {
+      "id": "super",
+      "name": "Super Ball",
+      "cost": 3,
+      "color": "#ffd60a",
+      "activation": "none",
+      "max_activations": 0,
+      "modes": [
+        "online",
+        "practice",
+        "stroke"
+      ],
+      "desc": "Hit 22% harder than your swing. Long carries, harder to stop.",
+      "params": {
+        "power_scale": 1.22
+      }
+    },
+    {
+      "id": "zig_zag",
+      "name": "Zig Zag",
+      "cost": 2,
+      "color": "#c77dff",
+      "activation": "manual",
+      "max_activations": 3,
+      "modes": [
+        "online",
+        "practice",
+        "stroke"
+      ],
+      "desc": "Press [Space] mid-flight to flip direction. Up to three times per shot.",
+      "params": {
+        "keep": 0.92
+      }
     }
-  ]
+  ],
+  "stroke": {
+    "charges": {
+      "default": 2,
+      "free_shot": 1,
+      "mulligan": 2
+    }
+  }
 }

@@ -90,12 +90,7 @@ func _build() -> void:
 	_card_box.alignment = BoxContainer.ALIGNMENT_CENTER
 	_card_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bottom.add_child(_card_box)
-	var idx := 0
-	for a: Dictionary in GameData.abilities:
-		if not view.allowed_abilities.has(a.id):
-			continue
-		idx += 1
-		_add_card(a, idx)
+	set_page(0)
 
 	# Centre announcements.
 	_center = UITheme.styled_label("", 120, UITheme.PAPER, 16)
@@ -304,6 +299,19 @@ func _process(_delta: float) -> void:
 
 	var bs_local := view.ball_state(view.local_slot)
 	_shots_label.text = "Shots: %d" % int(me.get("hole_shots", 0)) if view.mode == "online" and not bs_local.get("finished", false) else ""
+
+
+## Shows one page of six balls (number keys 1-6 pick within the page; the page key flips).
+func set_page(page: int) -> void:
+	for c in _card_box.get_children():
+		c.queue_free()
+	_cards.clear()
+	var allowed: Array[Dictionary] = []
+	for a: Dictionary in GameData.abilities:
+		if view.allowed_abilities.has(a.id):
+			allowed.append(a)
+	for i in range(page * 6, mini(allowed.size(), page * 6 + 6)):
+		_add_card(allowed[i], i - page * 6 + 1)
 
 
 func set_hole(number: int, hole_name: String, total_label: String) -> void:

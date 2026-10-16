@@ -28,12 +28,14 @@ func player_count() -> int:
 
 
 ## Interpolated render state for a ball. Keys: pos, vel, rot, active, at_rest, stuck,
-## grounded, finished, connected, forfeited, manual, ability (String), hazard, grenade.
+## grounded, finished, connected, forfeited, manual, ability (String), hazard, grenade,
+## shield, ice, anti_grav, magnet, brake, boost.
 func ball_state(_slot: int) -> Dictionary:
 	return {}
 
 
-## Latest known player state. Keys: energy, cooldown, points, hole_shots.
+## Latest known player state. Keys: energy, cooldown, points, hole_shots
+## (stroke play also: strokes, penalties, charges).
 func player_state(_slot: int) -> Dictionary:
 	return {}
 
@@ -48,7 +50,12 @@ func local_shot_block() -> String:
 	return "not_ready"
 
 
-func shoot(_angle: float, _power: float, _ability: String) -> void:
+func shoot(_angle: float, _power: float, _ability: String, _spin: float = 0.0) -> void:
+	pass
+
+
+## In-flight spin input: -1 backspin, 0 release, +1 topspin.
+func spin(_dir: int) -> void:
 	pass
 
 

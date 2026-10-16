@@ -28,6 +28,14 @@ var seg_mat: PackedInt32Array = PackedInt32Array()
 var polygons: Array[Dictionary] = []
 ## Hazard zones: Array of { "type": String, "points": PackedVector2Array, "rect": Rect2 }
 var zones: Array[Dictionary] = []
+## Force fields (not hazards): Array of { "type": "gravity", "points", "rect", "scale": float,
+## "vector": Vector2 (absolute gravity, used when "has_vector") }. See PHYSICS_SPEC.md §6.
+var fields: Array[Dictionary] = []
+## Upward-facing edges of water zones. Solid (as ice) only for balls that freeze water.
+var water_a: PackedVector2Array = PackedVector2Array()
+var water_b: PackedVector2Array = PackedVector2Array()
+var water_n: PackedVector2Array = PackedVector2Array()
+var ice_mat: int = -1
 
 var tee: Vector2 = Vector2.ZERO
 var cup_pos: Vector2 = Vector2.ZERO        ## Center of the cup mouth (surface level).
@@ -73,6 +81,7 @@ func build(hole: Dictionary) -> void:
 
 	for poly in polygons:
 		_add_polygon_segments(poly["points"], poly["edge_mats"])
+		poly["rect"] = _rect_of(poly["points"])
 
 	for zone_d: Dictionary in hole.get("zones", []):
 		var zp := PackedVector2Array()
@@ -82,7 +91,27 @@ func build(hole: Dictionary) -> void:
 			var r := Rect2(zp[0], Vector2.ZERO)
 			for v in zp:
 				r = r.expand(v)
-			zones.append({"type": str(zone_d.get("type", "water")), "points": zp, "rect": r})
+			var ztype := str(zone_d.get("type", "water"))
+			zones.append({"type": ztype, "points": zp, "rect": r})
+			if ztype == "water":
+				_add_water_tops(zp)
+
+	for field_d: Dictionary in hole.get("fields", []):
+		var fp := PackedVector2Array()
+		for p in field_d.get("points", []):
+			fp.append(Vector2(float(p[0]), float(p[1])))
+		if fp.size() < 3:
+			continue
+		var fr := Rect2(fp[0], Vector2.ZERO)
+		for v in fp:
+			fr = fr.expand(v)
+		var vec: Array = field_d.get("vector", [])
+		fields.append({"type": str(field_d.get("type", "gravity")), "points": fp, "rect": fr,
+			"scale": float(field_d.get("scale", 1.0)),
+			"has_vector": vec.size() == 2,
+			"vector": Vector2(float(vec[0]), float(vec[1])) if vec.size() == 2 else Vector2.ZERO})
+	if not water_a.is_empty():
+		ice_mat = material_index("ice")
 
 	_build_grid()
 
@@ -304,9 +333,33 @@ func query(pos: Vector2) -> PackedInt32Array:
 
 func is_point_solid(p: Vector2) -> bool:
 	for poly in polygons:
-		if Geometry2D.is_point_in_polygon(p, poly["points"]):
+		if poly["rect"].has_point(p) and point_in_polygon(p, poly["points"]):
 			return true
 	return false
+
+
+## Exact point-in-polygon by winding number. Geometry2D.is_point_in_polygon returns false
+## positives on large finely subdivided polygons (seen on Sunny Meadows holes 2 and 9), which
+## could snap a flying ball onto the ground through the recovery path.
+static func point_in_polygon(p: Vector2, pts: PackedVector2Array) -> bool:
+	var w := 0
+	var n := pts.size()
+	for i in n:
+		var a := pts[i]
+		var b := pts[(i + 1) % n]
+		if a.y <= p.y:
+			if b.y > p.y and (b - a).cross(p - a) > 0.0:
+				w += 1
+		elif b.y <= p.y and (b - a).cross(p - a) < 0.0:
+			w -= 1
+	return w != 0
+
+
+static func _rect_of(pts: PackedVector2Array) -> Rect2:
+	var r := Rect2(pts[0], Vector2.ZERO)
+	for v in pts:
+		r = r.expand(v)
+	return r
 
 
 ## Returns {hit: bool, pos: Vector2, normal: Vector2, mat: int, dist: float}
@@ -334,9 +387,36 @@ func raycast(from: Vector2, dir: Vector2, max_dist: float) -> Dictionary:
 	return {"hit": true, "pos": best_p, "normal": seg_n[best_i], "mat": seg_mat[best_i], "dist": best}
 
 
+func _add_water_tops(zp: PackedVector2Array) -> void:
+	var n := zp.size()
+	var area := _signed_area(zp)
+	for i in n:
+		var a := zp[i]
+		var b := zp[(i + 1) % n]
+		var d := b - a
+		if d.length_squared() < 0.0001:
+			continue
+		var nrm := Vector2(d.y, -d.x).normalized()
+		if area < 0.0:
+			nrm = -nrm
+		if nrm.y < -0.5:
+			water_a.append(a)
+			water_b.append(b)
+			water_n.append(nrm)
+
+
+## Gravity at p: `base` unless a gravity field covers p (absolute vector, or scale of base).
+func gravity_at(p: Vector2, base: Vector2) -> Vector2:
+	for f in fields:
+		if f["rect"].has_point(p) and point_in_polygon(p, f["points"]):
+			if f["type"] == "gravity":
+				return f["vector"] if f["has_vector"] else base * float(f["scale"])
+	return base
+
+
 func zone_at(p: Vector2) -> String:
 	for z in zones:
-		if z["rect"].has_point(p) and Geometry2D.is_point_in_polygon(p, z["points"]):
+		if z["rect"].has_point(p) and point_in_polygon(p, z["points"]):
 			return z["type"]
 	return ""
 

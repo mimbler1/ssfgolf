@@ -110,8 +110,10 @@ func _search(from: Vector2) -> Vector2:
 		var angle := -elev if toward > 0.0 else -PI + elev
 		for pi in 10:
 			var power := lerpf(0.08, 1.0, float(pi) / 9.0)
-			var speed := lerpf(float(bal.shot.min_speed), float(bal.shot.max_speed), power)
-			var res := SimPhysics.predict(view.terrain, bal.physics, GameData.materials, from, Vector2.from_angle(angle) * speed, float(bal.physics.ball_radius), 1.0, 4.0, 3.0, 3)
+			var vel := Vector2.from_angle(angle) * MatchSim.launch_speed(bal, power)
+			var r := float(bal.physics.ball_radius)
+			var res := SimPhysics.predict(view.terrain, bal.physics, GameData.materials, from, vel, r, 1.0, 4.0, 3.0, 3,
+				MatchSim.launch_spin(bal, vel, 0.0, r))
 			var pts: PackedVector2Array = res.points
 			if pts.is_empty():
 				continue

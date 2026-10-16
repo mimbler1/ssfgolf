@@ -85,6 +85,7 @@ switch ($Command) {
     & $GodotConsole --headless --path $Client --script res://tests/compile_all.gd
     & $GodotConsole --headless --path $Client --script res://tests/test_characters.gd
     & $GodotConsole --headless --path $Client --script res://tests/test_sim.gd
+    & $GodotConsole --headless --path $Client --script res://tests/test_abilities.gd
     & $GodotConsole --headless --path $Client --script res://tests/test_playable.gd
     Push-Location $Backend; npm test; Pop-Location
     python (Join-Path $Root "tools/e2e_online.py")

@@ -5,7 +5,7 @@ const BALANCE_PATH := "res://data/balance.json"
 const MATERIALS_PATH := "res://data/materials.json"
 const COURSES_DIR := "res://data/courses"
 const VERSION := "0.1.0"
-const PROTOCOL_VERSION := 1
+const PROTOCOL_VERSION := 2  ## 2: shots carry spin, c_spin, ability state flags
 
 var balance: Dictionary = {}
 var materials: Dictionary = {}

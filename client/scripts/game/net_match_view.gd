@@ -224,7 +224,8 @@ func ball_state(slot: int) -> Dictionary:
 	if br.is_empty():
 		return {"pos": Vector2.ZERO, "vel": Vector2.ZERO, "rot": 0.0, "active": false, "at_rest": true, "stuck": false,
 			"grounded": true, "finished": false, "connected": true, "forfeited": false, "manual": false,
-			"ability": "standard", "hazard": false, "grenade": false}
+			"ability": "standard", "hazard": false, "grenade": false, "shield": false, "ice": false,
+			"anti_grav": false, "magnet": false, "brake": false, "boost": false}
 	var a: Dictionary = _find(br[0].players, slot)
 	var b: Dictionary = _find(br[1].players, slot)
 	if a.is_empty():
@@ -290,9 +291,13 @@ func local_cooldown() -> float:
 	return float(_find(s.players, local_slot).get("cooldown", 0.0))
 
 
-func shoot(angle: float, power: float, ability: String) -> void:
+func shoot(angle: float, power: float, ability: String, spin: float = 0.0) -> void:
 	_seq += 1
-	Net.c_shoot.rpc_id(1, _seq, angle, power, GameData.ability_index(ability))
+	Net.c_shoot.rpc_id(1, _seq, angle, power, GameData.ability_index(ability), spin)
+
+
+func spin(dir: int) -> void:
+	Net.c_spin.rpc_id(1, dir)
 
 
 func activate() -> void:
