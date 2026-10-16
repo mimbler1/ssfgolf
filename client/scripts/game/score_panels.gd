@@ -256,6 +256,8 @@ class _Panel extends Control:
 
 	## Score change: the number pops and the panel flashes; gameplay is never blocked.
 	func _pop() -> void:
+		if bool(Settings.get_value("gameplay", "reduced_motion")):
+			return
 		_flash = 1.0
 		_score.pivot_offset = _score.size * Vector2(1.0 if mirror else 0.0, 0.5)
 		_score.scale = Vector2(1.45, 1.45)

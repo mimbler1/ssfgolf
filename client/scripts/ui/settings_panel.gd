@@ -106,6 +106,7 @@ func _show_tab(name: String) -> void:
 			_option("Drag direction (Blitz)", ["pull", "push"], ["Pull back (slingshot)", "Push toward target"], "gameplay", "aim_mode")
 			_slider("Drag length for full power (Blitz)", "gameplay", "aim_distance", 140.0, 520.0)
 			_slider("Screen shake", "gameplay", "screen_shake", 0.0, 1.0)
+			_toggle("Reduced motion (no shake, flyovers or score pops)", "gameplay", "reduced_motion")
 		"Controls":
 			_note("Click a binding, then press a key or mouse button. Esc cancels. Left-click is always aim/shoot.")
 			for action: String in Settings.ACTIONS:

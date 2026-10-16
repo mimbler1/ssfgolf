@@ -61,6 +61,9 @@ var _backdrop_theme_key := "-"
 var _flyover := 0.0
 var _flyover_len := 0.0
 var markers: OffscreenMarkers
+var ghosts: GhostPaths
+var _shot_log: Array[Dictionary] = []   ## practice: last shots {angle, power, spin, ability}
+var _last_shot_label: Label
 var _results_overlay: Control
 var _dev_aim: Vector2 = Vector2(-1, -1)  ## Developer screenshot hook: (angle, power)
 var _dev_overview := OS.get_cmdline_user_args().has("--dev-overview")
@@ -138,6 +141,9 @@ func _build_layers() -> void:
 	aim_view = AimView.new()
 	aim_view.visible = false
 	world.add_child(aim_view)
+	ghosts = GhostPaths.new()
+	world.add_child(ghosts)
+	world.move_child(ghosts, trajectory.get_index())
 	fx = FxLayer.new()
 	world.add_child(fx)
 	camera = Camera2D.new()
@@ -213,6 +219,14 @@ func _on_welcomed() -> void:
 			shot.spin = float(args[dsp + 1])
 		await get_tree().create_timer(1.2).timeout
 		shot.aiming = true
+		# --dev-fire N: take N shots with the dev aim (spread a little) for replay/ghost screenshots.
+		var dfi := args.find("--dev-fire")
+		if dfi != -1 and dfi + 1 < args.size():
+			for k in int(args[dfi + 1]):
+				while view.local_shot_block() != "":
+					await get_tree().process_frame
+				view.shoot(_dev_aim.x - 0.08 * k, _dev_aim.y + 0.05 * k, "standard", shot.spin)
+				await get_tree().create_timer(0.5).timeout
 
 
 func _on_hole_loaded(index: int, number: int) -> void:
@@ -253,7 +267,8 @@ func _on_hole_loaded(index: int, number: int) -> void:
 		camera.reset_smoothing()
 	# Flyover: show the hole's layout first (online: during the countdown; solo: 2.2 s, skippable).
 	_flyover_len = float(GameData.balance.hole.countdown) if view.mode == "online" else 2.2
-	_flyover = _flyover_len
+	_flyover = 0.0 if bool(Settings.get_value("gameplay", "reduced_motion")) else _flyover_len
+	ghosts.clear()
 	var ov := _overview()
 	camera.position = ov[0]
 	_cam_zoom = ov[1]
@@ -306,6 +321,8 @@ func _update_ball(slot: int, _delta: float) -> void:
 	var s := view.ball_state(slot)
 	if s.is_empty():
 		return
+	if slot == view.local_slot and view.mode == "practice":
+		ghosts.record(s.pos, bool(s.at_rest) or bool(s.stuck) or not bool(s.active))
 	bv.position = s.pos
 	bv.rot = float(s.rot)
 	bv.ability = str(s.ability)
@@ -419,6 +436,8 @@ func _update_camera(delta: float) -> void:
 	camera.position = camera.position.lerp(target, k)
 	_cam_zoom = lerpf(_cam_zoom, want_zoom, 1.0 - exp(-delta * 4.0))
 	camera.zoom = Vector2(_cam_zoom, _cam_zoom)
+	if _shake > 0.0 and bool(Settings.get_value("gameplay", "reduced_motion")):
+		_shake = 0.0
 	if _shake > 0.0:
 		var amt := _shake * 14.0 * float(Settings.get_value("gameplay", "screen_shake"))
 		camera.offset = Vector2(randf_range(-amt, amt), randf_range(-amt, amt))
@@ -773,6 +792,9 @@ func _on_event(ev: Dictionary) -> void:
 		"shot":
 			var power := float(ev.get("power", 0.5))
 			var vel: Vector2 = ev.vel
+			if is_me and view.mode == "practice":
+				ghosts.begin_shot(ev.pos)
+				_log_practice_shot(vel, power, float(ev.get("spin", 0.0)), str(ev.get("ability", "standard")))
 			Sfx.play("swing", -6.0 + power * 4.0, randf_range(0.95, 1.08))
 			Sfx.play("hit", -4.0 + power * 5.0, lerpf(1.15, 0.9, power))
 			fx.shot_burst(ev.pos, vel.normalized(), power)
@@ -1473,6 +1495,26 @@ func _reward_chip(parent: Control, icon: String, value: String, color: Color) ->
 # Practice tools
 # ---------------------------------------------------------------------------
 
+## Practice: remember the last shots and show them for comparison.
+func _log_practice_shot(vel: Vector2, power: float, spin: float, ability: String) -> void:
+	var deg := rad_to_deg(atan2(-vel.y, absf(vel.x)))
+	_shot_log.push_front({"deg": deg, "power": power, "spin": spin, "ability": ability})
+	while _shot_log.size() > 3:
+		_shot_log.pop_back()
+	if _last_shot_label == null:
+		return
+	var lines: PackedStringArray = []
+	for i in _shot_log.size():
+		var e: Dictionary = _shot_log[i]
+		var sp := ""
+		if absf(float(e.spin)) > 0.01:
+			sp = " · %s %d%%" % ["top" if float(e.spin) > 0.0 else "back", roundi(absf(float(e.spin)) * 100.0)]
+		lines.append("%s %d° · %d%%%s%s" % ["Last:" if i == 0 else "      ", roundi(float(e.deg)), roundi(float(e.power) * 100.0), sp,
+			"" if str(e.ability) == "standard" else " · " + str(GameData.ability(str(e.ability)).get("name", e.ability))])
+	_last_shot_label.text = "
+".join(lines)
+
+
 func _build_practice_panel() -> void:
 	var lv := view as LocalMatchView
 	var root := PanelContainer.new()
@@ -1520,6 +1562,13 @@ func _build_practice_panel() -> void:
 	var switch := GameButton.make("Open %s" % GameData.course(other).get("name", other), "GhostButton", Vector2(0, 50))
 	switch.pressed.connect(func() -> void: Router.goto(Router.GAME, {"mode": "practice", "course": other, "hole": 0, "lab": other == "physics_lab"}))
 	vb.add_child(switch)
+	_last_shot_label = Label.new()
+	_last_shot_label.theme_type_variation = "MutedLabel"
+	_last_shot_label.add_theme_font_size_override("font_size", 17)
+	_last_shot_label.add_theme_constant_override("line_spacing", -4)
+	_last_shot_label.text = "Your last shots appear here, with their paths drawn faintly on the course."
+	_last_shot_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	vb.add_child(_last_shot_label)
 	var dbg := CheckButton.new()
 	dbg.text = "Debug: show flight path"
 	dbg.tooltip_text = "Practice only. Draws the predicted flight for every ball. Never available online."
