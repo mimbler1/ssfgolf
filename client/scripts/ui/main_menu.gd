@@ -357,7 +357,7 @@ func _quick_play() -> void:
 	spinner.custom_minimum_size = Vector2(120, 120)
 	spinner.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	vb.add_child(spinner)
-	var mode := _muted("Quick Play · Ranked · 2-4 players · First to 9")
+	var mode := _muted("Quick Play · Ranked · 2-4 players · Holes from all six courses")
 	vb.add_child(mode)
 	var elapsed := UITheme.styled_label("0:00", 44, UITheme.PAPER, 8)
 	vb.add_child(elapsed)
@@ -492,9 +492,26 @@ func _open_room(code: String) -> void:
 	max_l.text = "Max players"
 	settings.add_child(max_l)
 	var maxp := OptionButton.new()
-	for v in [2, 3, 4]:
+	for v in [2, 3, 4, 5, 6]:
 		maxp.add_item(str(v), v)
 	settings.add_child(maxp)
+	var settings2 := HBoxContainer.new()
+	settings2.add_theme_constant_override("separation", 16)
+	vb.add_child(settings2)
+	var course_l := Label.new()
+	course_l.text = "Course"
+	settings2.add_child(course_l)
+	var course := OptionButton.new()
+	var course_ids: Array[String] = [GameData.POOL_ID]
+	course.add_item("All courses (random holes)")
+	for cid in GameData.main_courses:
+		course_ids.append(cid)
+		course.add_item(str(GameData.course(cid).name))
+	settings2.add_child(course)
+	var all_balls := CheckButton.new()
+	all_balls.text = "All balls for everyone"
+	all_balls.tooltip_text = "On: every ball is available to every player. Off: each player uses the balls they have unlocked."
+	settings2.add_child(all_balls)
 	var err := _error("")
 	vb.add_child(err)
 	var buttons := HBoxContainer.new()
@@ -534,6 +551,12 @@ func _open_room(code: String) -> void:
 		var res := await Backend.send_json(HTTPClient.METHOD_PATCH, "/v1/rooms/%s" % code, {"maxPlayers": maxp.get_item_id(i)})
 		if not res.ok:
 			err.text = Backend.friendly_error(res))
+	course.item_selected.connect(func(i: int) -> void:
+		if not state.updating:
+			Backend.send_json(HTTPClient.METHOD_PATCH, "/v1/rooms/%s" % code, {"courseId": course_ids[i]}))
+	all_balls.toggled.connect(func(on: bool) -> void:
+		if not state.updating:
+			Backend.send_json(HTTPClient.METHOD_PATCH, "/v1/rooms/%s" % code, {"allAbilities": on}))
 
 	while token == _poll_token:
 		var res := await Backend.get_json("/v1/rooms/%s" % code)
@@ -583,8 +606,13 @@ func _open_room(code: String) -> void:
 			for i in maxp.item_count:
 				if maxp.get_item_id(i) == int(s.maxPlayers):
 					maxp.select(i)
+			var ci := course_ids.find(str(s.get("courseId", GameData.POOL_ID)))
+			course.select(ci if ci != -1 else 0)
+			all_balls.set_pressed_no_signal(bool(s.get("allAbilities", true)))
 			target.disabled = not am_host or str(room.status) != "open"
 			maxp.disabled = target.disabled
+			course.disabled = target.disabled
+			all_balls.disabled = target.disabled
 			ready.visible = not am_host
 			ready.button_pressed = my_ready
 			ready.text = "Ready!" if my_ready else "Ready"

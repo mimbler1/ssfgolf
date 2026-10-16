@@ -1,130 +1,31 @@
 # Roadmap
 
-The approach is quality over count: each milestone ships complete, tested features. Nothing
-visible in the game is a placeholder. Every button shown works, or is disabled with an
-explanation.
+This roadmap follows the milestone order of the master development directive. "Done" means
+implemented, tested and committed; evidence is listed for each milestone. Earlier milestone notes
+(the online foundation, Golfer Studio v1 and the v3 visual pass) are in git history; `checkpoint-pre-rebuild` tags the state before this overhaul.
 
-## ✅ Milestone 1 — Playable online foundation (this build)
+| # | Milestone | Status | Evidence / what remains |
+|---|---|---|---|
+| 1 | Studio performance | **Done** | Idle 54–64 → 4–6 ms per frame; character switch 97 → 6 ms (PERFORMANCE_REPORT.md, `--perf-studio`). Remaining: one-frame hitches on first open (80–128 ms) from building legacy toon cards |
+| 2 | Retire cartoon art | **In progress** | Inventory written (ART_REPLACEMENT_INVENTORY.md). The roster is converting to sprites with the same ids (CHARACTER_CONVERSION.md). Still to do: stage art for five themes, the sprite ball, effects, and studio customisation on sprites |
+| 3 | Normal ball physics | **Done** | Real spin, a tuned power curve, soft-surface plugging, a material table, BallPhysicsLab tests A–H (96 checks) and generated tables (docs/physics/lab_results.md) |
+| 4 | Shooting controls | **Done** | Blitz drag and Classic meter, aim arrow, power % / spin / putting, no default trajectory, Laser-only guide, practice debug path, input buffering. Not yet automated: real-input tests |
+| 5 | Ability catalogue | **Done** | All 13 SSG3 balls plus Grenade and Heavy, each with distinct tested behaviour (POWERUP_SPEC.md); unlock matrix with server enforcement |
+| 6 | First course | **Done** (gameplay) | Golf Land: 9 holes, solver-verified, authored meadow art |
+| 7 | Courses 2–6 | **Done** (gameplay) / art pending | Beach Land, Sticky Zone, Snow Field, Gravity Lab and Spin Land: 54 holes total, all solver-verified and robust (test_playable 55/55, test_sim 306/306). Stage art for themes 2–6 is the main remaining visual gap |
+| 8 | Multiplayer score HUD | **Done** | SSF2-inspired portrait and score panels for 2–6 players, adaptive and readable from 1160×736 to 3440×1440 (HUD_SPEC.md, screenshots) |
+| 9 | Convert remaining interfaces | **In progress** | Course select is new. Still to do: pixel ability icons and frames, main menu and results polish, profile screen. The cosmetic collection and card packs need to be built first, since they don't exist yet |
+| 10 | Multiplayer and performance validation | **Partly done** | Online soak for 2/3/4/5/6 players with abilities: all clients agree. The backend E2E passes. Gameplay perf probe added (sim tick ~0.13 ms); frame-time numbers to be re-measured on an idle GPU. Still to do: reconnect within the soak, and a low-end hardware pass |
 
-### Core game
+## Next steps (priority order)
 
-- **Physics.** Authoritative fixed-step simulation: substep tunnelling guard, 9 materials,
-  slope-aware resting, ball-to-ball impulses, explosions, a forgiving cup, and hazard respawn
-  safety.
-- **Abilities.** 6 genuinely distinct balls: Standard, Nitro, Sticky, Grenade, Heavy and Air Brake.
-  They use energy, cooldowns and server validation.
-- **Match rules.** 4-player race scoring to 9 points, finish window, hole cap, sudden-death
-  tiebreaks, disconnect grace and forfeits.
-- **Courses.** Sunny Meadows has 9 distinct holes: water carries, bounce pads over walls, a sticky
-  cliff, a floating island green, a tunnel arch, a downhill run, and a combined finale. There is
-  also a practice-only Physics Lab with a live tuning panel.
-
-### Online
-
-- **Accounts.** Guest accounts; profiles with level, XP, trophies, coins and stats; match history;
-  leaderboard.
-- **Quick Play.** Trophy-window matchmaking.
-- **Private rooms.** Room codes, ready-up, host settings, and friendly (unranked) matches.
-- **Dedicated servers.** Headless Godot servers that register with the backend and verify signed
-  join tokens. They support reconnects, graceful leave, and idempotent, transactional reward
-  settlement.
-
-### Presentation
-
-- **World art.** Vector art direction throughout: parallax sky, illustrated terrain, swaying decor,
-  water and flag animation.
-- **Characters.** A procedurally rigged stickman with 10 animations.
-- **Feedback.** Trajectory preview with a hazard warning, 31 original synthesised sounds, particles
-  and screen shake.
-
-### Menus
-
-- **Main menu.** A living backdrop with a live profile chip.
-- **Golfer Studio.**
-  - Customisation: 8 presets, body/outline colours, 4 head shapes, 8 eyes, 7 mouths, 10 hats,
-    6 shirts, ball and trail colours, size sliders and custom colours.
-  - An animated preview.
-  - Saved looks with save, wear, copy, update and delete.
-  - The equipped look syncs to the profile and is shown to opponents.
-- **Settings.** Display, audio, gameplay, network, and full input remapping.
-
-### Engineering
-
-- **Tests.** About 160 automated checks across simulation, solver, backend and end-to-end flows.
-- **Tooling.** Dev launcher, export presets, and docs.
-
-## ✅ Post-M1 quality pass
-
-- **Characters.** Six original roster characters (Ace, Nana Birdie, Brick, Bolt, Skipper, Frost)
-  as baked, outlined sprite sheets with 16 animations each, alongside the customisable Stickman.
-  A Character tab in the Golfer Studio; the choice syncs to the profile and opponents.
-- **Emotes.** Eight animated emotes with expressions, an emote wheel (hold T) and F1–F8 hotkeys,
-  synced online.
-- **Polish.** The world continues past each hole's edges instead of ending in a cut-off cliff; a
-  compact controls card replaces the overlapping hint text; larger golfers; softer, calmer ball
-  sounds.
-
-## Next milestones (proposed order)
-
-### M2 — Character Drawing Studio
-
-- Per-bone drawing canvases (head, face, torso, arms, legs, hands, feet, hats, shirts).
-- Layers, and the full tool list: pencil and brushes, eraser, fill, shapes, selection
-  transforms, mirror and symmetry, undo/redo.
-- Stickers, a text tool, and a versioned stroke-based design format.
-- Rasterised gameplay textures.
-- Moderated upload pipeline: content review, report and block, safe fallbacks.
-- Opponents only ever see approved art.
-
-### M3 — Collection and cosmetics
-
-- A data-driven cosmetic catalogue with rarity tiers.
-- Inventory and collection screen: search, sort, filters, favourites, completion.
-- Loadouts and set collections with set rewards.
-- Equipment slots with attachment rules.
-- Cape/scarf secondary motion.
-- Trails, ball skins, club skins and victory animations as collectibles.
-
-### M4 — Card packs and crafting
-
-- Server-side drop tables with published odds, transactional grants and idempotent openings.
-- The pack-opening scene: float, shake, burst, card flips, rare/legendary/mythic reveals, skip,
-  reveal all, and bulk open.
-- Duplicates convert to crafting currency and upgrade progress.
-- Earnable only; no real-money loot boxes.
-
-### M5 — Goals
-
-- Daily and weekly missions, achievements and a reward calendar.
-- Season framework with a free reward track and a seasonal leaderboard; events configured from
-  the backend.
-
-### M6 — Worlds and editor
-
-- An in-game course editor:
-  - spline terrain editing, materials and hazards;
-  - portals, moving and rotating platforms;
-  - validation and instant test;
-  - multi-client test;
-  - import/export.
-- New themes: Crystal Caverns, Neon City, Frozen Peaks, Volcanic Valley, and more.
-- New hazards: moving platforms, wind, conveyors, lasers, saws, magnets, gravity wells, breakables.
-
-### M7 — Social
-
-- Friends: codes, requests, presence and invites.
-- Teams and clubs, with roles.
-- Chat with rate limits, filtering, mute, block, report and moderation tools.
-- Spectator mode.
-
-### M8 — Depth and polish
-
-- The remaining ability catalogue: Super, Bounce, Ghost, Shockwave, Laser, Magnet, Teleport,
-  Portal, and others.
-- Ability upgrades with balance caps or equalised ranked play.
-- Golfer stat upgrades.
-- Local prediction of your own ball.
-- Latency and packet-loss test harness.
-- Redis-backed horizontal scaling.
-- Music.
-- Production deployment guide, and code-signed Windows builds.
+1. Integrate the character and UI art tracks: the converted roster, portraits, ability icons,
+   sprite ball and HUD frames. Then hide any character that is still toon-only from the roster.
+2. Stage art for Beach Land, Sticky Zone, Snow Field, Gravity Lab and Spin Land, through the same
+   pipeline as the meadow.
+3. Re-measure gameplay and studio performance with the GPU idle, and update
+   PERFORMANCE_REPORT.md.
+4. Golfer Studio on sprites: palette variants, and hat and equipment layers on sprite anchors.
+5. Collection and card packs (backend data model, rewards, screens), then the results screen
+   with victory poses.
+6. Off-screen opponent indicators, course flyover, rematch and spectator view.
