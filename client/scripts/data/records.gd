@@ -62,6 +62,23 @@ static func medal_for(total: int, par: int) -> String:
 	return "bronze"
 
 
+## Daily challenge: best strokes per date (records.daily = {"YYYY-MM-DD": strokes}).
+static func daily_best(date: String) -> int:
+	return int((load_all().get("daily", {}) as Dictionary).get(date, 0))
+
+
+static func record_daily(date: String, strokes: int) -> Dictionary:
+	var d := load_all()
+	var daily: Dictionary = d.get("daily", {})
+	var prev := int(daily.get(date, 0))
+	var new_best := prev == 0 or strokes < prev
+	if new_best:
+		daily[date] = strokes
+	d["daily"] = daily
+	_save(d)
+	return {"new_best": new_best, "best": int(daily[date])}
+
+
 ## Records one finished round. Returns {new_best: bool, medal: String, total: int, par: int, aces: int, swishes: int}.
 static func record_round(course_dict: Dictionary, scorecard: Array, clean: bool) -> Dictionary:
 	var cid := str(course_dict.id)

@@ -17,7 +17,7 @@ var _prev_rot: Array[float] = []
 func setup_stroke(p_course_id: String, from_hole: int, appearance: Dictionary, display_name: String, clean: bool = false) -> void:
 	mode = "stroke"
 	course_id = p_course_id
-	course = GameData.course(p_course_id)
+	course = GameData.daily_course() if p_course_id == "daily" else GameData.course(p_course_id)
 	balance = GameData.balance.duplicate(true)
 	sim = MatchSim.new(balance, GameData.materials, course, "stroke", 0)
 	sim.clean_ball = clean

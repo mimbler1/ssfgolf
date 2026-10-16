@@ -74,6 +74,22 @@ func _build_pool() -> Dictionary:
 	return {"id": POOL_ID, "name": "All Courses", "theme": first.get("theme", {}), "holes": holes}
 
 
+## Today's daily challenge (UTC date): one hole from all six courses, the same for everyone that
+## day. Registered as course "daily" so stroke play can run it like any course.
+func daily_course(date: String = "") -> Dictionary:
+	if date == "":
+		date = Time.get_date_string_from_system(true)
+	var pool: Array = courses[POOL_ID].holes
+	if pool.is_empty():
+		return {}
+	var h: Dictionary = (pool[posmod(hash("daily:" + date), pool.size())] as Dictionary).duplicate(true)
+	var src: Dictionary = courses.get(str(h.get("course_id", "")), {})
+	var c := {"id": "daily", "name": "Daily Challenge", "date": date, "theme": h.get("theme", {}),
+		"source_course": str(src.get("name", "")), "holes": [h]}
+	courses["daily"] = c
+	return c
+
+
 ## Theme for one hole: the hole's own (pool holes) or its course's.
 static func hole_theme(course_dict: Dictionary, hole_dict: Dictionary) -> Dictionary:
 	return hole_dict.get("theme", course_dict.get("theme", {}))

@@ -453,6 +453,21 @@ func _update_camera(delta: float) -> void:
 		camera.offset = Vector2.ZERO
 
 
+func _cycle_spectate(step: int) -> void:
+	var candidates: Array[int] = []
+	for r in view.roster:
+		var sl := int(r.slot)
+		var st := view.ball_state(sl)
+		if sl != view.local_slot and not st.is_empty() and bool(st.get("active", false)) and not bool(st.get("finished", false)):
+			candidates.append(sl)
+	if candidates.is_empty():
+		return
+	var i := candidates.find(_spectate_slot)
+	_spectate_slot = candidates[posmod(i + step, candidates.size())]
+	hud.toast("Watching %s  (%s / %s to switch)" % [_name(_spectate_slot), Settings.binding_label("aim_left").split(" / ")[0], Settings.binding_label("aim_right").split(" / ")[0]],
+		UITheme.SLOT_COLORS[_spectate_slot % UITheme.SLOT_COLORS.size()])
+
+
 func _pick_spectate() -> int:
 	if _spectate_slot >= 0:
 		var s := view.ball_state(_spectate_slot)
@@ -482,6 +497,14 @@ func _unhandled_input(event: InputEvent) -> void:
 			_toggle_menu()
 		return
 	var classic := shot.style == "classic"
+	# Spectating (you've holed out): the aim keys switch which golfer the camera follows.
+	var me_s := view.ball_state(view.local_slot)
+	if (bool(me_s.get("finished", false)) or bool(me_s.get("forfeited", false))) and not event.is_echo():
+		var step := 1 if event.is_action_pressed("aim_right") else (-1 if event.is_action_pressed("aim_left") else 0)
+		if step != 0:
+			_cycle_spectate(step)
+			get_viewport().set_input_as_handled()
+			return
 	if event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_LEFT and not classic:
@@ -893,6 +916,8 @@ func _on_event(ev: Dictionary) -> void:
 			if is_me:
 				if view.mode == "online":
 					hud.announce(PLACE_TEXT[clampi(place - 1, 0, PLACE_TEXT.size() - 1)], PLACE_COLORS[clampi(place - 1, 0, PLACE_COLORS.size() - 1)], 150, 1.0)
+					if view.roster.size() > place:
+						hud.toast("Spectating: %s / %s switches golfer" % [Settings.binding_label("aim_left").split(" / ")[0], Settings.binding_label("aim_right").split(" / ")[0]], UITheme.MUTED)
 				elif view.mode == "stroke":
 					var par := int(view.course.holes[view.hole_index].get("par", 3))
 					var strokes := int(ev.get("strokes", ev.get("shots", 0)))
@@ -951,6 +976,9 @@ func _show_scorecard(ev: Dictionary) -> void:
 	var standings: Array = ev.get("standings", [])
 	var card: Array = standings[0].get("scorecard", []) if not standings.is_empty() else []
 	var clean := bool(params.get("clean", false))
+	if view.course_id == "daily":
+		_show_daily_result(card)
+		return
 	var res := Records.record_round(view.course, card, clean)
 	var panel := _overlay_panel(Vector2(980, 0))
 	var vb := VBoxContainer.new()
@@ -1010,6 +1038,33 @@ func _show_scorecard(ev: Dictionary) -> void:
 	again.pressed.connect(func() -> void: Router.goto(Router.GAME, {"mode": "stroke", "course": view.course_id, "hole": 0, "clean": clean}))
 	buttons.add_child(again)
 	var courses := GameButton.make("Courses", "", Vector2(220, 64))
+	courses.pressed.connect(func() -> void: Router.goto(Router.COURSES))
+	buttons.add_child(courses)
+	Sfx.play("results")
+
+
+func _show_daily_result(card: Array) -> void:
+	var date := str(view.course.get("date", ""))
+	var row: Dictionary = card[0] if not card.is_empty() else {"strokes": 0, "par": 3}
+	var res := Records.record_daily(date, int(row.strokes))
+	var panel := _overlay_panel(Vector2(720, 0))
+	var vb := VBoxContainer.new()
+	vb.add_theme_constant_override("separation", 12)
+	panel.add_child(vb)
+	vb.add_child(UITheme.styled_label("DAILY CHALLENGE", 52, UITheme.SUN, 10))
+	vb.add_child(UITheme.styled_label(_score_name(int(row.strokes), int(row.par)), 40, UITheme.PAPER, 8))
+	var info := Label.new()
+	info.text = "%s · %d strokes (par %d) · today's best %d%s" % [date, int(row.strokes), int(row.par), int(res.best), "  ·  NEW BEST" if bool(res.new_best) else ""]
+	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vb.add_child(info)
+	var buttons := HBoxContainer.new()
+	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
+	buttons.add_theme_constant_override("separation", 14)
+	vb.add_child(buttons)
+	var again := GameButton.make("Try Again", "PrimaryButton", Vector2(220, 64))
+	again.pressed.connect(func() -> void: Router.goto(Router.GAME, {"mode": "stroke", "course": "daily", "hole": 0}))
+	buttons.add_child(again)
+	var courses := GameButton.make("Courses", "", Vector2(200, 64))
 	courses.pressed.connect(func() -> void: Router.goto(Router.COURSES))
 	buttons.add_child(courses)
 	Sfx.play("results")

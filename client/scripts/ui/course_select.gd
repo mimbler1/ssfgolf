@@ -44,6 +44,17 @@ func _build() -> void:
 	ui.add_child(sub)
 	UITheme.pin(sub, 0.5, 0, Vector2(0, 104), 0, 1)
 
+	# Daily challenge: one hole from all six courses, picked by today's date.
+	var daily := GameData.daily_course()
+	if not daily.is_empty():
+		var dh: Dictionary = daily.holes[0]
+		var best := Records.daily_best(str(daily.date))
+		var dbtn := GameButton.make("DAILY CHALLENGE  ·  %s (%s) · Par %d%s" % [str(dh.get("name", "")), str(daily.source_course), int(dh.get("par", 3)),
+			("  ·  Best %d" % best) if best > 0 else ""], "SunButton", Vector2(0, 56))
+		dbtn.add_theme_font_size_override("font_size", 22)
+		dbtn.pressed.connect(func() -> void: Router.goto(Router.GAME, {"mode": "stroke", "course": "daily", "hole": 0}))
+		ui.add_child(dbtn)
+		UITheme.pin(dbtn, 0.5, 1, Vector2(0, -30), 0, -1)
 	var scroll := ScrollContainer.new()
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.anchor_right = 1.0
