@@ -1,3 +1,5 @@
+> **Superseded** by `INK_ART_SPEC.md` (hand-drawn ink direction). Kept for history.
+
 # UI pixel art (ability icons, ball, HUD frames, studio podium)
 
 Updated 2026-10-15. Everything here is pixel art at a fixed **native art-pixel size**. Show it

@@ -17,6 +17,16 @@ implemented, tested and committed; evidence is listed for each milestone. Earlie
 | 9 | Convert remaining interfaces | **Mostly done** | Done: pixel-art ability icons, card frames, energy cells, sprite ball, studio podium, framed portraits; course select; results with victory pose; Collection and card packs (backend + client); pause-menu mute/report. Still to do: a pixel logo and profile screen polish |
 | 10 | Multiplayer and performance validation | **Mostly done** | Online soak for 2/3/4/5/6 players with abilities: all clients agree. Abrupt drop and rejoin mid-match passes. The backend E2E passes. 6-player gameplay on an idle GPU: 1.4–2.5 ms avg, p95 ≤ 3.1 ms, sim tick about 0.15 ms. Still to do: a low-end hardware pass, and warm-up to remove 1–2 isolated frames over 33 ms per course |
 
+**Ink art conversion (branch `ink-art`).** The whole visual identity is rebuilt in a hand-drawn,
+Fancy Pants-inspired ink style:
+
+- stick-figure golfers, with the 17 collectible golfers as outfits (same ids);
+- all six worlds, the HUD, studio, collection and packs, and the menus.
+
+Gameplay, multiplayer and the backend are unchanged except for Appearance v2. See
+`INK_ART_SPEC.md`, `INK_REFERENCE_ANALYSIS.md` and `INK_MIGRATION.md`. That manifest lists what
+is still open, including drawing-editor layers and selection, and drawing moderation.
+
 Also added beyond the milestone list:
 
 - Ball unlock progression, enforced by the server.

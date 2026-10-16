@@ -28,6 +28,8 @@ var look_target: Vector2 = Vector2.ZERO  ## Local-space point to look at (watch 
 var frozen_time := false
 ## Throttles redraws (cards in a big grid): 0 = every frame.
 var redraw_interval := 0.0
+## Skip redraws while the golfer is outside the visible screen (gameplay; off for UI previews).
+var cull_offscreen := false
 ## Drop shadow under the feet (off when standing on a UI platform that draws its own).
 var shadow := true
 
@@ -174,6 +176,8 @@ func _process(delta: float) -> void:
 			play("lookaround")
 	_p = _sample()
 	_springs(delta)
+	if cull_offscreen and not _on_screen():
+		return
 	if redraw_interval > 0.0:
 		_redraw_wait -= delta
 		if _redraw_wait > 0.0:
@@ -218,6 +222,14 @@ func _sample() -> Dictionary:
 	if _fade_len > 0.0 and _fade_t < _fade_len and not _fade_from.is_empty():
 		s = InkRig.lerp_sample(_fade_from, s, InkAnims.ease(_fade_t / _fade_len, "s"))
 	return s
+
+
+func _on_screen() -> bool:
+	var xf := get_global_transform_with_canvas()
+	var p := xf.origin
+	var r := absf(xf.get_scale().y) * STANDARD_HEIGHT * 1.6
+	var vp := get_viewport_rect()
+	return p.x > -r and p.y > -r and p.x < vp.size.x + r and p.y < vp.size.y + r * 2.0
 
 
 func _springs(delta: float) -> void:

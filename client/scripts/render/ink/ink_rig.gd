@@ -11,7 +11,7 @@ const THIGH := 17.4
 const SHIN := 17.6
 const UPPER := 13.0
 const FORE := 13.6
-const CLUB := 31.0
+const CLUB := 33.0
 const HIP_H := 34.3
 const SHOULDER_T := 0.84
 const HIP_SPREAD := 1.3
@@ -184,10 +184,17 @@ static func lerp_sample(a: Dictionary, b: Dictionary, k: float) -> Dictionary:
 	for key: String in ["tb", "tf", "sq", "lean", "thumb", "elbow_up"]:
 		out[key] = lerpf(float(a[key]), float(b[key]), k)
 	out.head_rot = lerp_angle(float(a.head_rot), float(b.head_rot), k)
+	var src := b
 	if k < 0.5:
 		out.expr = a.expr
 		out.club = a.club
 		out.grip_mode = a.grip_mode
+		src = a
+	# A club held in the hands stays in the hands through the blend (it never floats free).
+	if str(src.club) != "planted" and str(src.club) != "none":
+		var hf: Vector2 = out.hf
+		out.grip = hf + ((src.grip as Vector2) - (src.hf as Vector2))
+		out.hosel = hf + ((src.hosel as Vector2) - (src.hf as Vector2))
 	return out
 
 

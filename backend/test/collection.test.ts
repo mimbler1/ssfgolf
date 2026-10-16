@@ -126,6 +126,32 @@ describe('collection routes', () => {
     assert.equal(custom.statusCode, 200);
   });
 
+  it('signature ink parts unlock with the outfit they come from', async () => {
+    const g = await newGuest(t);
+    const ink = {
+      hair: 'swept', hairColor: '#e0702a', headFill: 'paper', eyes: 'dots', brows: 'none', mouth: 'grin', mark: 'none',
+      pantsCut: 'bell', pantsColor: '#1fb5a3', pantsColor2: '#ffd166', pantsPattern: 'solid', pantsLength: 1, pantsFlare: 1.3,
+      pantsWaist: 0, pantsCuff: 'rolled', top: 'tee', topColor: '#fbf6ec', topColor2: '#1c1714', hat: '', hatColor: '#d6304a',
+      eyewear: 'round', eyewearColor: '#1c1714', neck: '', neckColor: '#d6304a', back: '', backColor: '#b02a3a',
+      gloves: '', glovesColor: '#ffffff', shoes: 'sneaker', shoesColor: '#ffffff', companion: '', club: 'iron',
+      drawings: { pants: { v: 1, legs: 'both', strokes: [{ c: '#ffd166', w: 3.4, a: 1, p: [620, 300, 420, 470, 560, 490] }] } },
+    };
+    const base = { ...DEFAULT_APPEARANCE, v: 2, character: 'stickman', ink };
+    const ok = await t.app.inject({ method: 'PATCH', url: '/v1/me', headers: bearer(g.token), payload: { appearance: base } });
+    assert.equal(ok.statusCode, 200, ok.body);
+    // The knight helm comes with Sir Putts (legendary): refused until owned.
+    const helm = { ...base, ink: { ...ink, hat: 'helm' } };
+    const denied = await t.app.inject({ method: 'PATCH', url: '/v1/me', headers: bearer(g.token), payload: { appearance: helm } });
+    assert.equal(denied.statusCode, 403);
+    assert.equal(denied.json().error.code, 'not_owned');
+    // The viking helmet comes with Bjorn, a default (owned) golfer.
+    const viking = await t.app.inject({ method: 'PATCH', url: '/v1/me', headers: bearer(g.token), payload: { appearance: { ...base, ink: { ...ink, hat: 'viking' } } } });
+    assert.equal(viking.statusCode, 200, viking.body);
+    await t.pool.query('INSERT INTO player_items (player_id, item_id) VALUES ($1, $2)', [g.playerId, 'char_knight']);
+    const owned = await t.app.inject({ method: 'PATCH', url: '/v1/me', headers: bearer(g.token), payload: { appearance: helm } });
+    assert.equal(owned.statusCode, 200, owned.body);
+  });
+
   it('reports are stored once per reporter, target and match', async () => {
     const a = await newGuest(t);
     const b = await newGuest(t);

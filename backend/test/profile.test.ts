@@ -88,11 +88,39 @@ describe('profile', () => {
     assert.equal(bad.statusCode, 400);
   });
 
+  it('PATCH /v1/me stores an Appearance v2 ink look with a clothing drawing', async () => {
+    const g = await newGuest(t);
+    const ink = {
+      hair: 'swept', hairColor: '#e0702a', headFill: 'paper', eyes: 'dots', brows: 'none', mouth: 'grin', mark: 'none',
+      pantsCut: 'bell', pantsColor: '#1fb5a3', pantsColor2: '#ffd166', pantsPattern: 'solid', pantsLength: 1, pantsFlare: 1.3,
+      pantsWaist: 0, pantsCuff: 'rolled', top: 'tee', topColor: '#fbf6ec', topColor2: '#1c1714', hat: '', hatColor: '#d6304a',
+      eyewear: 'round', eyewearColor: '#1c1714', neck: '', neckColor: '#d6304a', back: '', backColor: '#b02a3a',
+      gloves: '', glovesColor: '#ffffff', shoes: 'sneaker', shoesColor: '#ffffff', companion: '', club: 'iron',
+      drawings: { pants: { v: 1, legs: 'both', strokes: [{ c: '#ffd166', w: 3.4, a: 1, p: [620, 300, 420, 470, 560, 490] }] } },
+    };
+    const appearance = { ...DEFAULT_APPEARANCE, v: 2, character: 'stickman', ink };
+    const res = await t.app.inject({ method: 'PATCH', url: '/v1/me', headers: bearer(g.token), payload: { appearance } });
+    assert.equal(res.statusCode, 200, res.body);
+    assert.deepEqual(res.json().appearance, appearance);
+    const bad: Array<[string, unknown]> = [
+      ['unknown ink key', { ...ink, horns: 'big' }],
+      ['bad ink colour', { ...ink, pantsColor: 'teal' }],
+      ['flare out of range', { ...ink, pantsFlare: 3 }],
+      ['too many points', { ...ink, drawings: { pants: { v: 1, legs: 'both', strokes: [{ c: '#000000', w: 2, a: 1, p: Array(3002).fill(5) }] } } }],
+      ['coordinate out of range', { ...ink, drawings: { pants: { v: 1, legs: 'both', strokes: [{ c: '#000000', w: 2, a: 1, p: [0, 1001] }] } } }],
+      ['unknown drawing target', { ...ink, drawings: { face: { v: 1, legs: 'both', strokes: [] } } }],
+    ];
+    for (const [why, badInk] of bad) {
+      const r = await t.app.inject({ method: 'PATCH', url: '/v1/me', headers: bearer(g.token), payload: { appearance: { ...appearance, ink: badInk } } });
+      assert.equal(r.statusCode, 400, why);
+    }
+  });
+
   it('PATCH /v1/me rejects bad appearance and names', async () => {
     const g = await newGuest(t);
     const bad: Array<[string, unknown]> = [
       ['unknown key', { ...DEFAULT_APPEARANCE, wings: 'big' }],
-      ['v != 1', { ...DEFAULT_APPEARANCE, v: 2 }],
+      ['unknown version', { ...DEFAULT_APPEARANCE, v: 3 }],
       ['bad color', { ...DEFAULT_APPEARANCE, bodyColor: 'red' }],
       ['short color', { ...DEFAULT_APPEARANCE, ballColor: '#fff' }],
       ['bad id', { ...DEFAULT_APPEARANCE, eyes: 'Big-Eyes' }],

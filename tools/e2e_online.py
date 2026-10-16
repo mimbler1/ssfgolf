@@ -80,6 +80,18 @@ def main():
     s2, d2 = call("PATCH", "/v1/me", {"appearance": dict(me["appearance"], character="knight")}, players[0]["token"], ok=(403,))
     assert s2 == 403 and d2["error"]["code"] == "not_owned", (s2, d2)
 
+    # The second player wears a customised Appearance v2 ink look with a drawing on the pants.
+    s, me2 = call("GET", "/v1/me", token=players[1]["token"])
+    ink = {"hair": "swept", "hairColor": "#e0702a", "headFill": "paper", "eyes": "dots", "brows": "none", "mouth": "grin",
+           "mark": "none", "pantsCut": "bell", "pantsColor": "#1fb5a3", "pantsColor2": "#ffd166", "pantsPattern": "solid",
+           "pantsLength": 1.0, "pantsFlare": 1.2, "pantsWaist": 0.0, "pantsCuff": "rolled", "top": "tee", "topColor": "#fbf6ec",
+           "topColor2": "#1c1714", "hat": "cap", "hatColor": "#d6304a", "eyewear": "", "eyewearColor": "#1c1714", "neck": "",
+           "neckColor": "#d6304a", "back": "", "backColor": "#d6304a", "gloves": "", "glovesColor": "#ffffff",
+           "shoes": "classic", "shoesColor": "#1c1714", "companion": "", "club": "iron",
+           "drawings": {"pants": {"v": 1, "legs": "both", "strokes": [{"c": "#ffd166", "w": 3.4, "a": 1.0, "p": [620, 300, 420, 470, 560, 490, 380, 700]}]}}}
+    s, d = call("PATCH", "/v1/me", {"appearance": dict(me2["appearance"], v=2, character="stickman", ink=ink)}, players[1]["token"])
+    assert s == 200 and d["appearance"]["ink"]["pantsColor"] == "#1fb5a3", (s, d)
+
     time.sleep(2.0)  # let the game server register
     for p in players:
         s, d = call("POST", "/v1/matchmaking/queue", {"mode": "quick"}, p["token"])
@@ -121,6 +133,8 @@ def main():
         assert len(emotes) >= 2, "client %s saw emotes %s" % (name, emotes)
         # The first player's roster character travels backend -> server -> every client.
         assert "=bjorn" in out, "client %s did not see the roster character" % name
+        # ...and the second player's v2 ink look (with its drawing) reaches every client intact.
+        assert "1:hair=swept,pants=#1fb5a3,strokes=1" in out, "client %s did not see the ink look" % name
     assert codes == [0, 0], codes
 
     deadline = time.time() + 30

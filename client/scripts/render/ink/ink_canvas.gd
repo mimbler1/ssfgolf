@@ -21,17 +21,29 @@ var line_scale := 1.0
 var wobble := 1.0
 ## Round caps on stroke ends (off for bands that must stop exactly at their ends).
 var caps := true
-## Bounding box of everything emitted (canvas space), for framing previews.
-var bounds := Rect2()
-var _has_bounds := false
+## Bounding box of everything emitted (canvas space), for framing previews (computed on demand).
+var bounds: Rect2:
+	get:
+		if pts.is_empty():
+			return Rect2()
+		var lo := pts[0]
+		var hi := pts[0]
+		for q in pts:
+			lo = lo.min(q)
+			hi = hi.max(q)
+		return Rect2(lo, hi - lo)
+
+# Staging: shapes are built in local space into _lp / _li (indices already offset to their
+# final position), then transformed by `xf` and appended in bulk by _commit (native ops).
+var _lp := PackedVector2Array()
+var _li := PackedInt32Array()
+var _base := 0
 
 
 func clear() -> void:
 	pts.clear()
 	cols.clear()
 	idx.clear()
-	_has_bounds = false
-	bounds = Rect2()
 
 
 func vertex_count() -> int:
@@ -66,37 +78,49 @@ func to_mesh() -> ArrayMesh:
 	return m
 
 
-## Builds a static mesh-free copy (used when the same art is drawn into several items).
 func append_canvas(other: InkCanvas) -> void:
 	var base := pts.size()
 	pts.append_array(other.pts)
 	cols.append_array(other.cols)
 	for i in other.idx:
 		idx.append(i + base)
-	if other._has_bounds:
-		_grow(other.bounds.position)
-		_grow(other.bounds.end)
 
 
-func _grow(p: Vector2) -> void:
-	if _has_bounds:
-		bounds = bounds.expand(p)
-	else:
-		bounds = Rect2(p, Vector2.ZERO)
-		_has_bounds = true
+func _begin() -> void:
+	_lp.clear()
+	_li.clear()
+	_base = pts.size()
+
+
+## Stages a local-space vertex; returns its final index.
+func _sv(p: Vector2) -> int:
+	_lp.append(p)
+	return _base + _lp.size() - 1
+
+
+func _commit(color: Color) -> void:
+	var n := _lp.size()
+	if n == 0:
+		return
+	pts.append_array(xf * _lp)
+	var c := PackedColorArray()
+	c.resize(n)
+	c.fill(color)
+	cols.append_array(c)
+	idx.append_array(_li)
+	_lp.clear()
+	_li.clear()
 
 
 func _v(p: Vector2, c: Color) -> int:
-	var q := xf * p
-	pts.append(q)
+	pts.append(xf * p)
 	cols.append(c)
-	_grow(q)
 	return pts.size() - 1
 
 
 ## Cheap smooth 1D noise in roughly [-1, 1]; stable for a given seed.
 static func noise(x: float, seed_value: float) -> float:
-	return sin(x + seed_value * 1.37) * 0.5 + sin(x * 2.31 + seed_value * 2.71) * 0.3 + sin(x * 4.73 + seed_value * 0.53) * 0.2
+	return sin(x + seed_value * 1.37) * 0.62 + sin(x * 2.63 + seed_value * 2.71) * 0.38
 
 
 # ---------------------------------------------------------------------------
@@ -154,19 +178,17 @@ func stroke(line: PackedVector2Array, width: float, color: Color, taper_a: float
 ## Strip with round caps; sharp corners get round joins (strip is split there).
 func _strip(p: PackedVector2Array, hw: PackedFloat32Array, color: Color) -> void:
 	var n := p.size()
-	var start := 0
+	_begin()
 	var prev_l := -1
 	var prev_r := -1
 	var d_in := (p[1] - p[0]).normalized()
 	if d_in == Vector2.ZERO:
 		d_in = Vector2.RIGHT
 	if caps:
-		_cap(p[0], hw[0], -d_in, color)
+		_scap(p[0], hw[0], -d_in)
+	var d_prev := d_in
 	for i in n:
-		var d_prev := d_in if i == 0 else (p[i] - p[i - 1]).normalized()
 		var d_next := (p[i + 1] - p[i]).normalized() if i < n - 1 else d_prev
-		if d_prev == Vector2.ZERO:
-			d_prev = d_next
 		if d_next == Vector2.ZERO:
 			d_next = d_prev
 		var sharp := i > 0 and i < n - 1 and d_prev.dot(d_next) < 0.6
@@ -175,54 +197,79 @@ func _strip(p: PackedVector2Array, hw: PackedFloat32Array, color: Color) -> void
 		if sharp:
 			nrm = Vector2(-d_prev.y, d_prev.x)
 		else:
-			var avg := (d_prev + d_next)
+			var avg := d_prev + d_next
 			if avg.length_squared() < 0.0001:
 				avg = d_next
 			avg = avg.normalized()
 			nrm = Vector2(-avg.y, avg.x)
-			miter = clampf(1.0 / maxf(0.2, nrm.dot(Vector2(-d_prev.y, d_prev.x))), 1.0, 2.0)
-		var l := _v(p[i] + nrm * hw[i] * miter, color)
-		var r := _v(p[i] - nrm * hw[i] * miter, color)
+			miter = clampf(1.0 / maxf(0.2, nrm.x * -d_prev.y + nrm.y * d_prev.x), 1.0, 2.0)
+		var o := nrm * (hw[i] * miter)
+		var l := _sv(p[i] + o)
+		var r := _sv(p[i] - o)
 		if prev_l >= 0:
-			idx.append_array(PackedInt32Array([prev_l, l, r, prev_l, r, prev_r]))
+			_li.append(prev_l)
+			_li.append(l)
+			_li.append(r)
+			_li.append(prev_l)
+			_li.append(r)
+			_li.append(prev_r)
 		prev_l = l
 		prev_r = r
 		if sharp:
 			# Round join, then restart the strip with the outgoing normal.
-			dot(p[i], hw[i], color)
-			var n2 := Vector2(-d_next.y, d_next.x)
-			prev_l = _v(p[i] + n2 * hw[i], color)
-			prev_r = _v(p[i] - n2 * hw[i], color)
+			_sdot(p[i], hw[i])
+			var n2 := Vector2(-d_next.y, d_next.x) * hw[i]
+			prev_l = _sv(p[i] + n2)
+			prev_r = _sv(p[i] - n2)
+		d_prev = d_next
 	var d_out := (p[n - 1] - p[n - 2]).normalized()
 	if d_out == Vector2.ZERO:
 		d_out = d_in
 	if caps:
-		_cap(p[n - 1], hw[n - 1], d_out, color)
+		_scap(p[n - 1], hw[n - 1], d_out)
+	_commit(color)
 
 
-## Semicircle cap at `c` bulging toward `dir`.
-func _cap(c: Vector2, r: float, dir: Vector2, color: Color) -> void:
-	var seg := clampi(int(r * xf.get_scale().length() * 0.9) + 3, 3, 10)
-	var ci := _v(c, color)
+func _seg_for(r: float, k: float, lo: int, hi: int) -> int:
+	return clampi(int(r * absf(xf.x.x + xf.y.y) * 0.5 * k) + lo, lo, hi)
+
+
+## Staged semicircle cap at `c` bulging toward `dir`.
+func _scap(c: Vector2, r: float, dir: Vector2) -> void:
+	var seg := _seg_for(r, 0.9, 3, 10)
+	var ci := _sv(c)
 	var a0 := dir.angle() - PI * 0.5
-	var prev := _v(c + Vector2.from_angle(a0) * r, color)
+	var prev := _sv(c + Vector2.from_angle(a0) * r)
 	for k in range(1, seg + 1):
-		var cur := _v(c + Vector2.from_angle(a0 + PI * float(k) / float(seg)) * r, color)
-		idx.append_array(PackedInt32Array([ci, prev, cur]))
+		var cur := _sv(c + Vector2.from_angle(a0 + PI * float(k) / float(seg)) * r)
+		_li.append(ci)
+		_li.append(prev)
+		_li.append(cur)
 		prev = cur
+
+
+## Staged filled disc.
+func _sdot(c: Vector2, r: float) -> void:
+	var seg := _seg_for(r, 1.2, 6, 40)
+	var ci := _sv(c)
+	var first := _sv(c + Vector2(r, 0))
+	var prev := first
+	for k in range(1, seg):
+		var cur := _sv(c + Vector2.from_angle(TAU * float(k) / float(seg)) * r)
+		_li.append(ci)
+		_li.append(prev)
+		_li.append(cur)
+		prev = cur
+	_li.append(ci)
+	_li.append(prev)
+	_li.append(first)
 
 
 ## Filled disc.
 func dot(c: Vector2, r: float, color: Color) -> void:
-	var seg := clampi(int(r * xf.get_scale().length() * 1.2) + 6, 6, 40)
-	var ci := _v(c, color)
-	var first := _v(c + Vector2(r, 0), color)
-	var prev := first
-	for k in range(1, seg):
-		var cur := _v(c + Vector2.from_angle(TAU * float(k) / float(seg)) * r, color)
-		idx.append_array(PackedInt32Array([ci, prev, cur]))
-		prev = cur
-	idx.append_array(PackedInt32Array([ci, prev, first]))
+	_begin()
+	_sdot(c, r)
+	_commit(color)
 
 
 ## Closed outline (polygon contour) inked with the stroke rules.
@@ -295,10 +342,16 @@ func fill(poly: PackedVector2Array, color: Color) -> void:
 			idx.append_array(PackedInt32Array([ci, base0 + i, base0 + (i + 1) % n]))
 		return
 	var base := pts.size()
-	for v in poly:
-		_v(v, color)
-	for t in tri:
-		idx.append(base + t)
+	pts.append_array(xf * poly)
+	var c2 := PackedColorArray()
+	c2.resize(n)
+	c2.fill(color)
+	cols.append_array(c2)
+	if base == 0:
+		idx.append_array(tri)
+	else:
+		for t in tri:
+			idx.append(base + t)
 
 
 static func _dedupe(poly: PackedVector2Array) -> PackedVector2Array:

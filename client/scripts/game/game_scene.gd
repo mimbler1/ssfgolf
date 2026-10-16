@@ -191,6 +191,12 @@ func _on_welcomed() -> void:
 		g.visible = false
 		golfer_layer.add_child(g)
 		golfers[slot] = g
+		# Opponents animate "on twos" (30 Hz, staggered) and skip redraws when off screen; the
+		# local golfer stays at full rate for responsive aiming.
+		g.cull_offscreen = true
+		if slot != view.local_slot:
+			g.redraw_interval = 1.0 / 30.0
+			g.set("_redraw_wait", float(slot % 2) / 60.0)
 		_golfer_state[slot] = {"shown": false, "swing_until": -1.0}
 		var bv := BallView.new()
 		bv.slot = slot

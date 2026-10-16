@@ -81,9 +81,8 @@ switch ($Command) {
   }
   "test" {
     Require-Godot
-    python (Join-Path $Root "tools/sprites/build_character.py") adventurer --check
     & $GodotConsole --headless --path $Client --script res://tests/compile_all.gd
-    & $GodotConsole --headless --path $Client --script res://tests/test_characters.gd
+    & $GodotConsole --headless --path $Client --script res://tests/test_ink.gd
     & $GodotConsole --headless --path $Client --script res://tests/test_sim.gd
     & $GodotConsole --headless --path $Client --script res://tests/test_abilities.gd
     & $GodotConsole --headless --path $Client --script res://tests/test_playable.gd

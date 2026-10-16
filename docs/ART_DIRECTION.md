@@ -1,3 +1,5 @@
+> **Superseded** by `INK_ART_SPEC.md` (hand-drawn ink direction). Kept for history.
+
 # Art Direction
 
 **One art direction for the whole game:** detailed, intentionally authored 2D sprite art with

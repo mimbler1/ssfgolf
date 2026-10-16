@@ -1,3 +1,5 @@
+> **Superseded** by `INK_ART_SPEC.md` (hand-drawn ink direction). Kept for history.
+
 # Art Style Guide (v3: "arcade stage" direction)
 
 **Visual benchmark:** the craft and presentation of Super Smash Flash 2. That means detailed

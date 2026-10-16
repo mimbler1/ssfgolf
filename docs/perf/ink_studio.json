@@ -1,0 +1,236 @@
+{
+  "cpu": "AMD Ryzen 7 7800X3D 8-Core Processor",
+  "engine": "4.7.2-stable (official)",
+  "gpu": "NVIDIA GeForce RTX 4070 SUPER",
+  "memory": [
+    {
+      "at": "menu start",
+      "draw_calls": 90,
+      "nodes": 126,
+      "objects": 1978,
+      "orphans": 0,
+      "static_mb": 72.36,
+      "video_mb": 109.37
+    },
+    {
+      "at": "c0 studio open",
+      "draw_calls": 156,
+      "nodes": 245,
+      "objects": 2397,
+      "orphans": 0,
+      "static_mb": 85.93,
+      "video_mb": 113.75
+    },
+    {
+      "at": "c0 before leave",
+      "draw_calls": 201,
+      "nodes": 245,
+      "objects": 2577,
+      "orphans": 0,
+      "static_mb": 94.96,
+      "video_mb": 114.09
+    },
+    {
+      "at": "c0 menu",
+      "draw_calls": 90,
+      "nodes": 126,
+      "objects": 2244,
+      "orphans": 0,
+      "static_mb": 92.64,
+      "video_mb": 112.63
+    },
+    {
+      "at": "c1 studio open",
+      "draw_calls": 156,
+      "nodes": 245,
+      "objects": 2577,
+      "orphans": 0,
+      "static_mb": 95.0,
+      "video_mb": 114.13
+    },
+    {
+      "at": "c1 before leave",
+      "draw_calls": 201,
+      "nodes": 245,
+      "objects": 2732,
+      "orphans": 0,
+      "static_mb": 103.27,
+      "video_mb": 114.09
+    },
+    {
+      "at": "c1 menu",
+      "draw_calls": 90,
+      "nodes": 126,
+      "objects": 2399,
+      "orphans": 0,
+      "static_mb": 100.94,
+      "video_mb": 112.63
+    }
+  ],
+  "phases": [
+    {
+      "avg_ms": 2.63,
+      "frames": 608,
+      "max_ms": 343.28,
+      "p95_ms": 2.31,
+      "phase": "c0 open studio",
+      "stalls_over_33ms": 2
+    },
+    {
+      "avg_ms": 1.86,
+      "frames": 804,
+      "max_ms": 2.88,
+      "p95_ms": 2.07,
+      "phase": "c0 idle",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 1.89,
+      "frames": 89,
+      "max_ms": 2.7,
+      "p95_ms": 2.02,
+      "phase": "c0 scroll roster",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 3.68,
+      "frames": 119,
+      "max_ms": 27.4,
+      "p95_ms": 25.64,
+      "phase": "c0 switch 30 characters",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 6.59,
+      "frames": 87,
+      "max_ms": 34.1,
+      "p95_ms": 25.59,
+      "phase": "c0 headwear equip x20",
+      "stalls_over_33ms": 1
+    },
+    {
+      "avg_ms": 21.39,
+      "frames": 83,
+      "max_ms": 93.26,
+      "p95_ms": 80.73,
+      "phase": "c0 colour swatches x20",
+      "stalls_over_33ms": 20
+    },
+    {
+      "avg_ms": 2.09,
+      "frames": 2348,
+      "max_ms": 3.43,
+      "p95_ms": 2.49,
+      "phase": "c0 preview all anims",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 2.06,
+      "frames": 355,
+      "max_ms": 5.0,
+      "p95_ms": 2.34,
+      "phase": "c0 character tab",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 2.07,
+      "frames": 380,
+      "max_ms": 3.46,
+      "p95_ms": 2.38,
+      "phase": "c0 save",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 2.44,
+      "frames": 655,
+      "max_ms": 244.28,
+      "p95_ms": 2.35,
+      "phase": "c0 back to menu",
+      "stalls_over_33ms": 1
+    },
+    {
+      "avg_ms": 2.39,
+      "frames": 670,
+      "max_ms": 268.18,
+      "p95_ms": 2.25,
+      "phase": "c1 open studio",
+      "stalls_over_33ms": 1
+    },
+    {
+      "avg_ms": 2.02,
+      "frames": 741,
+      "max_ms": 3.26,
+      "p95_ms": 2.58,
+      "phase": "c1 idle",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 2.05,
+      "frames": 89,
+      "max_ms": 3.08,
+      "p95_ms": 2.47,
+      "phase": "c1 scroll roster",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 3.71,
+      "frames": 119,
+      "max_ms": 28.95,
+      "p95_ms": 25.63,
+      "phase": "c1 switch 30 characters",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 7.56,
+      "frames": 87,
+      "max_ms": 49.39,
+      "p95_ms": 26.12,
+      "phase": "c1 headwear equip x20",
+      "stalls_over_33ms": 4
+    },
+    {
+      "avg_ms": 22.13,
+      "frames": 83,
+      "max_ms": 93.99,
+      "p95_ms": 85.71,
+      "phase": "c1 colour swatches x20",
+      "stalls_over_33ms": 20
+    },
+    {
+      "avg_ms": 2.07,
+      "frames": 2371,
+      "max_ms": 3.76,
+      "p95_ms": 2.5,
+      "phase": "c1 preview all anims",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 2.06,
+      "frames": 356,
+      "max_ms": 5.29,
+      "p95_ms": 2.27,
+      "phase": "c1 character tab",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 2.16,
+      "frames": 370,
+      "max_ms": 3.47,
+      "p95_ms": 3.06,
+      "phase": "c1 save",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 2.51,
+      "frames": 638,
+      "max_ms": 257.87,
+      "p95_ms": 2.57,
+      "phase": "c1 back to menu",
+      "stalls_over_33ms": 1
+    }
+  ],
+  "window": [
+    1920,
+    1080
+  ]
+}

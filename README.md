@@ -111,23 +111,23 @@ This runs:
 | `--screenshot out.png --shot-delay S` | Save a screenshot and quit (art review) |
 | `--dev-character ID` | Practice/Studio: play as a roster character without saving it |
 | `--dev-emote N` / `--dev-wheel` | Practice: perform emote N / open the emote wheel after loading |
-| `res://scenes/dev/gallery.tscn -- --gallery-skins [ids] [poses] [scale] [sprites]` | Roster art review (live-painted, or from baked sheets) |
+| `res://scenes/dev/gallery.tscn -- --ink-poses [outfit] / --ink-outfits / --ink-looks` | Ink golfer art review |
 | `res://scenes/dev/gallery.tscn -- --gallery-emotes [t]` | Stickman presets frozen mid-emote |
 
-## Character sprite sheets
+## Art (hand-drawn ink style)
 
-The roster characters (Ace, Nana Birdie, Brick, Bolt, Skipper, Frost) are drawn by
-`client/scripts/render/character_skin.gd` over the same animation rig as the Stickman, then baked
-into sprite sheets in `client/assets/characters/` (`<id>.png` atlas + `<id>.json` frame data).
-After changing character art or any animation, rebake:
+Everything visible is drawn from vector data by `InkCanvas` (`client/scripts/render/ink/`). Nothing
+needs baking. The spec is `docs/INK_ART_SPEC.md`, and the migration status is
+`docs/INK_MIGRATION.md`.
 
-```powershell
-./tools/bake_sprites.ps1            # all characters (a small window opens while it renders)
-./tools/bake_sprites.ps1 ace,nana   # just some
-```
-
-The sheet format is documented in `character_sheet.gd`. A hand-drawn sheet in the same format can
-replace a baked one.
+| Review tool | Command |
+|---|---|
+| Golfer pose sheet | `SCENE=res://scenes/dev/gallery.tscn tools/shot.sh out.png 1920x1080 1 --ink-poses knight` |
+| All outfits | `... --ink-outfits` |
+| Customisation sampler | `... --ink-looks` |
+| Off-screen screenshot of any screen (no window pops up) | `tools/shot.sh out.png 1920x1080 3 --practice --course beach_land --hole 2` |
+| Frame-time probe | `tools/perf.sh label --studio` |
+| Ink art checks | `godot --headless --path client --script res://tests/test_ink.gd` |
 
 ## Exporting a Windows build
 

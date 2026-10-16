@@ -1,3 +1,5 @@
+> **Superseded** by `INK_ART_SPEC.md` (hand-drawn ink direction). Kept for history.
+
 # Sprite Character Pipeline (v4)
 
 ## v4 golfer pipeline (current, Milestone 2)

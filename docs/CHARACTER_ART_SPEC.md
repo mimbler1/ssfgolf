@@ -1,3 +1,5 @@
+> **Superseded** by `INK_ART_SPEC.md` (hand-drawn ink direction). Kept for history.
+
 # Character Art Specification (v2, "toon golfers")
 
 Benchmark: the *feel* of Golf Blitz's golfers (readability, compact silhouettes, bold ink, playful

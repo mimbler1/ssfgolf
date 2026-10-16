@@ -1,0 +1,126 @@
+{
+  "cpu": "AMD Ryzen 7 7800X3D 8-Core Processor",
+  "engine": "4.7.2-stable (official)",
+  "gpu": "NVIDIA GeForce RTX 4070 SUPER",
+  "memory": [
+    {
+      "at": "menu start",
+      "draw_calls": 90,
+      "nodes": 126,
+      "objects": 1981,
+      "orphans": 0,
+      "static_mb": 72.36,
+      "video_mb": 109.34
+    },
+    {
+      "at": "in match golf_land",
+      "draw_calls": 124,
+      "nodes": 209,
+      "objects": 2405,
+      "orphans": 0,
+      "static_mb": 91.67,
+      "video_mb": 129.56
+    },
+    {
+      "at": "menu after golf_land",
+      "draw_calls": 90,
+      "nodes": 126,
+      "objects": 2126,
+      "orphans": 0,
+      "static_mb": 90.26,
+      "video_mb": 128.97
+    },
+    {
+      "at": "in match gravity_lab",
+      "draw_calls": 134,
+      "nodes": 213,
+      "objects": 2420,
+      "orphans": 0,
+      "static_mb": 95.14,
+      "video_mb": 143.39
+    },
+    {
+      "at": "menu after gravity_lab",
+      "draw_calls": 90,
+      "nodes": 126,
+      "objects": 2130,
+      "orphans": 0,
+      "static_mb": 90.82,
+      "video_mb": 141.02
+    },
+    {
+      "at": "in match spin_land",
+      "draw_calls": 132,
+      "nodes": 214,
+      "objects": 2404,
+      "orphans": 0,
+      "static_mb": 94.35,
+      "video_mb": 142.52
+    },
+    {
+      "at": "menu after spin_land",
+      "draw_calls": 90,
+      "nodes": 126,
+      "objects": 2130,
+      "orphans": 0,
+      "static_mb": 90.83,
+      "video_mb": 141.02
+    }
+  ],
+  "phases": [
+    {
+      "avg_ms": 5.88,
+      "frames": 4253,
+      "max_ms": 20.97,
+      "p95_ms": 8.39,
+      "phase": "6p stress golf_land",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 7.38,
+      "frames": 3385,
+      "max_ms": 19.9,
+      "p95_ms": 10.05,
+      "phase": "6p stress gravity_lab",
+      "stalls_over_33ms": 0
+    },
+    {
+      "avg_ms": 6.96,
+      "frames": 3593,
+      "max_ms": 17.73,
+      "p95_ms": 9.49,
+      "phase": "6p stress spin_land",
+      "stalls_over_33ms": 0
+    }
+  ],
+  "sim": [
+    {
+      "course": "golf_land",
+      "max_balls_moving": 6,
+      "shots": 61,
+      "sim_tick_avg_ms": 0.146,
+      "sim_tick_max_ms": 0.489,
+      "ticks": 1500
+    },
+    {
+      "course": "gravity_lab",
+      "max_balls_moving": 6,
+      "shots": 67,
+      "sim_tick_avg_ms": 0.156,
+      "sim_tick_max_ms": 0.463,
+      "ticks": 1501
+    },
+    {
+      "course": "spin_land",
+      "max_balls_moving": 6,
+      "shots": 59,
+      "sim_tick_avg_ms": 0.136,
+      "sim_tick_max_ms": 0.69,
+      "ticks": 1500
+    }
+  ],
+  "window": [
+    1920,
+    1080
+  ]
+}

@@ -297,11 +297,32 @@ toward the sky by its depth.
 **Reduced effects** (Settings → Gameplay) halves particle counts and turns off camera shake and
 the paper grain animation.
 
-## 12. Performance budget (measured with `tools/perf.sh`, 1920×1080, vsync off)
+## 12. Performance (measured 2026-10-16)
 
-| Scene | Target | Baseline (pixel build, 2026-10-16) |
+Measured with the project's own probes (`--perf-game`, `--perf-studio`; `docs/perf/ink_*.json`)
+on a Ryzen 7 7800X3D with an RTX 4070 SUPER, at 1920×1080, vsync off.
+
+| Scene | Ink build | Pixel build (PERFORMANCE_REPORT.md, different PC) |
 |---|---|---|
-| Gameplay, one golfer | < 6.9 ms mean, p99 < 10 ms | 6.18 ms mean, p99 7.0 ms |
-| Six customised golfers | < 8 ms mean | not measured (no 6-player view) |
-| Golfer Studio | < 8 ms mean | **55.4 ms mean (18 fps), 2211 draw calls** |
-| Main menu | < 6.9 ms mean | 5.56 ms mean |
+| 6-player stress, Golf Land | 5.9 ms avg, p95 8.4 ms, 0 frames > 33 ms | 1.4 ms avg, p95 1.9 ms |
+| 6-player stress, Gravity Lab | 7.4 ms avg, p95 10.1 ms, 0 frames > 33 ms | not comparable |
+| 6-player stress, Spin Land | 7.0 ms avg, p95 9.5 ms, 0 frames > 33 ms | not comparable |
+| Golfer Studio, idle | 1.9 ms avg | 0.45 ms |
+| Golfer Studio, first open | one 343 ms frame (thumbnail build) | one 40 ms frame |
+
+Every scene stays well above 60 FPS. The vector art costs more CPU than sprites, mainly golfer
+redraws: 0.7–1.4 ms each.
+
+**Mitigations in place:**
+
+- Each drawable item is submitted as one triangle array, transformed in bulk.
+- Opponents animate "on twos" (30 Hz, staggered).
+- Off-screen golfers are culled.
+- Static art is built once.
+- Gravity-field chevrons are static geometry that only moves.
+
+**Still to do:**
+
+- Cache the first-open studio thumbnails.
+- Cache golfer head and hair geometry.
+- Test on low-end hardware.

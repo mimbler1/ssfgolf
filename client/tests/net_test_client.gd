@@ -51,6 +51,12 @@ func _make_view() -> void:
 		for r: Dictionary in view.roster:
 			chars.append("%d=%s" % [int(r.slot), str(Appearance.normalize(r.appearance).character)])
 		print("[%s] welcomed as slot %d, %d players, characters %s" % [_name, view.local_slot, view.roster.size(), ",".join(chars)])
+		var looks := []
+		for r in view.roster:
+			var ink: Dictionary = Appearance.normalize(r.get("appearance", {})).ink
+			looks.append("%d:hair=%s,pants=%s,strokes=%d" % [int(r.slot), ink.hair, ink.pantsColor,
+				((ink.drawings as Dictionary).get("pants", {}).get("strokes", []) as Array).size()])
+		print("[%s] ink looks %s" % [_name, " ".join(looks)])
 		_emote_at = _t + 2.0)
 	view.connection_lost.connect(func(r: String) -> void:
 		print("[%s] connection lost: %s" % [_name, r])
