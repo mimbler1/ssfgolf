@@ -201,6 +201,14 @@ never affect gameplay.
   - Values that are not catalog items (custom colours from older clients) are accepted.
   - So is a value unchanged from the current appearance, so existing profiles keep working.
 
+### 1.8 Player reports
+
+- `POST /v1/reports` (auth) with `{ "playerId": "uuid", "matchId": "…", "reason": "name"|"griefing"|"cheating"|"other", "note"?: "≤280 chars" }` → `200 { "ok": true, "duplicate": false }`.
+  - The report is stored in `player_reports` for moderation.
+  - Only one report is kept per reporter, target and match; a repeat returns `duplicate: true`.
+  - Reporting yourself returns `400`. An unknown player returns `404`.
+- Muting is client-side only: a muted player's emotes are hidden for the person who muted them.
+
 ## 2. Game-server internal API (`/internal/...`)
 
 Every request requires the header `X-Server-Key: <GAME_SERVER_KEY>` (env). A wrong or missing key returns `401`.

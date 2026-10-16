@@ -125,4 +125,21 @@ describe('collection routes', () => {
     const custom = await t.app.inject({ method: 'PATCH', url: '/v1/me', headers: bearer(g.token), payload: { appearance: { ...brick, ballColor: '#123456' } } });
     assert.equal(custom.statusCode, 200);
   });
+
+  it('reports are stored once per reporter, target and match', async () => {
+    const a = await newGuest(t);
+    const b = await newGuest(t);
+    const body = { playerId: b.playerId, matchId: 'm-1', reason: 'griefing', note: 'kept blocking the cup' };
+    const r1 = await t.app.inject({ method: 'POST', url: '/v1/reports', headers: bearer(a.token), payload: body });
+    assert.equal(r1.statusCode, 200);
+    assert.equal(r1.json().duplicate, false);
+    const r2 = await t.app.inject({ method: 'POST', url: '/v1/reports', headers: bearer(a.token), payload: body });
+    assert.equal(r2.json().duplicate, true);
+    const self = await t.app.inject({ method: 'POST', url: '/v1/reports', headers: bearer(a.token), payload: { ...body, playerId: a.playerId } });
+    assert.equal(self.statusCode, 400);
+    const bad = await t.app.inject({ method: 'POST', url: '/v1/reports', headers: bearer(a.token), payload: { ...body, reason: 'meh' } });
+    assert.equal(bad.statusCode, 400);
+    const { rows } = await t.pool.query('SELECT count(*)::int AS n FROM player_reports WHERE target_id = $1', [b.playerId]);
+    assert.equal(rows[0].n, 1);
+  });
 });

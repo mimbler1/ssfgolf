@@ -9,6 +9,7 @@ import { AppError, codeForStatus, errorBody } from './errors.ts';
 import { MatchCoordinator } from './matches/coordinator.ts';
 import { Matchmaker } from './matchmaking/matchmaker.ts';
 import { matchmakingRoutes } from './matchmaking/routes.ts';
+import { reportRoutes } from './collection/reports.ts';
 import { collectionRoutes } from './collection/routes.ts';
 import { profileRoutes } from './profile/routes.ts';
 import { createRateLimiter } from './rateLimit.ts';
@@ -134,6 +135,7 @@ export async function buildApp(config: Config, deps: AppDeps): Promise<BuiltApp>
   await app.register(authRoutes, { ctx });
   await app.register(profileRoutes, { ctx });
   await app.register(collectionRoutes, { ctx });
+  await app.register(reportRoutes, { ctx });
   await app.register(matchmakingRoutes, { ctx });
   await app.register(roomRoutes, { ctx });
   await app.register(internalRoutes, { ctx });

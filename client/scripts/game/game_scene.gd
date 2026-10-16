@@ -61,6 +61,8 @@ var _backdrop_theme_key := "-"
 var _flyover := 0.0
 var _flyover_len := 0.0
 var markers: OffscreenMarkers
+## Players whose emotes this player has muted (client-side only).
+var _muted: Dictionary = {}
 var ghosts: GhostPaths
 var _shot_log: Array[Dictionary] = []   ## practice: last shots {angle, power, spin, ability}
 var _last_shot_label: Label
@@ -101,6 +103,8 @@ func _ready() -> void:
 				var vals := OS.get_cmdline_user_args()[dpts + 1].split(",")
 				for i in mini(vals.size(), lv.sim.players.size()):
 					lv.sim.players[i].points = int(vals[i])
+			if OS.get_cmdline_user_args().has("--dev-menu"):
+				get_tree().create_timer(5.0).timeout.connect(_toggle_menu)
 			if OS.get_cmdline_user_args().has("--dev-end"):
 				# Results-screen check: end the local match a few seconds in.
 				get_tree().create_timer(4.0).timeout.connect(func() -> void: lv.sim.abort("completed"))
@@ -1070,7 +1074,7 @@ static func _ordinal(n: int) -> String:
 
 
 func _show_emote(slot: int, id: int) -> void:
-	if id < 0 or id >= Emotes.count() or not balls.has(slot):
+	if id < 0 or id >= Emotes.count() or not balls.has(slot) or _muted.has(slot):
 		return
 	var e: Dictionary = Emotes.LIST[id]
 	if _bubbles.has(slot):
@@ -1222,6 +1226,8 @@ func _toggle_menu() -> void:
 		overlay_layer.add_child(sp)
 		sp.closed.connect(sp.queue_free))
 	vb.add_child(settings)
+	if view.mode == "online" and view.roster.size() > 1:
+		vb.add_child(_players_panel())
 	if view.mode == "stroke":
 		var restart := GameButton.make("Restart Round", "", Vector2(0, 56))
 		restart.pressed.connect(func() -> void: Router.goto(Router.GAME, {"mode": "stroke", "course": view.course_id, "hole": 0, "clean": bool(params.get("clean", false))}))
@@ -1234,6 +1240,56 @@ func _toggle_menu() -> void:
 		else:
 			_leave_to_menu())
 	vb.add_child(leave)
+
+
+## Online pause menu: mute a player's emotes, or report them (stored by the backend for review).
+func _players_panel() -> Control:
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 6)
+	var t := Label.new()
+	t.theme_type_variation = "TitleLabel"
+	t.text = "Players"
+	box.add_child(t)
+	for r in view.roster:
+		var slot := int(r.slot)
+		if slot == view.local_slot:
+			continue
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 8)
+		var n := Label.new()
+		n.text = str(r.name)
+		n.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		n.add_theme_color_override("font_color", UITheme.SLOT_COLORS[slot % UITheme.SLOT_COLORS.size()])
+		row.add_child(n)
+		var mute := GameButton.make("Unmute" if _muted.has(slot) else "Mute", "GhostButton", Vector2(110, 44))
+		mute.add_theme_font_size_override("font_size", 18)
+		mute.pressed.connect(func() -> void:
+			if _muted.has(slot):
+				_muted.erase(slot)
+			else:
+				_muted[slot] = true
+				if _bubbles.has(slot):
+					_bubbles[slot].node.queue_free()
+					_bubbles.erase(slot)
+			mute.text = "Unmute" if _muted.has(slot) else "Mute")
+		row.add_child(mute)
+		var report := OptionButton.new()
+		report.add_item("Report…")
+		for reason in [["Offensive name", "name"], ["Griefing", "griefing"], ["Cheating", "cheating"], ["Other", "other"]]:
+			report.add_item(str(reason[0]))
+		report.custom_minimum_size = Vector2(150, 44)
+		report.item_selected.connect(func(i: int) -> void:
+			if i == 0:
+				return
+			var reason: String = ["", "name", "griefing", "cheating", "other"][i]
+			report.disabled = true
+			var res := await Backend.send_json(HTTPClient.METHOD_POST, "/v1/reports",
+				{"playerId": str(r.playerId), "matchId": str(params.get("matchId", "")), "reason": reason})
+			hud.toast("Report sent. Thank you." if res.ok else "Couldn't send the report: %s" % Backend.friendly_error(res),
+				UITheme.MUTED if res.ok else UITheme.CORAL))
+		row.add_child(report)
+		box.add_child(row)
+	return box
 
 
 func _confirm_leave() -> void:
